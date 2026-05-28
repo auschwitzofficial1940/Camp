@@ -30,11 +30,13 @@ body {
   background: #d8ddd5;
 }
 
-body.menu-active .app-shell {
+body.menu-active .app-shell,
+body.faction-active .app-shell {
   opacity: 0;
   pointer-events: none;
 }
 
+body.faction-active .main-menu,
 body.game-active .main-menu,
 body.credits-active .main-menu,
 body.game-active .credits-screen {
@@ -52,6 +54,7 @@ button {
 }
 
 .main-menu,
+.faction-select,
 .credits-screen,
 .settings-panel,
 .cloud-transition {
@@ -174,6 +177,306 @@ body.menu-idle:not(.settings-open) .main-options {
 
 .menu-option.disabled:hover {
   transform: none;
+}
+
+.faction-select {
+  z-index: 34;
+  overflow: hidden;
+  background: #070b0e;
+  color: #e8edf1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 520ms ease;
+}
+
+.faction-select[hidden] {
+  display: none;
+}
+
+body.faction-active .faction-select {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.faction-select::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 10, 16, 0.18), transparent 40%, rgba(12, 3, 4, 0.28)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.045) 1px, transparent 1px, transparent 9px);
+  mix-blend-mode: screen;
+}
+
+.faction-select::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -8vh;
+  z-index: 8;
+  width: 3px;
+  height: 116vh;
+  background: linear-gradient(180deg, transparent, rgba(221, 240, 255, 0.98) 18%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 92, 79, 0.82) 84%, transparent);
+  box-shadow:
+    0 0 18px rgba(160, 215, 255, 0.9),
+    0 0 38px rgba(255, 63, 52, 0.26);
+  transform: rotate(13deg);
+  transform-origin: center;
+}
+
+.faction-header {
+  position: absolute;
+  top: 36px;
+  left: 50%;
+  z-index: 12;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.faction-header h2 {
+  margin: 0;
+  color: rgba(238, 240, 235, 0.88);
+  font-size: clamp(28px, 3.4vw, 54px);
+  font-weight: 950;
+  letter-spacing: 10px;
+  text-indent: 10px;
+  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.68);
+}
+
+.faction-header p,
+.faction-en,
+.faction-button span {
+  letter-spacing: 4px;
+}
+
+.faction-header p {
+  margin: 8px 0 0;
+  color: rgba(238, 240, 235, 0.62);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.faction-side {
+  position: absolute;
+  inset-block: 0;
+  overflow: hidden;
+}
+
+.faction-faculty {
+  left: 0;
+  width: 56vw;
+  clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+}
+
+.faction-students {
+  right: 0;
+  width: 56vw;
+  clip-path: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.faction-bg,
+.faction-shade,
+.faction-logo,
+.faction-representative,
+.faction-copy,
+.faction-button {
+  position: absolute;
+}
+
+.faction-bg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.03);
+}
+
+.faction-shade {
+  inset: 0;
+}
+
+.faction-faculty .faction-shade {
+  background:
+    radial-gradient(circle at 48% 42%, rgba(35, 102, 161, 0.18), transparent 34%),
+    linear-gradient(90deg, rgba(2, 16, 35, 0.76), rgba(4, 27, 49, 0.38) 54%, rgba(4, 6, 10, 0.72));
+}
+
+.faction-students .faction-shade {
+  background:
+    radial-gradient(circle at 58% 42%, rgba(137, 24, 24, 0.18), transparent 36%),
+    linear-gradient(90deg, rgba(4, 6, 10, 0.76), rgba(44, 10, 9, 0.46) 44%, rgba(7, 3, 3, 0.78));
+}
+
+.faction-logo {
+  top: 16%;
+  width: min(24vw, 330px);
+  opacity: 0.72;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.55));
+}
+
+.faction-faculty .faction-logo {
+  left: 10%;
+}
+
+.faction-students .faction-logo {
+  right: 12%;
+  opacity: 0.36;
+}
+
+.faction-representative {
+  bottom: 0;
+  z-index: 2;
+  max-height: 82vh;
+  object-fit: contain;
+  filter: drop-shadow(0 28px 42px rgba(0, 0, 0, 0.72));
+}
+
+.faction-faculty .faction-representative {
+  right: 18%;
+  max-width: min(28vw, 420px);
+}
+
+.faction-students .faction-representative {
+  right: 8%;
+  max-width: min(38vw, 610px);
+  opacity: 0.92;
+}
+
+.faction-copy {
+  z-index: 3;
+  top: 44%;
+  width: min(34vw, 520px);
+  transform: translateY(-50%);
+}
+
+.faction-faculty .faction-copy {
+  left: 9%;
+}
+
+.faction-students .faction-copy {
+  right: 11%;
+  text-align: right;
+}
+
+.faction-copy > span {
+  display: block;
+  margin-bottom: 18px;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 4px;
+}
+
+.faction-faculty .faction-copy > span,
+.faction-faculty .faction-values {
+  color: #4ca5ff;
+}
+
+.faction-students .faction-copy > span,
+.faction-students .faction-values {
+  color: #ff554c;
+}
+
+.faction-copy h3 {
+  margin: 0;
+  color: rgba(244, 247, 246, 0.92);
+  font-size: clamp(34px, 4vw, 66px);
+  letter-spacing: 10px;
+  text-indent: 10px;
+  text-shadow: 0 16px 32px rgba(0, 0, 0, 0.7);
+}
+
+.faction-en {
+  margin: 8px 0 12px;
+  color: rgba(238, 240, 235, 0.62);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.faction-values {
+  margin: 0 0 24px;
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: 5px;
+}
+
+.faction-desc {
+  max-width: 450px;
+  margin: 0;
+  color: rgba(238, 240, 235, 0.78);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.8;
+}
+
+.faction-students .faction-desc {
+  margin-left: auto;
+}
+
+.faction-button {
+  z-index: 4;
+  bottom: 8.5%;
+  display: grid;
+  gap: 5px;
+  place-items: center;
+  width: min(26vw, 380px);
+  min-width: 250px;
+  padding: 17px 22px;
+  border-radius: 6px;
+  background: rgba(4, 8, 14, 0.54);
+  color: rgba(246, 248, 246, 0.94);
+  cursor: pointer;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    filter 150ms ease,
+    transform 150ms ease;
+}
+
+.faction-button strong {
+  font-size: 23px;
+  letter-spacing: 6px;
+  text-indent: 6px;
+}
+
+.faction-button span {
+  color: rgba(238, 240, 235, 0.66);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.faculty-button {
+  left: 12%;
+  border: 1px solid rgba(58, 150, 255, 0.78);
+  box-shadow: 0 0 28px rgba(58, 150, 255, 0.22);
+}
+
+.student-button {
+  right: 12%;
+  border: 1px solid rgba(255, 72, 62, 0.88);
+  box-shadow: 0 0 28px rgba(255, 72, 62, 0.26);
+}
+
+.student-button:hover {
+  background: rgba(70, 11, 10, 0.72);
+  transform: translateY(-3px);
+}
+
+.faculty-button:hover {
+  border-color: rgba(170, 176, 178, 0.8);
+  background: rgba(40, 43, 44, 0.72);
+  color: rgba(221, 224, 224, 0.72);
+  filter: grayscale(0.75);
+  transform: translateY(-3px);
+}
+
+.faculty-button:hover strong {
+  font-size: 21px;
 }
 
 .settings-panel {
@@ -617,7 +920,7 @@ body.menu-idle:not(.settings-open) .main-options {
   z-index: 8;
   width: min(420px, calc(100vw - 560px));
   min-width: 340px;
-  padding: 10px 12px 12px;
+  padding: 8px 12px 12px;
   border: 1px solid rgba(255, 255, 255, 0.76);
   border-radius: 16px;
   background: rgba(246, 248, 241, 0.78);
@@ -628,11 +931,12 @@ body.menu-idle:not(.settings-open) .main-options {
 }
 
 .semester-day-label {
-  margin-bottom: 9px;
+  margin-bottom: 24px;
   color: var(--ink);
   font-size: 14px;
   font-weight: 950;
   text-align: center;
+  transform: translateY(-4px);
 }
 
 .day-progress-track {
@@ -946,14 +1250,29 @@ body.game-active:not(.time-paused) #gameSettings img {
   left: 92px;
   top: 106px;
   z-index: 10;
-  width: 300px;
+  display: grid;
+  grid-template-columns: 300px 300px;
+  gap: 10px;
+  width: auto;
   max-height: min(420px, calc(100vh - 132px));
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.mail-panel {
+  position: fixed;
+  left: 92px;
+  top: 106px;
+  z-index: 10;
+  width: 360px;
+  max-height: min(600px, calc(100vh - 132px));
   border-radius: 16px;
   box-shadow: var(--shadow);
 }
 
 .recruit-panel[hidden],
 .members-panel[hidden],
+.mail-panel[hidden],
 .student-detail-panel[hidden] {
   display: none;
 }
@@ -1009,6 +1328,28 @@ body.game-active:not(.time-paused) #gameSettings img {
   backdrop-filter: blur(14px);
 }
 
+.empty-member-list {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(31, 41, 35, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.52);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.mail-list-wrap {
+  min-height: 220px;
+  max-height: min(600px, calc(100vh - 132px));
+  padding: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  border-radius: 16px;
+  background: var(--glass-strong);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(14px);
+}
+
 .recruit-list {
   display: grid;
   gap: 8px;
@@ -1037,6 +1378,10 @@ body.game-active:not(.time-paused) #gameSettings img {
 .student-row.active {
   border-color: rgba(40, 95, 78, 0.42);
   background: #eef5eb;
+}
+
+.student-row.joined {
+  background: rgba(209, 229, 204, 0.72);
 }
 
 .student-row img {
@@ -1075,6 +1420,21 @@ body.game-active:not(.time-paused) #gameSettings img {
   top: 106px;
   z-index: 11;
   width: 315px;
+  max-height: calc(100vh - 128px);
+  overflow-y: auto;
+}
+
+.members-panel:not([hidden]) ~ .student-detail-panel {
+  left: 720px;
+}
+
+.student-detail-panel .panel-title {
+  cursor: grab;
+  user-select: none;
+}
+
+.student-detail-panel.dragging .panel-title {
+  cursor: grabbing;
 }
 
 .student-detail-panel h2 {
@@ -1123,6 +1483,255 @@ body.game-active:not(.time-paused) #gameSettings img {
   color: var(--green);
   font-size: 12px;
   font-weight: 950;
+}
+
+.position-panel {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid rgba(31, 41, 35, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.position-panel[hidden] {
+  display: none;
+}
+
+.position-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.position-option {
+  min-height: 32px;
+  border: 1px solid rgba(31, 41, 35, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.position-option.active {
+  border-color: rgba(40, 95, 78, 0.46);
+  background: rgba(40, 95, 78, 0.14);
+  color: var(--green);
+}
+
+.position-option:disabled {
+  background: rgba(31, 41, 35, 0.12);
+  color: rgba(31, 41, 35, 0.42);
+  cursor: not-allowed;
+}
+
+.position-locked {
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.student-actions {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.student-actions.member-mode {
+  grid-template-columns: 1fr;
+}
+
+.student-action {
+  min-height: 36px;
+  border: 1px solid rgba(31, 41, 35, 0.14);
+  border-radius: 12px;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.student-action.bribe {
+  background: rgba(208, 155, 43, 0.22);
+}
+
+.student-action.invite {
+  background: rgba(40, 95, 78, 0.16);
+}
+
+.student-action.leave {
+  background: rgba(157, 56, 51, 0.16);
+  color: var(--red);
+}
+
+.student-action:hover:not(:disabled) {
+  border-color: rgba(40, 95, 78, 0.42);
+  background: #eef5eb;
+}
+
+.student-action:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(21, 28, 24, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  backdrop-filter: blur(4px);
+}
+
+.confirm-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.confirm-modal[hidden] {
+  display: none;
+}
+
+.confirm-card {
+  width: min(430px, calc(100vw - 48px));
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(252, 253, 247, 0.97);
+  box-shadow: 0 24px 64px rgba(17, 26, 21, 0.28);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 160ms ease;
+}
+
+.confirm-modal.open .confirm-card {
+  transform: translateY(0) scale(1);
+}
+
+.confirm-card p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.55;
+}
+
+.phone-emphasis {
+  color: var(--green);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.confirm-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.confirm-actions button,
+.mail-actions button {
+  min-height: 36px;
+  border: 1px solid rgba(31, 41, 35, 0.14);
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.confirm-cancel,
+.mail-reject {
+  background: rgba(157, 56, 51, 0.14);
+  color: var(--red);
+}
+
+.confirm-accept,
+.mail-accept {
+  background: rgba(40, 95, 78, 0.15);
+  color: var(--green);
+}
+
+.mail-list {
+  display: grid;
+  gap: 10px;
+  max-height: calc(min(600px, 100vh - 132px) - 54px);
+  margin-top: 11px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.mail-card,
+.empty-mail {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid rgba(31, 41, 35, 0.12);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.mail-card h3 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.mail-card.handled {
+  opacity: 0.72;
+}
+
+.mail-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+.mail-status {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(31, 41, 35, 0.08);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.mail-status.accepted {
+  background: rgba(40, 95, 78, 0.14);
+  color: var(--green);
+}
+
+.mail-status.rejected {
+  background: rgba(157, 56, 51, 0.12);
+  color: var(--red);
+}
+
+.mail-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.empty-mail {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .panel-card,

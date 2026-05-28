@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>剑拔弩张</title>
+    <title>剑拔弩张1.0</title>
+    <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -19,6 +20,49 @@
         <button id="openSettings" class="menu-option" type="button">设置</button>
         <button id="showCredits" class="menu-option" type="button">制作人员</button>
       </nav>
+    </section>
+
+    <section id="factionSelect" class="faction-select" aria-label="选择阵营" hidden>
+      <div class="faction-header">
+        <h2>选择你的阵营</h2>
+        <p>CHOOSE YOUR FACTION</p>
+      </div>
+
+      <article class="faction-side faction-faculty" aria-label="老师阵营">
+        <img class="faction-bg" src="assets/老师阵营背景.png" alt="" />
+        <div class="faction-shade"></div>
+        <img class="faction-logo" src="assets/老师阵营logo.png" alt="" />
+        <img class="faction-representative" src="assets/老师代表.png" alt="" />
+        <div class="faction-copy">
+          <span>FACTION 01</span>
+          <h3>老师阵营</h3>
+          <p class="faction-en">FACULTY FACTION</p>
+          <p class="faction-values">信仰 · 责任 · 引导</p>
+          <p class="faction-desc">秩序需要信念来支撑，学生需要引导来成长。</p>
+        </div>
+        <button id="selectFaculty" class="faction-button faculty-button" type="button">
+          <strong>加入老师阵营</strong>
+          <span>JOIN THE FACULTY</span>
+        </button>
+      </article>
+
+      <article class="faction-side faction-students" aria-label="学生阵营">
+        <img class="faction-bg" src="assets/学生阵营背景.png" alt="" />
+        <div class="faction-shade"></div>
+        <img class="faction-logo" src="assets/学生阵营logo.png" alt="" />
+        <img class="faction-representative" src="assets/学生代表.png" alt="" />
+        <div class="faction-copy">
+          <span>FACTION 02</span>
+          <h3>学生阵营</h3>
+          <p class="faction-en">STUDENT FACTION</p>
+          <p class="faction-values">自由 · 反抗 · 改变</p>
+          <p class="faction-desc">规则束缚思想，改变源于行动。</p>
+        </div>
+        <button id="selectStudents" class="faction-button student-button" type="button">
+          <strong>加入学生阵营</strong>
+          <span>JOIN THE STUDENTS</span>
+        </button>
+      </article>
     </section>
 
     <section id="settingsPanel" class="settings-panel" aria-label="主页设置" hidden>
@@ -96,7 +140,7 @@
           <div class="hud-row resource-row">
             <article class="resource-chip" title="手机：2">
               <img src="assets/icon/手机.png" alt="" />
-              <strong>2</strong>
+              <strong id="phoneCount">10</strong>
             </article>
             <article class="resource-chip" title="金钱：35">
               <img src="assets/icon/钱.png" alt="" />
@@ -133,10 +177,10 @@
               <span>学生支持</span>
               <div class="meter"><i style="width: 18%"></i></div>
             </article>
-            <article class="meter-chip danger" title="管理层察觉：0%">
+            <article id="awarenessChip" class="meter-chip danger" title="管理层察觉：0%">
               <img src="assets/icon/察觉.png" alt="" />
               <span>察觉</span>
-              <div class="meter"><i style="width: 0%"></i></div>
+              <div class="meter"><i id="awarenessMeter" style="width: 0%"></i></div>
             </article>
           </div>
         </section>
@@ -184,7 +228,7 @@
           <button class="rail-button" type="button" aria-label="科技树" data-label="科技树">
             <img src="assets/icon/科技树.png" alt="" />
           </button>
-          <button class="rail-button" type="button" aria-label="邮件" data-label="邮件">
+          <button id="mailButton" class="rail-button" type="button" aria-label="邮件" data-label="邮件">
             <img src="assets/icon/邮件.png" alt="" />
           </button>
         </aside>
@@ -255,12 +299,29 @@
         </aside>
 
         <aside id="membersPanel" class="members-panel" aria-label="成员" hidden>
-          <section class="members-list-wrap">
+          <section class="members-list-wrap core-list-wrap">
             <div class="panel-title">
               <img src="assets/icon/人数.png" alt="" />
               <span>核心成员</span>
             </div>
+            <div id="coreMembersList" class="recruit-list"></div>
+          </section>
+          <section class="members-list-wrap regular-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/人数.png" alt="" />
+              <span>成员</span>
+            </div>
             <div id="membersList" class="recruit-list"></div>
+          </section>
+        </aside>
+
+        <aside id="mailPanel" class="mail-panel" aria-label="邮件" hidden>
+          <section class="mail-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/邮件.png" alt="" />
+              <span>地下邮件</span>
+            </div>
+            <div id="mailList" class="mail-list"></div>
           </section>
         </aside>
 
@@ -286,8 +347,30 @@
               <span id="studentStrength">体力 --</span>
               <span id="studentVision">视力 --</span>
             </div>
+            <section id="positionPanel" class="position-panel" hidden>
+              <div class="panel-title">
+                <img src="assets/icon/管理.png" alt="" />
+                <span>更改职位</span>
+              </div>
+              <div id="positionOptions" class="position-options"></div>
+            </section>
+            <div class="student-actions">
+              <button id="bribeStudent" class="student-action bribe" type="button">贿赂</button>
+              <button id="inviteStudent" class="student-action invite" type="button">邀请</button>
+              <button id="removeMember" class="student-action leave" type="button" hidden>让他离开</button>
+            </div>
           </section>
         </aside>
+
+        <section id="confirmModal" class="confirm-modal" aria-label="确认操作" hidden>
+          <div class="confirm-card">
+            <p id="confirmMessage">确认操作？</p>
+            <div class="confirm-actions">
+              <button id="cancelConfirm" class="confirm-cancel" type="button">取消</button>
+              <button id="acceptConfirm" class="confirm-accept" type="button">确认</button>
+            </div>
+          </div>
+        </section>
 
         <section id="eventLog" class="event-log" aria-label="事件日志">
           <button id="collapseLog" class="collapse-log" type="button" aria-label="收起日志">

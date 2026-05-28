@@ -21,8 +21,11 @@ const regions = [
 
 const mapViewport = document.getElementById("mapViewport");
 const mainMenu = document.getElementById("mainMenu");
+const factionSelect = document.getElementById("factionSelect");
 const creditsScreen = document.getElementById("creditsScreen");
 const startGame = document.getElementById("startGame");
+const selectFaculty = document.getElementById("selectFaculty");
+const selectStudents = document.getElementById("selectStudents");
 const showCredits = document.getElementById("showCredits");
 const backToMenu = document.getElementById("backToMenu");
 const openSettings = document.getElementById("openSettings");
@@ -57,6 +60,7 @@ const recruitTitle = document.getElementById("recruitTitle");
 const recruitList = document.getElementById("recruitList");
 const membersButton = document.getElementById("membersButton");
 const membersPanel = document.getElementById("membersPanel");
+const coreMembersList = document.getElementById("coreMembersList");
 const membersList = document.getElementById("membersList");
 const studentDetailPanel = document.getElementById("studentDetailPanel");
 const studentDetailName = document.getElementById("studentDetailName");
@@ -71,6 +75,21 @@ const studentLiterature = document.getElementById("studentLiterature");
 const studentEmergency = document.getElementById("studentEmergency");
 const studentStrength = document.getElementById("studentStrength");
 const studentVision = document.getElementById("studentVision");
+const positionPanel = document.getElementById("positionPanel");
+const positionOptions = document.getElementById("positionOptions");
+const phoneCount = document.getElementById("phoneCount");
+const awarenessChip = document.getElementById("awarenessChip");
+const awarenessMeter = document.getElementById("awarenessMeter");
+const bribeStudent = document.getElementById("bribeStudent");
+const inviteStudent = document.getElementById("inviteStudent");
+const removeMember = document.getElementById("removeMember");
+const confirmModal = document.getElementById("confirmModal");
+const confirmMessage = document.getElementById("confirmMessage");
+const cancelConfirm = document.getElementById("cancelConfirm");
+const acceptConfirm = document.getElementById("acceptConfirm");
+const mailButton = document.getElementById("mailButton");
+const mailPanel = document.getElementById("mailPanel");
+const mailList = document.getElementById("mailList");
 
 const regionName = document.getElementById("regionName");
 const regionPanel = document.getElementById("regionPanel");
@@ -166,7 +185,43 @@ const INITIAL_GRADE_COUNTS = {
 };
 const CORE_MEMBER_DEFS = [
   { name: "Hong Xixi", role: "我", grade: 11, personality: "理想主义压力", faction: "激进学生", trust: 100 },
-  { name: "Li Xinyu", role: "副手", grade: 11, personality: "忠诚", faction: "激进学生", trust: 92 },
+  { name: "Li Xinyu", role: "副主席", grade: 11, personality: "忠诚", faction: "激进学生", trust: 92 },
+];
+const ORGANIZATION_ROLES = ["副主席", "宣传部长", "情报部长", "后勤部长", "成员"];
+const BRIBE_PHONE_COST = 5;
+const BRIBE_TRUST_GAIN = 15;
+const VOLUNTARY_TRUST_THRESHOLD = 80;
+const VOLUNTARY_FAME_THRESHOLD = 40;
+const MAIL_TEMPLATES = [
+  {
+    subject: ".......",
+    body:
+      "我不确定这封邮件会不会被看到。\n\n最近学校里有很多人在讨论一些事情。\n\n我不知道你们到底是谁，\n但如果你们真的想改变什么……\n\n也许我能帮上忙。",
+  },
+  {
+    subject: "我受够了",
+    body:
+      "每天都一样。\n\n巡逻、检查、压力、规矩。\n\n所有人都装作正常，\n但根本没人真的开心。\n\n如果你们不是在开玩笑，\n我愿意加入。",
+  },
+  {
+    subject: "不要回复太快",
+    body:
+      "有人说最近有学生被约谈了。\n\n我不知道是不是因为那个论坛。\n\n如果这封邮件有风险，\n请直接删掉。\n\n但如果安全的话……\n我想知道你们到底在做什么。",
+  },
+  {
+    subject: "今天晚上又突击检查。",
+    body: "他们翻了所有人的柜子。\n\n我已经受够这种生活了。\n\n如果你们准备行动，\n算我一个。",
+  },
+  {
+    subject: "我有条件",
+    body:
+      "我知道你们最近发展得很快。\n\n我可以帮你们。\n\n但我不想被当成炮灰。\n\n如果你们真的有能力保护成员，\n再联系我。",
+  },
+  {
+    subject: "申请加入",
+    body:
+      "我已经观察你们很久了。\n\n现在越来越多人开始意识到，\n学校并不像它表现出来的那样。\n\n我愿意正式加入组织。\n\n不用回复这封邮件。\n明天午饭后，\n我会在网球场旁边等也可以线上告诉我。",
+  },
 ];
 
 let indexReady = false;
@@ -188,14 +243,28 @@ let menuIdleTimer = null;
 let nameData = DEFAULT_NAMES;
 let allStudents = [];
 let playerMembers = [];
+let mailHistory = [];
 let selectedRecruitGrade = 6;
 let selectedStudentId = null;
+let resources = {
+  phones: 10,
+};
+let managementAwareness = 0;
+let bribeUsedDayKey = null;
+let dailyInviteAttempts = 0;
+let dailyInviteFailures = 0;
+let dailyInviteAwarenessPenaltyApplied = false;
+let dailyInviteTrustPenaltyApplied = false;
+let pendingConfirmAction = null;
+let factionFame = 6;
 const pressedKeys = new Set();
+let detailDrag = null;
 let activeMapImage = campusMap;
 let inactiveMapImage = campusMapAlt;
 let currentMapVisual = MAP_VISUALS.day;
 let gameTime = {
   day: 1,
+  totalDay: 1,
   semester: 1,
   year: 1,
   dayProgressMs: 0,
@@ -211,6 +280,12 @@ window.tpDebug = () => ({
   paused,
   gameTime: { ...gameTime },
   currentMapVisual,
+  resources: { ...resources },
+  pendingApplications: mailHistory.filter((mail) => mail.status === "pending").length,
+  mailHistory: mailHistory.length,
+  dailyInviteAttempts,
+  dailyInviteFailures,
+  managementAwareness,
   allStudents: allStudents.length,
   playerMembers: playerMembers.length,
   sampleStudent: allStudents[0] ? structuredClone(allStudents[0]) : null,
@@ -254,7 +329,69 @@ window.addEventListener("keyup", (event) => {
   pressedKeys.delete(event.key.toLowerCase());
 });
 
+studentDetailPanel.querySelector(".panel-title").addEventListener("pointerdown", (event) => {
+  if (event.button !== 0) return;
+  const rect = studentDetailPanel.getBoundingClientRect();
+  detailDrag = {
+    offsetX: event.clientX - rect.left,
+    offsetY: event.clientY - rect.top,
+  };
+  studentDetailPanel.classList.add("dragging");
+  studentDetailPanel.style.left = `${rect.left}px`;
+  studentDetailPanel.style.top = `${rect.top}px`;
+  studentDetailPanel.setPointerCapture(event.pointerId);
+});
+
+studentDetailPanel.addEventListener("pointermove", (event) => {
+  if (!detailDrag) return;
+  const nextLeft = clamp(event.clientX - detailDrag.offsetX, 12, window.innerWidth - studentDetailPanel.offsetWidth - 12);
+  const nextTop = clamp(event.clientY - detailDrag.offsetY, 12, window.innerHeight - 80);
+  studentDetailPanel.style.left = `${nextLeft}px`;
+  studentDetailPanel.style.top = `${nextTop}px`;
+});
+
+studentDetailPanel.addEventListener("pointerup", (event) => {
+  if (!detailDrag) return;
+  detailDrag = null;
+  studentDetailPanel.classList.remove("dragging");
+  studentDetailPanel.releasePointerCapture(event.pointerId);
+});
+
+document.addEventListener("pointerdown", (event) => {
+  if (studentDetailPanel.hidden) return;
+  if (studentDetailPanel.contains(event.target)) return;
+  studentDetailPanel.hidden = true;
+});
+
 startGame.addEventListener("click", () => {
+  playSound(startSound);
+  settingsPanel.hidden = true;
+  document.body.classList.remove("settings-open");
+  document.body.classList.remove("menu-active");
+  document.body.classList.add("faction-active");
+  factionSelect.hidden = false;
+  resetMenuIdleTimer();
+});
+
+selectFaculty.addEventListener("pointerenter", () => {
+  selectFaculty.querySelector("strong").textContent = "敬请谅解";
+  selectFaculty.querySelector("span").textContent = "COMING SOON";
+});
+
+selectFaculty.addEventListener("pointerleave", () => {
+  selectFaculty.querySelector("strong").textContent = "加入老师阵营";
+  selectFaculty.querySelector("span").textContent = "JOIN THE FACULTY";
+});
+
+selectFaculty.addEventListener("click", (event) => {
+  event.preventDefault();
+});
+
+selectStudents.addEventListener("click", () => {
+  enterStudentFactionGame();
+});
+
+function enterStudentFactionGame() {
   playSound(startSound);
   settingsPanel.hidden = true;
   document.body.classList.remove("settings-open");
@@ -262,12 +399,15 @@ startGame.addEventListener("click", () => {
   cloudTransition.classList.add("active");
 
   window.setTimeout(() => {
-    document.body.classList.remove("menu-active");
+    document.body.classList.remove("menu-active", "faction-active");
     document.body.classList.add("game-active");
+    factionSelect.hidden = true;
     if (allStudents.length === 0) initializeStudentPopulation();
     gameTime.lastTickAt = performance.now();
     updateTimeUi();
     updateMemberUi();
+    updateResourceUi();
+    updateAwarenessUi();
     menuMusic.pause();
     startGameMusicAfterDelay();
     initializeIndexCanvas();
@@ -279,7 +419,7 @@ startGame.addEventListener("click", () => {
   window.setTimeout(() => {
     cloudTransition.classList.remove("active", "open");
   }, 1550);
-});
+}
 
 showCredits.addEventListener("click", () => {
   creditsScreen.hidden = false;
@@ -356,6 +496,7 @@ pauseToggle.addEventListener("click", () => {
 recruitButton.addEventListener("click", () => {
   const shouldOpen = recruitPanel.hidden;
   membersPanel.hidden = true;
+  mailPanel.hidden = true;
   recruitPanel.hidden = !shouldOpen;
   document.querySelectorAll(".rail-button").forEach((button) => button.classList.remove("active"));
   recruitButton.classList.toggle("active", shouldOpen);
@@ -370,6 +511,7 @@ recruitButton.addEventListener("click", () => {
 membersButton.addEventListener("click", () => {
   const shouldOpen = membersPanel.hidden;
   recruitPanel.hidden = true;
+  mailPanel.hidden = true;
   membersPanel.hidden = !shouldOpen;
   document.querySelectorAll(".rail-button").forEach((button) => button.classList.remove("active"));
   membersButton.classList.toggle("active", shouldOpen);
@@ -381,6 +523,18 @@ membersButton.addEventListener("click", () => {
   renderMembersList();
 });
 
+mailButton.addEventListener("click", () => {
+  const shouldOpen = mailPanel.hidden;
+  recruitPanel.hidden = true;
+  membersPanel.hidden = true;
+  mailPanel.hidden = !shouldOpen;
+  studentDetailPanel.hidden = true;
+  document.querySelectorAll(".rail-button").forEach((button) => button.classList.remove("active"));
+  mailButton.classList.toggle("active", shouldOpen);
+  if (!shouldOpen) document.querySelector(".rail-button")?.classList.add("active");
+  if (shouldOpen) renderMailList();
+});
+
 document.querySelectorAll(".grade-tab").forEach((button) => {
   button.addEventListener("click", () => {
     selectedRecruitGrade = Number(button.dataset.grade);
@@ -388,6 +542,40 @@ document.querySelectorAll(".grade-tab").forEach((button) => {
     renderRecruitList(selectedRecruitGrade);
     studentDetailPanel.hidden = true;
   });
+});
+
+bribeStudent.addEventListener("click", () => {
+  const student = getSelectedStudent();
+  if (!student || !canBribeStudent(student)) return;
+  openConfirmModal(
+    `你确定要使用 <strong class="phone-emphasis">${BRIBE_PHONE_COST}个手机</strong> 来增加这个学生的信任度吗？`,
+    () => confirmBribeStudent(student),
+  );
+});
+
+inviteStudent.addEventListener("click", () => {
+  const student = getSelectedStudent();
+  if (!student || getInviteChance(student) <= 0 || isPlayerMember(student.id)) return;
+  const chance = getInviteChance(student);
+  const riskText = chance >= 0.75 ? "有较小概率失败。" : "有极大概率失败。";
+  openConfirmModal(`你确定要邀请这个学生吗？<br><span class="confirm-note">${riskText}</span>`, () => confirmInviteStudent(student));
+});
+
+removeMember.addEventListener("click", () => {
+  const student = getSelectedStudent();
+  if (!student || !isPlayerMember(student.id)) return;
+  removeStudentFromOrganization(student);
+});
+
+cancelConfirm.addEventListener("click", closeConfirmModal);
+
+acceptConfirm.addEventListener("click", () => {
+  if (typeof pendingConfirmAction === "function") pendingConfirmAction();
+  closeConfirmModal();
+});
+
+confirmModal.addEventListener("click", (event) => {
+  if (event.target === confirmModal) closeConfirmModal();
 });
 
 mapViewport.addEventListener(
@@ -474,6 +662,11 @@ async function loadNameData() {
 
 function initializeStudentPopulation() {
   allStudents = [];
+  mailHistory = [];
+  resources.phones = 10;
+  managementAwareness = 0;
+  bribeUsedDayKey = null;
+  resetDailyInviteCounters();
   Object.entries(INITIAL_GRADE_COUNTS).forEach(([gradeText, range]) => {
     const grade = Number(gradeText);
     const count = randomInt(...range);
@@ -486,6 +679,8 @@ function initializeStudentPopulation() {
   allStudents.push(...playerMembers);
 
   appendLog(`学生生态初始化：全校 ${allStudents.length} 人，地下组织核心成员 ${playerMembers.length} 人。`);
+  updateResourceUi();
+  updateAwarenessUi();
   renderRecruitList(selectedRecruitGrade);
 }
 
@@ -531,9 +726,7 @@ function generateStudentName() {
 
 function generateTrustForFaction(faction) {
   if (faction === "管理层支持者") return randomInt(0, 20);
-  if (faction === "激进学生") return randomInt(55, 88);
-  if (faction === "中立") return randomInt(20, 65);
-  return randomInt(15, 75);
+  return randomInt(0, 50);
 }
 
 function updateGameClock() {
@@ -559,6 +752,9 @@ function updateGameClock() {
 
 function advanceGameDay() {
   applyDailyStudentDrift();
+  bribeUsedDayKey = null;
+  resetDailyInviteCounters();
+  gameTime.totalDay += 1;
 
   if (gameTime.day >= DAYS_PER_SEMESTER) {
     finishSemester();
@@ -566,7 +762,12 @@ function advanceGameDay() {
     gameTime.day += 1;
   }
 
+  checkVoluntaryApplications();
   appendLog(`${getSemesterName()} 第 ${gameTime.day} 天开始：校园时间进入${getCurrentPhase()}。`);
+  if (!studentDetailPanel.hidden) {
+    const student = getSelectedStudent();
+    if (student) updateStudentActionButtons(student);
+  }
 }
 
 function finishSemester() {
@@ -613,10 +814,11 @@ function applyDailyStudentDrift() {
     if (student.status === "愤怒") student.stress = clamp(student.stress + randomInt(0, 3), 0, 100);
     if (student.status === "恐惧" && student.stressResistance === "低") student.stress = clamp(student.stress + randomInt(0, 2), 0, 100);
   });
+  protectLockedMemberTrust();
 }
 
 function updateTimeUi() {
-  dayLabel.textContent = `第 ${gameTime.day} 天`;
+  dayLabel.textContent = `第 ${gameTime.totalDay} 天`;
   phaseLabel.textContent = getCurrentPhase();
   semesterDayLabel.textContent = `${getSemesterName()} 第 ${gameTime.day} 天`;
   dayProgressFill.style.width = `${Math.min(100, (gameTime.dayProgressMs / REAL_MS_PER_GAME_DAY) * 100)}%`;
@@ -625,6 +827,16 @@ function updateTimeUi() {
 
 function updateMemberUi() {
   memberCount.textContent = String(playerMembers.length);
+}
+
+function updateResourceUi() {
+  phoneCount.textContent = String(resources.phones);
+  phoneCount.closest(".resource-chip").title = `手机：${resources.phones}`;
+}
+
+function updateAwarenessUi() {
+  awarenessMeter.style.width = `${managementAwareness}%`;
+  awarenessChip.title = `管理层察觉：${managementAwareness}%`;
 }
 
 function renderRecruitList(grade) {
@@ -638,10 +850,20 @@ function renderRecruitList(grade) {
 }
 
 function renderMembersList() {
+  coreMembersList.replaceChildren();
   membersList.replaceChildren();
-  playerMembers.forEach((student) => {
+  playerMembers.filter(isLeadershipMember).forEach((student) => {
+    coreMembersList.append(createStudentRow(student, true));
+  });
+  playerMembers.filter((student) => !isLeadershipMember(student)).forEach((student) => {
     membersList.append(createStudentRow(student, true));
   });
+  if (membersList.children.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-member-list";
+    empty.textContent = "暂无普通成员。";
+    membersList.append(empty);
+  }
 }
 
 function createStudentRow(student, showRole = false) {
@@ -650,6 +872,7 @@ function createStudentRow(student, showRole = false) {
   row.className = "student-row";
   row.dataset.studentId = student.id;
   row.classList.toggle("active", student.id === selectedStudentId);
+  row.classList.toggle("joined", isPlayerMember(student.id));
 
   const avatar = document.createElement("img");
   avatar.src = "assets/icon/人.png";
@@ -663,7 +886,7 @@ function createStudentRow(student, showRole = false) {
   body.append(name, meta);
 
   const trust = document.createElement("em");
-  trust.textContent = `${student.trust}%`;
+  trust.textContent = isPlayerMember(student.id) && !showRole ? "已加入" : `${student.trust}%`;
 
   row.append(avatar, body, trust);
   row.addEventListener("click", () => showStudentDetail(student.id));
@@ -688,7 +911,344 @@ function showStudentDetail(studentId) {
   studentEmergency.textContent = `应急 ${student.abilities.emergency}`;
   studentStrength.textContent = `体力 ${student.abilities.strength}`;
   studentVision.textContent = `视力 ${student.abilities.vision}`;
+  updateStudentActionButtons(student);
+  renderPositionOptions(student);
   studentDetailPanel.hidden = false;
+}
+
+function updateStudentActionButtons(student) {
+  const alreadyMember = isPlayerMember(student.id);
+  const selectedFromMembers = !membersPanel.hidden && alreadyMember;
+  const protectedMember = isProtectedCoreMember(student);
+  const bribeDisabledReason = getBribeDisabledReason(student);
+  const inviteChance = getInviteChance(student);
+
+  bribeStudent.hidden = selectedFromMembers;
+  inviteStudent.hidden = selectedFromMembers;
+  removeMember.hidden = !selectedFromMembers;
+  removeMember.parentElement.classList.toggle("member-mode", selectedFromMembers);
+
+  bribeStudent.disabled = alreadyMember || Boolean(bribeDisabledReason);
+  bribeStudent.title = alreadyMember ? "该学生已经是组织成员" : bribeDisabledReason || "使用 5 个手机提高信任度";
+
+  inviteStudent.disabled = alreadyMember || inviteChance <= 0;
+  inviteStudent.title = alreadyMember ? "该学生已经是组织成员" : inviteChance <= 0 ? "信任度低于 20%，无法邀请" : `成功概率 ${Math.round(inviteChance * 100)}%`;
+  removeMember.disabled = protectedMember;
+  removeMember.title = protectedMember ? "初始核心成员不可移除" : "从组织成员中移除，信任度下降 30%";
+}
+
+function renderPositionOptions(student) {
+  const selectedFromMembers = !membersPanel.hidden && isPlayerMember(student.id);
+  positionPanel.hidden = !selectedFromMembers;
+  positionOptions.replaceChildren();
+  if (!selectedFromMembers) return;
+
+  if (isPlayerAvatar(student)) {
+    const locked = document.createElement("p");
+    locked.className = "position-locked";
+    locked.textContent = "玩家身份固定为主席。";
+    positionOptions.append(locked);
+    return;
+  }
+
+  ORGANIZATION_ROLES.forEach((role) => {
+    const occupant = getRoleOccupant(role);
+    const occupiedByOther = role !== "成员" && occupant && occupant.id !== student.id;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "position-option";
+    button.classList.toggle("active", student.role === role);
+    button.disabled = occupiedByOther;
+    button.textContent = role === "成员" ? "成员" : `${role} ${occupant ? "1/1" : "0/1"}`;
+    button.title = occupiedByOther ? `${role} 已由 ${occupant.name} 担任` : `任命为${role}`;
+    button.addEventListener("click", () => changeMemberRole(student, role));
+    positionOptions.append(button);
+  });
+}
+
+function getRoleOccupant(role) {
+  if (role === "成员") return null;
+  return playerMembers.find((member) => member.role === role) || null;
+}
+
+function changeMemberRole(student, role) {
+  if (!isPlayerMember(student.id) || isPlayerAvatar(student)) return;
+  const occupant = getRoleOccupant(role);
+  if (role !== "成员" && occupant && occupant.id !== student.id) return;
+  student.role = role;
+  renderMembersList();
+  showStudentDetail(student.id);
+  appendLog(`${student.name} 的职位变更为 ${role}。`);
+}
+
+function getSelectedStudent() {
+  return allStudents.find((student) => student.id === selectedStudentId) || null;
+}
+
+function isPlayerMember(studentId) {
+  return playerMembers.some((member) => member.id === studentId);
+}
+
+function isLeadershipMember(student) {
+  return isPlayerMember(student?.id) && student?.role !== "成员";
+}
+
+function isProtectedCoreMember(student) {
+  return student?.name === "Hong Xixi" || student?.name === "Li Xinyu";
+}
+
+function isPlayerAvatar(student) {
+  return student?.name === "Hong Xixi" && student?.role === "我";
+}
+
+function protectLockedMemberTrust() {
+  allStudents.forEach((student) => {
+    if (isPlayerAvatar(student)) student.trust = 100;
+  });
+}
+
+function getCurrentDayKey() {
+  return `${gameTime.year}-${gameTime.semester}-${gameTime.day}`;
+}
+
+function getBribeDisabledReason(student) {
+  if (resources.phones < BRIBE_PHONE_COST) return "手机不足";
+  if (bribeUsedDayKey === getCurrentDayKey()) return "今天已经贿赂过一名学生";
+  if (student.trust >= 100) return "该学生信任度已经满值";
+  return "";
+}
+
+function canBribeStudent(student) {
+  return !isPlayerMember(student.id) && !getBribeDisabledReason(student);
+}
+
+function getInviteChance(student) {
+  if (student.trust < 20) return 0;
+  if (student.trust < 50) return 0.5;
+  if (student.trust < 70) return 0.75;
+  return 1;
+}
+
+function openConfirmModal(messageHtml, onConfirm) {
+  confirmMessage.innerHTML = messageHtml;
+  pendingConfirmAction = onConfirm;
+  confirmModal.hidden = false;
+  requestAnimationFrame(() => confirmModal.classList.add("open"));
+}
+
+function closeConfirmModal() {
+  confirmModal.classList.remove("open");
+  pendingConfirmAction = null;
+  window.setTimeout(() => {
+    if (!confirmModal.classList.contains("open")) confirmModal.hidden = true;
+  }, 160);
+}
+
+function confirmBribeStudent(student) {
+  if (!canBribeStudent(student)) return;
+  resources.phones -= BRIBE_PHONE_COST;
+  bribeUsedDayKey = getCurrentDayKey();
+  if (student.faction === "管理层支持者" && Math.random() < 0.3) {
+    managementAwareness = clamp(managementAwareness + 10, 0, 100);
+    updateResourceUi();
+    updateAwarenessUi();
+    refreshStudentViews(student);
+    appendLog(`${student.name} 收下手机后向管理层上报，察觉值上升到 ${managementAwareness}%。`);
+    return;
+  }
+
+  student.trust = clamp(student.trust + BRIBE_TRUST_GAIN, 0, 100);
+  student.status = "热情";
+  updateResourceUi();
+  refreshStudentViews(student);
+  appendLog(`${student.name} 的信任度提高到 ${student.trust}%。`);
+}
+
+function confirmInviteStudent(student) {
+  if (isPlayerMember(student.id)) return;
+  const chance = getInviteChance(student);
+  if (chance <= 0) return;
+
+  dailyInviteAttempts += 1;
+  applyInviteAttemptPressure();
+
+  if (Math.random() <= chance) {
+    addStudentToOrganization(student, "手动邀请");
+    appendLog(`${student.name} 同意加入地下组织。`);
+  } else {
+    dailyInviteFailures += 1;
+    student.status = "怀疑";
+    student.trust = clamp(student.trust - randomInt(2, 6), 0, 100);
+    appendLog(`${student.name} 拒绝了邀请，关系出现动摇。`);
+    applyInviteFailurePressure();
+    refreshStudentViews(student);
+  }
+}
+
+function applyInviteAttemptPressure() {
+  if (dailyInviteAttempts <= 10 || dailyInviteAwarenessPenaltyApplied) return;
+  dailyInviteAwarenessPenaltyApplied = true;
+  managementAwareness = clamp(managementAwareness + 5, 0, 100);
+  updateAwarenessUi();
+  appendLog(`频繁邀请引起管理层注意，察觉值上升到 ${managementAwareness}%。`);
+}
+
+function applyInviteFailurePressure() {
+  if (dailyInviteFailures <= 5 || dailyInviteTrustPenaltyApplied) return;
+  dailyInviteTrustPenaltyApplied = true;
+  allStudents.forEach((student) => {
+    student.trust = clamp(student.trust - 5, 0, 100);
+  });
+  protectLockedMemberTrust();
+  refreshStudentViews(getSelectedStudent() || allStudents[0]);
+  appendLog("一天内邀请失败过多，学生群体信任度整体下降 5%。");
+}
+
+function resetDailyInviteCounters() {
+  dailyInviteAttempts = 0;
+  dailyInviteFailures = 0;
+  dailyInviteAwarenessPenaltyApplied = false;
+  dailyInviteTrustPenaltyApplied = false;
+}
+
+function addStudentToOrganization(student, source = "申请") {
+  if (isPlayerMember(student.id)) return;
+  student.role = "成员";
+  student.status = "热情";
+  playerMembers.push(student);
+  mailHistory.forEach((mail) => {
+    if (mail.studentId === student.id && mail.status === "pending") {
+      mail.status = "accepted";
+      mail.handledDayKey = getCurrentDayKey();
+    }
+  });
+  updateMemberUi();
+  refreshStudentViews(student);
+  renderMailList();
+}
+
+function removeStudentFromOrganization(student) {
+  if (isProtectedCoreMember(student)) return;
+  playerMembers = playerMembers.filter((member) => member.id !== student.id);
+  student.trust = clamp(student.trust - 30, 0, 100);
+  student.status = "怀疑";
+  student.role = "";
+  updateMemberUi();
+  renderMembersList();
+  if (!recruitPanel.hidden) renderRecruitList(selectedRecruitGrade);
+  showStudentDetail(student.id);
+  appendLog(`${student.name} 离开了组织，信任度下降到 ${student.trust}%。`);
+}
+
+function refreshStudentViews(student) {
+  if (!recruitPanel.hidden) renderRecruitList(selectedRecruitGrade);
+  if (!membersPanel.hidden) renderMembersList();
+  if (!studentDetailPanel.hidden && selectedStudentId === student.id) showStudentDetail(student.id);
+}
+
+function checkVoluntaryApplications() {
+  if (factionFame < VOLUNTARY_FAME_THRESHOLD) return;
+  const candidates = allStudents.filter(
+    (student) =>
+      !isPlayerMember(student.id) &&
+      student.trust >= VOLUNTARY_TRUST_THRESHOLD &&
+      !mailHistory.some((mail) => mail.studentId === student.id && mail.status === "pending"),
+  );
+  if (candidates.length === 0) return;
+
+  const student = randomFrom(candidates);
+  const template = randomFrom(MAIL_TEMPLATES);
+  mailHistory.unshift({
+    id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
+    studentId: student.id,
+    subject: template.subject,
+    body: template.body,
+    dayKey: getCurrentDayKey(),
+    status: "pending",
+  });
+  appendLog(`${student.name} 发来一封加入申请邮件。`);
+  if (!mailPanel.hidden) renderMailList();
+}
+
+function renderMailList() {
+  mailList.replaceChildren();
+  if (mailHistory.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-mail";
+    empty.textContent = "暂无邮件记录。";
+    mailList.append(empty);
+    return;
+  }
+
+  mailHistory.forEach((mail) => {
+    const student = allStudents.find((candidate) => candidate.id === mail.studentId);
+
+    const card = document.createElement("article");
+    card.className = "mail-card";
+    card.classList.toggle("handled", mail.status !== "pending");
+
+    const subject = document.createElement("h3");
+    subject.textContent = `主题：${mail.subject}`;
+
+    const body = document.createElement("p");
+    body.textContent = `${mail.body}\n${student?.name || "已离校学生"}`;
+
+    const status = document.createElement("span");
+    status.className = `mail-status ${mail.status}`;
+    status.textContent = getMailStatusText(mail.status);
+
+    const actions = document.createElement("div");
+    actions.className = "mail-actions";
+
+    if (mail.status === "pending" && student) {
+      const reject = document.createElement("button");
+      reject.type = "button";
+      reject.className = "mail-reject";
+      reject.textContent = "拒绝";
+      reject.addEventListener("click", () => rejectApplication(mail.id, student));
+
+      const accept = document.createElement("button");
+      accept.type = "button";
+      accept.className = "mail-accept";
+      accept.textContent = "同意";
+      accept.addEventListener("click", () => acceptApplication(mail.id, student));
+
+      actions.append(reject, accept);
+    }
+
+    card.append(subject, body, status);
+    if (actions.children.length > 0) card.append(actions);
+    mailList.append(card);
+  });
+}
+
+function acceptApplication(mailId, student) {
+  const mail = mailHistory.find((candidate) => candidate.id === mailId);
+  if (mail) {
+    mail.status = "accepted";
+    mail.handledDayKey = getCurrentDayKey();
+  }
+  addStudentToOrganization(student, "自愿申请");
+  appendLog(`${student.name} 的加入申请已通过。`);
+}
+
+function rejectApplication(mailId, student) {
+  const mail = mailHistory.find((candidate) => candidate.id === mailId);
+  if (mail) {
+    mail.status = "rejected";
+    mail.handledDayKey = getCurrentDayKey();
+  }
+  student.status = "怀疑";
+  student.trust = clamp(student.trust - randomInt(1, 4), 0, 100);
+  renderMailList();
+  refreshStudentViews(student);
+  appendLog(`${student.name} 的加入申请被拒绝。`);
+}
+
+function getMailStatusText(status) {
+  if (status === "accepted") return "已同意";
+  if (status === "rejected") return "已拒绝";
+  return "未处理";
 }
 
 function getCurrentPhase() {
@@ -979,7 +1539,7 @@ function setupUiAudio() {
       playSound(hoverSound, 0.32);
     });
 
-    if (button.id === "startGame") return;
+    if (["startGame", "selectStudents", "selectFaculty"].includes(button.id)) return;
     button.addEventListener("click", () => {
       playRandomClickSound();
     });
@@ -1105,3 +1665,5 @@ function playSound(sound, volume = 0.58) {
   sound.volume = volume;
   sound.play().catch(() => {});
 }
+
+
