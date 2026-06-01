@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>剑拔弩张1.0</title>
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section id="mainMenu" class="main-menu" aria-label="主菜单">
+      <div class="title-block">
+        <p>Tension Point</p>
+        <h1>剑拔弩张</h1>
+      </div>
+
+      <nav class="main-options" aria-label="主菜单选项">
+        <button id="startGame" class="menu-option active" type="button">开始新游戏</button>
+        <button class="menu-option disabled" type="button" disabled>继续游戏</button>
+        <button id="openSettings" class="menu-option" type="button">设置</button>
+        <button id="showCredits" class="menu-option" type="button">制作人员</button>
+      </nav>
+    </section>
+
+    <section id="factionSelect" class="faction-select" aria-label="选择阵营" hidden>
+      <div class="faction-header">
+        <h2>选择你的阵营</h2>
+        <p>CHOOSE YOUR FACTION</p>
+      </div>
+
+      <article class="faction-side faction-faculty" aria-label="老师阵营">
+        <img class="faction-bg" src="assets/老师阵营背景.png" alt="" />
+        <div class="faction-shade"></div>
+        <img class="faction-logo" src="assets/老师阵营logo.png" alt="" />
+        <img class="faction-representative" src="assets/老师代表.png" alt="" />
+        <div class="faction-copy">
+          <span>FACTION 01</span>
+          <h3>老师阵营</h3>
+          <p class="faction-en">FACULTY FACTION</p>
+          <p class="faction-values">信仰 · 责任 · 引导</p>
+          <p class="faction-desc">秩序需要信念来支撑，学生需要引导来成长。</p>
+        </div>
+        <button id="selectFaculty" class="faction-button faculty-button" type="button">
+          <strong>加入老师阵营</strong>
+          <span>JOIN THE FACULTY</span>
+        </button>
+      </article>
+
+      <article class="faction-side faction-students" aria-label="学生阵营">
+        <img class="faction-bg" src="assets/学生阵营背景.png" alt="" />
+        <div class="faction-shade"></div>
+        <img class="faction-logo" src="assets/学生阵营logo.png" alt="" />
+        <img class="faction-representative" src="assets/学生代表.png" alt="" />
+        <div class="faction-copy">
+          <span>FACTION 02</span>
+          <h3>学生阵营</h3>
+          <p class="faction-en">STUDENT FACTION</p>
+          <p class="faction-values">自由 · 反抗 · 改变</p>
+          <p class="faction-desc">规则束缚思想，改变源于行动。</p>
+        </div>
+        <button id="selectStudents" class="faction-button student-button" type="button">
+          <strong>加入学生阵营</strong>
+          <span>JOIN THE STUDENTS</span>
+        </button>
+      </article>
+    </section>
+
+    <section id="settingsPanel" class="settings-panel" aria-label="主页设置" hidden>
+      <div class="settings-card">
+        <div class="settings-head">
+          <h2><img src="assets/icon/音频.png" alt="" />设置</h2>
+          <button id="closeSettings" type="button" aria-label="关闭设置">×</button>
+        </div>
+        <label class="setting-row" for="musicSelect">
+          <span>音乐</span>
+          <select id="musicSelect">
+            <option value="0">Aphelion</option>
+            <option value="1">Phoenix</option>
+            <option value="2">Scott</option>
+            <option value="3">There was a time</option>
+          </select>
+        </label>
+        <label class="setting-row" for="playMode">
+          <span>播放方式</span>
+          <select id="playMode">
+            <option value="sequence">顺序播放</option>
+            <option value="loop">循环播放</option>
+            <option value="random">随机播放</option>
+          </select>
+        </label>
+        <div class="mode-icons" aria-label="播放模式图标">
+          <span><img src="assets/icon/音频.png" alt="" />顺序</span>
+          <span><img src="assets/icon/循环.png" alt="" />循环</span>
+          <span><img src="assets/icon/随机.png" alt="" />随机</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="creditsScreen" class="credits-screen" aria-label="制作人员" hidden>
+      <button id="backToMenu" class="credits-back" type="button">返回主菜单</button>
+      <div class="credits-roll">
+        <p class="credits-title">《Tension Point》</p>
+        <p>A Game By Umbra.</p>
+
+        <h2>Lead Designer</h2>
+        <p>Umbra</p>
+
+        <h2>Gameplay Systems</h2>
+        <p>Umbra</p>
+
+        <h2>UI / UX Design</h2>
+        <p>Umbra</p>
+
+        <h2>Province Mapping</h2>
+        <p>Arthur L.</p>
+
+        <h2>Psychological Damage</h2>
+        <p>Also Arthur L.</p>
+      </div>
+    </section>
+
+    <section id="cloudTransition" class="cloud-transition" aria-hidden="true">
+      <div class="cloud-bank cloud-bank-left">
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+      </div>
+      <div class="cloud-bank cloud-bank-right">
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+        <img src="assets/image/云朵.png" alt="" />
+      </div>
+    </section>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <section class="hud-stack" aria-label="全局状态">
+          <div class="hud-row resource-row">
+            <article class="resource-chip" title="手机：2">
+              <img src="assets/icon/手机.png" alt="" />
+              <strong id="phoneCount">10</strong>
+            </article>
+            <article class="resource-chip" title="金钱：35">
+              <img src="assets/icon/钱.png" alt="" />
+              <strong>35</strong>
+            </article>
+            <article class="resource-chip" title="食物：18">
+              <img src="assets/icon/食物.png" alt="" />
+              <strong>18</strong>
+            </article>
+            <article class="resource-chip" title="人数：2">
+              <img src="assets/icon/人数.png" alt="" />
+              <strong id="memberCount">2</strong>
+            </article>
+            <article id="pressureChip" class="meter-chip hud-tip-chip">
+              <img src="assets/icon/压力.png" alt="" />
+              <span>压力</span>
+              <div class="meter"><i id="pressureMeter" style="width: 0%"></i></div>
+              <span id="pressureTip" class="hud-tooltip">压力：0%</span>
+            </article>
+            <article id="fameChip" class="meter-chip fame hud-tip-chip">
+              <img src="assets/icon/知名度.png" alt="" />
+              <span>知名度</span>
+              <div class="meter"><i id="fameMeter" style="width: 6%"></i></div>
+              <span id="fameTip" class="hud-tooltip">知名度：6%</span>
+            </article>
+          </div>
+
+          <div class="hud-row status-row">
+            <article id="stabilityChip" class="meter-chip hud-tip-chip">
+              <img src="assets/icon/稳定度.png" alt="" />
+              <span>稳定度</span>
+              <div class="meter"><i id="stabilityMeter" style="width: 0%"></i></div>
+              <span id="stabilityTip" class="hud-tooltip">稳定度：0%</span>
+            </article>
+            <article id="studentSupportChip" class="meter-chip hud-tip-chip">
+              <img src="assets/icon/支持率.png" alt="" />
+              <span>学生支持</span>
+              <div class="meter"><i id="studentSupportMeter" style="width: 0%"></i></div>
+              <span id="studentSupportTip" class="hud-tooltip">学生支持：0%</span>
+            </article>
+            <article id="awarenessChip" class="meter-chip danger hud-tip-chip">
+              <img src="assets/icon/察觉.png" alt="" />
+              <span>察觉</span>
+              <div class="meter"><i id="awarenessMeter" style="width: 0%"></i></div>
+              <span id="awarenessTip" class="hud-tooltip">察觉：0%</span>
+            </article>
+          </div>
+        </section>
+      </header>
+
+      <section class="top-actions" aria-label="时间与系统控制">
+        <article class="time-chip" title="第 1 天：上课">
+          <img src="assets/icon/时间.png" alt="" />
+          <span id="dayLabel">第 1 天</span>
+          <strong id="phaseLabel">上课</strong>
+        </article>
+        <button id="gameSettings" class="action-chip" type="button" aria-label="设置" data-label="设置">
+          <img src="assets/icon/设置.png" alt="" />
+        </button>
+        <div id="speedControl" class="speed-control" style="--speed-index: 1" aria-label="时间速度">
+          <img id="speedPointer" class="speed-pointer" src="assets/icon/时间指针.png" alt="" />
+          <button class="speed-option" type="button" data-speed="0">S</button>
+          <span></span>
+          <button class="speed-option active" type="button" data-speed="1">1X</button>
+          <span></span>
+          <button class="speed-option" type="button" data-speed="2">2X</button>
+          <span></span>
+          <button class="speed-option" type="button" data-speed="5">5X</button>
+        </div>
+        <button id="pauseToggle" class="action-chip" type="button" aria-label="暂停" data-label="暂停">
+          <img id="pauseIcon" src="assets/icon/停.png" alt="" />
+        </button>
+      </section>
+
+      <section class="day-progress-hud" aria-label="日程进度">
+        <div id="semesterDayLabel" class="semester-day-label">第一学期 第 1 天</div>
+        <div class="day-progress-track">
+          <div id="dayProgressFill" class="day-progress-fill"></div>
+          <span class="timeline-marker marker-lunch">午饭</span>
+          <span class="timeline-marker marker-after">放学后</span>
+          <span class="timeline-label label-day">白天</span>
+          <span class="timeline-label label-night">晚上</span>
+        </div>
+      </section>
+
+      <main class="game-layout">
+        <aside class="left-rail" aria-label="战略菜单">
+          <button class="rail-button active" type="button" aria-label="管理" data-label="管理">
+            <img src="assets/icon/管理.png" alt="" />
+          </button>
+          <button id="membersButton" class="rail-button" type="button" aria-label="成员" data-label="成员">
+            <img src="assets/icon/人数.png" alt="" />
+          </button>
+          <button id="recruitButton" class="rail-button" type="button" aria-label="招募" data-label="招募">
+            <img src="assets/icon/招募.png" alt="" />
+          </button>
+          <button id="squadButton" class="rail-button" type="button" aria-label="行动小队" data-label="行动小队">
+            <img src="assets/icon/行动小队.png" alt="" />
+          </button>
+          <button class="rail-button" type="button" aria-label="科技树" data-label="科技树">
+            <img src="assets/icon/科技树.png" alt="" />
+          </button>
+          <button id="mailButton" class="rail-button" type="button" aria-label="邮件" data-label="邮件">
+            <img src="assets/icon/邮件.png" alt="" />
+          </button>
+        </aside>
+
+        <section class="map-stage" aria-label="校园战略地图">
+          <div id="mapViewport" class="map-viewport">
+            <div id="mapContent" class="map-content">
+              <img id="campusMap" class="map-image active" src="assets/学校视图.png" alt="学校卫星战略地图" draggable="false" />
+              <img id="campusMapAlt" class="map-image" src="assets/学校视图.png" alt="" draggable="false" aria-hidden="true" />
+              <canvas id="highlightCanvas" width="1988" height="791" aria-hidden="true"></canvas>
+            </div>
+          </div>
+
+          <div id="hoverCard" class="hover-card" hidden>
+            <strong id="hoverName">区域</strong>
+            <span id="hoverFunction">功能</span>
+          </div>
+
+        </section>
+
+        <aside id="regionPanel" class="region-popover" aria-label="区域信息" hidden>
+          <section class="panel-card selected-region">
+            <div class="panel-title">
+              <img src="assets/icon/区域.png" alt="" />
+              <span>选中区域</span>
+            </div>
+            <h2 id="regionName">未选择区域</h2>
+            <p id="regionFunction">点击地图上的彩色 Province 区域查看基础信息。</p>
+
+            <dl class="region-stats">
+              <div>
+                <dt><img src="assets/icon/支持率.png" alt="" />支持率</dt>
+                <dd id="regionSupport">--</dd>
+              </div>
+              <div>
+                <dt><img src="assets/icon/压力.png" alt="" />压力</dt>
+                <dd id="regionPressure">--</dd>
+              </div>
+              <div>
+                <dt><img src="assets/icon/巡逻.png" alt="" />巡逻</dt>
+                <dd id="regionPatrol">--</dd>
+              </div>
+              <div>
+                <dt><img src="assets/icon/人数.png" alt="" />组织学生</dt>
+                <dd><button id="regionMembersButton" class="region-members-button" type="button">--</button></dd>
+              </div>
+              <div>
+                <dt><img src="assets/icon/人.png" alt="" />学生人数</dt>
+                <dd id="regionStudentCount">--</dd>
+              </div>
+            </dl>
+          </section>
+        </aside>
+
+        <aside id="regionMemberPanel" class="region-member-panel" aria-label="区域组织学生" hidden>
+          <section class="panel-card">
+            <div class="panel-title">
+              <img src="assets/icon/人数.png" alt="" />
+              <span id="regionMemberPanelTitle">组织学生</span>
+            </div>
+            <div id="regionMemberList" class="region-member-list"></div>
+          </section>
+        </aside>
+
+        <aside id="recruitPanel" class="recruit-panel" aria-label="招募学生" hidden>
+          <div class="recruit-tabs" aria-label="年级筛选">
+            <button class="grade-tab active" type="button" data-grade="6">6</button>
+            <button class="grade-tab" type="button" data-grade="7">7</button>
+            <button class="grade-tab" type="button" data-grade="8">8</button>
+            <button class="grade-tab" type="button" data-grade="9">9</button>
+            <button class="grade-tab" type="button" data-grade="10">10</button>
+            <button class="grade-tab" type="button" data-grade="11">11</button>
+            <button class="grade-tab" type="button" data-grade="12">12</button>
+          </div>
+          <section class="recruit-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/招募.png" alt="" />
+              <span id="recruitTitle">6 年级学生</span>
+            </div>
+            <div id="recruitList" class="recruit-list"></div>
+          </section>
+        </aside>
+
+        <aside id="membersPanel" class="members-panel" aria-label="成员" hidden>
+          <section class="members-list-wrap core-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/人数.png" alt="" />
+              <span>核心成员</span>
+            </div>
+            <div id="coreMembersList" class="recruit-list"></div>
+          </section>
+          <section class="members-list-wrap regular-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/人数.png" alt="" />
+              <span>成员</span>
+            </div>
+            <div id="membersList" class="recruit-list"></div>
+          </section>
+        </aside>
+
+        <aside id="mailPanel" class="mail-panel" aria-label="邮件" hidden>
+          <section class="mail-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/邮件.png" alt="" />
+              <span>地下邮件</span>
+            </div>
+            <div id="mailList" class="mail-list"></div>
+          </section>
+        </aside>
+
+        <aside id="squadPanel" class="squad-panel" aria-label="行动小队" hidden>
+          <section class="squad-list-wrap">
+            <div class="panel-title">
+              <img src="assets/icon/行动小队.png" alt="" />
+              <span>行动小队</span>
+            </div>
+            <div id="squadList" class="squad-list"></div>
+          </section>
+        </aside>
+
+        <section id="squadCreateModal" class="squad-create-modal" aria-label="创建行动小队" hidden>
+          <div class="squad-create-card">
+            <div class="squad-create-head">
+              <div class="panel-title">
+                <img src="assets/icon/行动小队.png" alt="" />
+                <span>创建新的行动小队</span>
+              </div>
+              <button id="closeSquadCreate" class="squad-close" type="button" aria-label="关闭创建窗口">×</button>
+            </div>
+
+            <div class="squad-create-grid">
+              <section class="squad-info-column">
+                <div class="squad-identity">
+                  <button id="squadFlagButton" class="squad-flag-button" type="button" aria-label="更改队旗">
+                    <img id="squadFlagImage" src="assets/学生阵营logo.png" alt="" />
+                    <span id="squadFlagEmoji" hidden>🏴‍☠️</span>
+                  </button>
+                  <label class="squad-name-field" for="squadNameInput">
+                    <span>队伍名称</span>
+                    <input id="squadNameInput" type="text" value="" maxlength="16" placeholder="点击输入文本" />
+                  </label>
+                </div>
+                <dl id="draftSquadStats" class="squad-stats-grid"></dl>
+                <button id="createSquadConfirm" class="create-squad-confirm" type="button" disabled>创建队伍</button>
+              </section>
+
+              <section class="squad-roster-column">
+                <div class="panel-title">
+                  <img src="assets/icon/人数.png" alt="" />
+                  <span>编队成员</span>
+                </div>
+                <div id="draftSquadMembers" class="draft-squad-members"></div>
+              </section>
+
+              <section class="squad-pick-column">
+                <div class="panel-title">
+                  <img src="assets/icon/人.png" alt="" />
+                  <span>成员选择</span>
+                </div>
+                <div id="squadCandidateList" class="squad-candidate-list"></div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <div id="flagPicker" class="flag-picker" hidden>
+          <button type="button" data-flag-type="image" data-flag-value="assets/学生阵营logo.png">默认</button>
+          <button type="button" data-flag-type="emoji" data-flag-value="🏴‍☠️">🏴‍☠️</button>
+          <button type="button" data-flag-type="emoji" data-flag-value="🇺🇸">🇺🇸</button>
+          <button type="button" data-flag-type="emoji" data-flag-value="🇯🇵">🇯🇵</button>
+          <button type="button" data-flag-type="emoji" data-flag-value="🇩🇪">🇩🇪</button>
+        </div>
+
+        <div id="squadMemberContext" class="squad-member-context" hidden>
+          <button id="removeDraftMember" type="button">移出队伍</button>
+          <button id="inspectDraftMember" type="button">查看成员信息</button>
+        </div>
+
+        <div id="squadListContext" class="squad-member-context" hidden>
+          <button id="editSquad" type="button">编辑队伍</button>
+          <button id="disbandSquad" type="button">解散队伍</button>
+        </div>
+
+        <section id="candidateInfoPopup" class="candidate-info-popup" aria-label="成员信息" hidden></section>
+
+        <aside id="studentDetailPanel" class="student-detail-panel" aria-label="学生信息" hidden>
+          <section class="panel-card">
+            <div class="panel-title">
+              <img src="assets/icon/人.png" alt="" />
+              <span>人员信息</span>
+            </div>
+            <h2 id="studentDetailName">学生</h2>
+            <dl class="student-detail-grid">
+              <div><dt>年级</dt><dd id="studentDetailGrade">--</dd></div>
+              <div><dt>性格</dt><dd id="studentDetailPersonality">--</dd></div>
+              <div><dt>派系</dt><dd id="studentDetailFaction">--</dd></div>
+              <div><dt>状态</dt><dd id="studentDetailStatus">--</dd></div>
+              <div><dt>信任度</dt><dd id="studentDetailTrust">--</dd></div>
+              <div><dt>压力</dt><dd id="studentDetailStress">--</dd></div>
+              <div><dt>所属小队</dt><dd id="studentDetailSquad">无</dd></div>
+              <div id="studentDetailResistanceCard" class="student-detail-hover-card">
+                <dt>压力抗性</dt>
+                <dd id="studentDetailResistance">--</dd>
+                <span id="studentDetailResistanceTip" class="student-detail-tip">--</span>
+              </div>
+            </dl>
+            <div class="student-abilities">
+              <span id="studentLiterature">文学 --</span>
+              <span id="studentEmergency">应急 --</span>
+              <span id="studentStrength">体力 --</span>
+              <span id="studentVision">视力 --</span>
+            </div>
+            <section id="positionPanel" class="position-panel" hidden>
+              <div class="panel-title">
+                <img src="assets/icon/管理.png" alt="" />
+                <span>更改职位</span>
+              </div>
+              <div id="positionOptions" class="position-options"></div>
+            </section>
+            <div class="student-actions">
+              <button id="bribeStudent" class="student-action bribe" type="button">贿赂</button>
+              <button id="inviteStudent" class="student-action invite" type="button">邀请</button>
+              <button id="removeMember" class="student-action leave" type="button" hidden>让他离开</button>
+            </div>
+          </section>
+        </aside>
+
+        <section id="confirmModal" class="confirm-modal" aria-label="确认操作" hidden>
+          <div class="confirm-card">
+            <p id="confirmMessage">确认操作？</p>
+            <div class="confirm-actions">
+              <button id="cancelConfirm" class="confirm-cancel" type="button">取消</button>
+              <button id="acceptConfirm" class="confirm-accept" type="button">确认</button>
+            </div>
+          </div>
+        </section>
+
+        <section id="eventLog" class="event-log" aria-label="事件日志">
+          <button id="collapseLog" class="collapse-log" type="button" aria-label="收起日志">
+            <img src="assets/icon/收起.png" alt="" />
+          </button>
+          <div class="panel-title">
+            <img src="assets/icon/突发事件.png" alt="" />
+            <span>局势日志</span>
+          </div>
+          <ol id="logList">
+            <li><time>07:50</time> 地下组织建立，初始成员 2 人。</li>
+            <li><time>08:10</time> 管理层察觉值保持 0%，校园处于正常状态。</li>
+            <li><time>08:30</time> 等待玩家选择第一个 Province 区域。</li>
+          </ol>
+        </section>
+        <button id="expandLog" class="expand-log" type="button" aria-label="展开日志" hidden>
+          <img src="assets/icon/收起.png" alt="" />
+        </button>
+      </main>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>
