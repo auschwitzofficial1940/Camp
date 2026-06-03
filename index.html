@@ -8,6 +8,18 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <section id="loadingScreen" class="loading-screen" aria-label="资源加载中">
+      <div class="loading-core">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <div class="loading-percent" id="loadingPercent">0%</div>
+        <div class="loading-bar" aria-hidden="true">
+          <i id="loadingFill"></i>
+        </div>
+        <p id="loadingStatus">正在检查校园档案...</p>
+        <button id="loadingContinue" class="loading-continue" type="button" hidden>继续进入</button>
+      </div>
+    </section>
+
     <section id="mainMenu" class="main-menu" aria-label="主菜单">
       <div class="title-block">
         <p>Tension Point</p>
@@ -192,6 +204,7 @@
       </header>
 
       <section class="top-actions" aria-label="时间与系统控制">
+        <article id="zoomValue" class="zoom-value" aria-label="地图缩放">100%</article>
         <article class="time-chip" title="第 1 天：上课">
           <img src="assets/icon/时间.png" alt="" />
           <span id="dayLabel">第 1 天</span>
@@ -249,11 +262,13 @@
         </aside>
 
         <section class="map-stage" aria-label="校园战略地图">
-          <div id="mapViewport" class="map-viewport">
+          <div id="mapViewport" class="map-viewport" tabindex="-1">
             <div id="mapContent" class="map-content">
               <img id="campusMap" class="map-image active" src="assets/学校视图.png" alt="学校卫星战略地图" draggable="false" />
               <img id="campusMapAlt" class="map-image" src="assets/学校视图.png" alt="" draggable="false" aria-hidden="true" />
               <canvas id="highlightCanvas" width="1988" height="791" aria-hidden="true"></canvas>
+              <div id="squadMarkerLayer" class="squad-marker-layer" aria-label="行动小队位置"></div>
+              <div id="memberMarkerLayer" class="member-marker-layer" aria-hidden="true"></div>
             </div>
           </div>
 
@@ -262,6 +277,16 @@
             <span id="hoverFunction">功能</span>
           </div>
 
+        </section>
+
+        <section id="headquartersSelectOverlay" class="headquarters-select-overlay" aria-label="选择小队总部" hidden>
+          <div class="crosshair-line horizontal"></div>
+          <div class="crosshair-line vertical"></div>
+          <div class="crosshair-center"></div>
+          <aside class="headquarters-hint">
+            <strong>选择小队总部</strong>
+            <span id="headquartersHintText">移动地图，让准星中心对准有效地块。按 Enter 完成选择。</span>
+          </aside>
         </section>
 
         <aside id="regionPanel" class="region-popover" aria-label="区域信息" hidden>
@@ -294,6 +319,28 @@
                 <dt><img src="assets/icon/人.png" alt="" />学生人数</dt>
                 <dd id="regionStudentCount">--</dd>
               </div>
+            </dl>
+          </section>
+        </aside>
+
+        <aside id="squadInfoPanel" class="squad-info-panel" aria-label="行动小队信息" hidden>
+          <section class="panel-card">
+            <div class="panel-title">
+              <img src="assets/icon/行动小队.png" alt="" />
+              <span>行动小队</span>
+            </div>
+            <div class="squad-info-head">
+              <span id="squadInfoFlag" class="squad-info-flag"></span>
+              <div>
+                <h2 id="squadInfoName">小队</h2>
+                <p id="squadInfoStatus">状态：--</p>
+              </div>
+            </div>
+            <dl class="squad-info-stats">
+              <div><dt>人数</dt><dd id="squadInfoCount">--</dd></div>
+              <div><dt>总部</dt><dd id="squadInfoHeadquarters">--</dd></div>
+              <div><dt>稳定度</dt><dd id="squadInfoStability">--</dd></div>
+              <div><dt>压力</dt><dd id="squadInfoPressure">--</dd></div>
             </dl>
           </section>
         </aside>
@@ -388,6 +435,7 @@
                 </div>
                 <dl id="draftSquadStats" class="squad-stats-grid"></dl>
                 <button id="createSquadConfirm" class="create-squad-confirm" type="button" disabled>创建队伍</button>
+                <button id="relocateSquadButton" class="relocate-squad-button" type="button" hidden>迁移新位置</button>
               </section>
 
               <section class="squad-roster-column">
