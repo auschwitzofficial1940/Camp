@@ -1540,6 +1540,32 @@ body.game-active:not(.time-paused) #gameSettings img {
   background: linear-gradient(90deg, rgba(207, 232, 245, 0.96), rgba(238, 248, 239, 0.94));
 }
 
+.squad-map-marker.acting {
+  border-color: rgba(157, 56, 51, 0.86);
+  background: linear-gradient(90deg, rgba(255, 235, 229, 0.96), rgba(250, 242, 229, 0.94));
+}
+
+.squad-map-marker.acting .squad-map-flag::before,
+.squad-map-marker.acting .squad-map-flag::after {
+  border-color: rgba(157, 56, 51, 0.92);
+  background-color: rgba(255, 243, 238, 0.96);
+}
+
+.squad-map-marker.moving {
+  min-width: 58px;
+  min-height: 58px;
+  padding: 0;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  transform: translate(-50%, -50%) scale(var(--marker-scale));
+  transform-origin: center;
+}
+
+.squad-map-marker.moving .squad-map-name {
+  display: none;
+}
+
 .squad-map-flag {
   position: absolute;
   left: -4px;
@@ -1553,13 +1579,106 @@ body.game-active:not(.time-paused) #gameSettings img {
   background: rgba(252, 253, 247, 0.97);
   box-shadow: 0 5px 14px rgba(17, 26, 21, 0.25);
   font-size: 20px;
+  isolation: isolate;
   transform: translateY(-50%);
 }
 
+.squad-map-flag::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.squad-map-marker.moving .squad-map-flag {
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.squad-map-marker.status-assembled .squad-map-flag {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.squad-map-marker.status-assembled .squad-map-flag::before {
+  inset: 4px;
+  border: 2px solid rgba(30, 82, 102, 0.92);
+  border-radius: 10px;
+  background: rgba(252, 253, 247, 0.97);
+  box-shadow: 0 5px 14px rgba(17, 26, 21, 0.25);
+  transform: rotate(45deg);
+}
+
+.squad-map-marker.status-assembled.moving .squad-map-flag {
+  transform: translate(-50%, -50%);
+}
+
+.squad-map-marker.status-assembled .squad-map-flag img {
+  position: relative;
+  z-index: 2;
+}
+
+.squad-map-marker.status-assembled .squad-flag-emoji {
+  position: relative;
+  z-index: 2;
+}
+
+.squad-map-marker.status-hidden .squad-map-flag {
+  border-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.squad-map-marker.status-hidden .squad-map-flag::before {
+  inset: 5px 3px 2px;
+  z-index: 1;
+  background: rgba(252, 253, 247, 0.9);
+  clip-path: polygon(4% 8%, 96% 8%, 50% 96%);
+}
+
+.squad-map-marker.status-hidden .squad-map-flag::after {
+  content: "";
+  position: absolute;
+  inset: 1px 0 -3px;
+  z-index: 0;
+  background: rgba(30, 82, 102, 0.95);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  filter: drop-shadow(0 5px 9px rgba(17, 26, 21, 0.24));
+}
+
+.squad-map-marker.status-hidden .squad-map-flag img {
+  position: relative;
+  z-index: 2;
+  width: 31px;
+  height: 31px;
+  margin-top: -4px;
+}
+
+.squad-map-marker.status-hidden .squad-flag-emoji {
+  position: relative;
+  z-index: 2;
+  margin-top: -5px;
+}
+
 .squad-map-flag img {
+  position: relative;
+  z-index: 2;
   width: 42px;
   height: 42px;
   object-fit: contain;
+}
+
+.squad-flag-emoji {
+  position: relative;
+  z-index: 2;
+  display: inline-grid;
+  place-items: center;
+  font-size: 23px;
+  line-height: 1;
 }
 
 .squad-map-name {
@@ -1581,6 +1700,16 @@ body.game-active:not(.time-paused) #gameSettings img {
   border-radius: 999px;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.54), 0 3px 10px rgba(17, 26, 21, 0.3);
   transform: translate(-50%, -50%);
+}
+
+.member-map-marker.hidden-squad {
+  opacity: 0.34;
+  border-color: rgba(30, 82, 102, 0.46);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.24), 0 3px 10px rgba(17, 26, 21, 0.16);
+}
+
+.member-map-marker.hidden-squad::after {
+  background: rgba(30, 82, 102, 0.66);
 }
 
 .member-map-marker::after {
@@ -1743,6 +1872,46 @@ body.game-active:not(.time-paused) #gameSettings img {
   display: none;
 }
 
+.squad-member-panel {
+  position: fixed;
+  right: 22px;
+  top: 548px;
+  z-index: 12;
+  width: min(330px, calc(100vw - 120px));
+}
+
+.squad-member-panel[hidden] {
+  display: none;
+}
+
+.squad-info-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.squad-info-title > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.squad-info-edit {
+  padding: 7px 10px;
+  border: 1px solid rgba(40, 95, 78, 0.24);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.68);
+  color: var(--green);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.squad-info-edit:hover {
+  background: rgba(226, 238, 229, 0.9);
+}
+
 .squad-info-head {
   display: grid;
   grid-template-columns: 56px 1fr;
@@ -1781,6 +1950,72 @@ body.game-active:not(.time-paused) #gameSettings img {
   font-weight: 900;
 }
 
+.squad-status-button {
+  margin-top: 6px;
+  padding: 6px 9px;
+  border: 1px solid rgba(40, 95, 78, 0.2);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.squad-status-button:hover {
+  background: rgba(226, 238, 229, 0.9);
+  color: var(--green);
+}
+
+.squad-status-button:disabled {
+  cursor: default;
+  opacity: 0.62;
+  filter: grayscale(0.5);
+}
+
+.squad-status-button:disabled:hover {
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--muted);
+}
+
+.squad-status-menu {
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 7px;
+  border: 1px solid rgba(31, 41, 35, 0.12);
+  border-radius: 12px;
+  background: rgba(252, 253, 247, 0.96);
+  box-shadow: 0 12px 24px rgba(21, 28, 24, 0.16);
+}
+
+.squad-status-menu[hidden] {
+  display: none;
+}
+
+.squad-status-menu button {
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 950;
+  text-align: left;
+}
+
+.squad-status-menu button:hover:not(:disabled) {
+  border-color: rgba(40, 95, 78, 0.24);
+  background: rgba(226, 238, 229, 0.9);
+}
+
+.squad-status-menu button:disabled {
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.64;
+}
+
 .squad-info-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1805,6 +2040,87 @@ body.game-active:not(.time-paused) #gameSettings img {
   margin: 5px 0 0;
   font-size: 16px;
   font-weight: 950;
+}
+
+.squad-info-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  min-height: 28px;
+  padding: 3px 9px;
+  border: 1px solid rgba(40, 95, 78, 0.18);
+  border-radius: 9px;
+  background: rgba(226, 238, 229, 0.82);
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.squad-info-count:hover {
+  border-color: rgba(40, 95, 78, 0.38);
+  background: rgba(210, 230, 216, 0.96);
+}
+
+.squad-info-members {
+  display: grid;
+  gap: 6px;
+  max-height: 158px;
+  margin-top: 10px;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.squad-info-members[hidden] {
+  display: none;
+}
+
+.squad-info-member-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid rgba(31, 41, 35, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+  text-align: left;
+}
+
+.squad-info-member-row span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.squad-info-member-row:hover {
+  background: rgba(226, 238, 229, 0.92);
+}
+
+.squad-info-member-row.missing {
+  opacity: 0.58;
+}
+
+.squad-info-move {
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 12px;
+  border: 1px solid rgba(40, 95, 78, 0.22);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(232, 241, 235, 0.96), rgba(191, 218, 205, 0.92));
+  color: var(--green);
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.squad-info-move:hover {
+  background: linear-gradient(135deg, rgba(242, 248, 243, 0.98), rgba(172, 207, 191, 0.96));
 }
 
 .region-member-panel[hidden] {
@@ -1998,6 +2314,11 @@ body.game-active:not(.time-paused) #gameSettings img {
   background: rgba(255, 255, 255, 0.62);
 }
 
+.squad-card.acting {
+  border-color: rgba(157, 56, 51, 0.38);
+  background: rgba(255, 244, 241, 0.72);
+}
+
 .squad-card h3,
 .squad-card p {
   margin: 0;
@@ -2018,6 +2339,32 @@ body.game-active:not(.time-paused) #gameSettings img {
   display: grid;
   gap: 6px;
   margin-top: 8px;
+}
+
+.squad-action-progress {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.squad-action-progress span {
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.squad-action-progress i {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(157, 56, 51, 0.14);
+}
+
+.squad-action-progress b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(157, 56, 51, 0.86), rgba(208, 155, 43, 0.82));
 }
 
 .squad-mini-meter {
@@ -2931,6 +3278,137 @@ body.game-active:not(.time-paused) #gameSettings img {
   line-height: 1.55;
 }
 
+.action-confirm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(21, 28, 24, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+  backdrop-filter: blur(4px);
+}
+
+.action-confirm-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.action-confirm-modal[hidden] {
+  display: none;
+}
+
+.action-confirm-card {
+  width: min(560px, calc(100vw - 48px));
+  max-height: min(680px, calc(100vh - 72px));
+  overflow-y: auto;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 18px;
+  background: rgba(252, 253, 247, 0.97);
+  box-shadow: 0 24px 64px rgba(17, 26, 21, 0.28);
+  transform: translateY(10px) scale(0.98);
+  transition: transform 160ms ease;
+}
+
+.action-confirm-modal.open .action-confirm-card {
+  transform: translateY(0) scale(1);
+}
+
+.action-confirm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.action-confirm-head h2 {
+  margin: 0;
+  font-size: 25px;
+}
+
+.action-confirm-head button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(31, 41, 35, 0.12);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.68);
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.action-confirm-card p {
+  margin: 12px 0;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.action-squad-list {
+  display: grid;
+  gap: 8px;
+}
+
+.action-squad-row {
+  display: grid;
+  grid-template-columns: 42px 1fr 110px 92px;
+  gap: 9px;
+  align-items: center;
+  padding: 9px 10px;
+  border: 1px solid rgba(40, 95, 78, 0.18);
+  border-radius: 12px;
+  background: rgba(226, 238, 229, 0.78);
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.action-squad-row:hover:not(:disabled) {
+  background: rgba(210, 230, 216, 0.96);
+}
+
+.action-squad-row.disabled {
+  cursor: default;
+  opacity: 0.44;
+  filter: grayscale(0.8);
+}
+
+.action-squad-row .squad-card-flag {
+  width: 36px;
+  height: 36px;
+}
+
+.action-squad-row .squad-card-flag img {
+  width: 25px;
+  height: 25px;
+}
+
+.action-squad-row strong,
+.action-squad-row span,
+.action-squad-row em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action-squad-row span {
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.action-squad-row em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: right;
+}
+
 .phone-emphasis {
   color: var(--green);
   text-decoration: underline;
@@ -3119,6 +3597,66 @@ body.game-active:not(.time-paused) #gameSettings img {
 .region-members-button:disabled {
   cursor: default;
   opacity: 0.62;
+}
+
+.region-actions {
+  margin-top: 12px;
+}
+
+.region-actions-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid rgba(31, 41, 35, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.region-actions-toggle img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  transition: transform 180ms ease;
+}
+
+.region-actions-toggle.expanded img {
+  transform: rotate(90deg);
+}
+
+.region-action-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.region-action-list[hidden] {
+  display: none;
+}
+
+.region-action-button {
+  padding: 10px 8px;
+  border: 1px solid rgba(40, 95, 78, 0.18);
+  border-radius: 11px;
+  background: rgba(226, 238, 229, 0.76);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.region-action-button:hover:not(:disabled) {
+  background: rgba(210, 230, 216, 0.96);
+}
+
+.region-action-button:disabled {
+  cursor: default;
+  opacity: 0.46;
+  filter: grayscale(0.8);
 }
 
 .region-members-button:not(:disabled):hover {

@@ -148,6 +148,9 @@ const regionPressure = document.getElementById("regionPressure");
 const regionPatrol = document.getElementById("regionPatrol");
 const regionMembersButton = document.getElementById("regionMembersButton");
 const regionStudentCount = document.getElementById("regionStudentCount");
+const regionActionsToggle = document.getElementById("regionActionsToggle");
+const regionActionsArrow = document.getElementById("regionActionsArrow");
+const regionActionList = document.getElementById("regionActionList");
 const regionMemberPanel = document.getElementById("regionMemberPanel");
 const regionMemberPanelTitle = document.getElementById("regionMemberPanelTitle");
 const regionMemberList = document.getElementById("regionMemberList");
@@ -159,6 +162,17 @@ const squadInfoCount = document.getElementById("squadInfoCount");
 const squadInfoHeadquarters = document.getElementById("squadInfoHeadquarters");
 const squadInfoStability = document.getElementById("squadInfoStability");
 const squadInfoPressure = document.getElementById("squadInfoPressure");
+const squadInfoMembers = document.getElementById("squadInfoMembers");
+const squadInfoMove = document.getElementById("squadInfoMove");
+const squadInfoEdit = document.getElementById("squadInfoEdit");
+const squadStatusMenu = document.getElementById("squadStatusMenu");
+const squadMemberPanel = document.getElementById("squadMemberPanel");
+const squadMemberPanelTitle = document.getElementById("squadMemberPanelTitle");
+const actionConfirmModal = document.getElementById("actionConfirmModal");
+const actionConfirmTitle = document.getElementById("actionConfirmTitle");
+const actionConfirmBody = document.getElementById("actionConfirmBody");
+const actionSquadList = document.getElementById("actionSquadList");
+const closeActionConfirm = document.getElementById("closeActionConfirm");
 
 const indexImage = new Image();
 indexImage.src = "assets/索引图.png";
@@ -314,6 +328,19 @@ const CORE_MEMBER_DEFS = [
 const ORGANIZATION_ROLES = ["副主席", "宣传部长", "情报部长", "后勤部长", "成员"];
 const SQUAD_MEMBER_ROLES = ["队长", "宣传员", "侦查员", "成员"];
 const LIMITED_SQUAD_ROLES = ["队长", "宣传员", "侦查员"];
+const SQUAD_STATUSES = ["分散", "集合", "潜伏"];
+const SQUAD_STATUS_DESCRIPTIONS = {
+  分散: "这支小队会回到普通学生日程，不执行任何行动，也不会增加察觉。",
+  集合: "这支小队会以 100% 能力行动，但更容易被管理层察觉。",
+  潜伏: "这支小队只发挥 60% 能力，较难被察觉，但长期潜伏会逐渐引起怀疑。",
+};
+const REGION_ACTIONS = {
+  宣传: { durationMs: REAL_MS_PER_GAME_DAY / 2, cooldownMs: REAL_MS_PER_GAME_DAY },
+  招募: { durationMs: REAL_MS_PER_GAME_DAY / 2, cooldownMs: REAL_MS_PER_GAME_DAY },
+  侦查: { durationMs: REAL_MS_PER_GAME_DAY / 2, cooldownMs: REAL_MS_PER_GAME_DAY * 3, minScouting: 45 },
+  集会: { durationMs: REAL_MS_PER_GAME_DAY / 2, cooldownMs: REAL_MS_PER_GAME_DAY * 3 },
+  休息: { durationMs: REAL_MS_PER_GAME_DAY, cooldownMs: REAL_MS_PER_GAME_DAY },
+};
 const STRESS_RESISTANCE_RULES = {
   低: { gainMultiplier: 0.9, dailyRecovery: 1 },
   中: { gainMultiplier: 0.75, dailyRecovery: 2 },
@@ -379,7 +406,9 @@ let playerMembers = [];
 let actionSquads = [];
 let draftSquad = null;
 let pendingHeadquartersSquad = null;
+let pendingRegionAction = null;
 let choosingSquadHeadquarters = false;
+let choosingActionTarget = false;
 let selectedCandidateId = null;
 let contextDraftMemberId = null;
 let contextSquadId = null;
@@ -407,6 +436,7 @@ let currentMapVisual = MAP_VISUALS.day;
 let lastStudentScheduleKey = "";
 const memberMarkerState = new Map();
 let lastMarkerUpdateAt = 0;
+let lastSquadMovementUpdateAt = 0;
 let gameTime = {
   day: 1,
   totalDay: 1,
@@ -471,6 +501,11 @@ window.setInterval(updateKeyboardPan, 16);
 requestAnimationFrame(updateOrganizationMemberMarkers);
 
 window.addEventListener("keydown", (event) => {
+  if (choosingActionTarget && event.key === "Enter") {
+    event.preventDefault();
+    completeActionTargetSelection();
+    return;
+  }
   if (choosingSquadHeadquarters && event.key === "Enter") {
     event.preventDefault();
     completeHeadquartersSelection();
@@ -661,16 +696,21 @@ expandLog.addEventListener("click", () => {
   expandLog.hidden = true;
 });
 
-pauseToggle.addEventListener("click", togglePause);
+pauseToggle.addEventListener("click", () => {
+  togglePause();
+  focusMapAfterUiAction();
+});
 
 speedOptions.forEach((button) => {
   button.addEventListener("click", () => {
     const speed = Number(button.dataset.speed);
     if (speed === 0) {
       setPausedState(true);
+      focusMapAfterUiAction();
       return;
     }
     setTimeSpeed(speed);
+    focusMapAfterUiAction();
   });
 });
 
@@ -793,12 +833,16 @@ flagPicker.addEventListener("click", (event) => {
 document.addEventListener("pointerdown", (event) => {
   const clickedMap = Boolean(event.target.closest(".map-stage"));
   const clickedRegionUi = Boolean(event.target.closest("#regionPanel") || event.target.closest("#regionMemberPanel"));
+  const clickedSquadUi = Boolean(event.target.closest("#squadInfoPanel") || event.target.closest("#squadMemberPanel"));
   const clickedSquadMarker = Boolean(event.target.closest(".squad-map-marker"));
   if (!clickedMap && !clickedRegionUi) {
     clearRegionSelection();
   }
-  if (!clickedSquadMarker && !event.target.closest("#squadInfoPanel")) {
+  if (!clickedSquadMarker && !clickedSquadUi) {
     closeSquadInfoPanel();
+  }
+  if (!squadStatusMenu.hidden && !squadStatusMenu.contains(event.target) && event.target !== squadInfoStatus) {
+    squadStatusMenu.hidden = true;
   }
   if (!flagPicker.hidden && !flagPicker.contains(event.target) && !squadFlagButton.contains(event.target)) {
     flagPicker.hidden = true;
@@ -814,6 +858,9 @@ document.addEventListener("pointerdown", (event) => {
   }
   if (!regionMemberPanel.hidden && !regionMemberPanel.contains(event.target) && !regionMembersButton.contains(event.target)) {
     regionMemberPanel.hidden = true;
+  }
+  if (!squadMemberPanel.hidden && !squadMemberPanel.contains(event.target) && !squadInfoCount.contains(event.target)) {
+    squadMemberPanel.hidden = true;
   }
 });
 
@@ -835,6 +882,46 @@ regionMembersButton.addEventListener("click", () => {
   if (!selectedRegion) return;
   regionMemberPanel.hidden = false;
   renderRegionMemberList(selectedRegion);
+});
+
+regionActionsToggle.addEventListener("click", () => {
+  const expanded = regionActionList.hidden;
+  regionActionList.hidden = !expanded;
+  regionActionsToggle.setAttribute("aria-expanded", String(expanded));
+  regionActionsToggle.classList.toggle("expanded", expanded);
+  if (expanded && selectedRegion) renderRegionActionList(selectedRegion);
+});
+
+squadInfoCount.addEventListener("click", () => {
+  if (!selectedSquadInfoId) return;
+  squadMemberPanel.hidden = false;
+  renderSquadInfoMembers(selectedSquadInfoId);
+});
+
+squadInfoMove.addEventListener("click", () => {
+  if (!selectedSquadInfoId) return;
+  startSquadRelocation(selectedSquadInfoId);
+});
+
+squadInfoEdit.addEventListener("click", () => {
+  if (!selectedSquadInfoId) return;
+  const squadId = selectedSquadInfoId;
+  openSquadEditModal(squadId);
+  closeSquadInfoPanel();
+});
+
+squadInfoStatus.addEventListener("click", () => {
+  if (!selectedSquadInfoId) return;
+  const squad = actionSquads.find((candidate) => candidate.id === selectedSquadInfoId);
+  if (squad?.currentAction) return;
+  renderSquadStatusMenu(selectedSquadInfoId);
+  squadStatusMenu.hidden = !squadStatusMenu.hidden;
+});
+
+closeActionConfirm.addEventListener("click", closeActionConfirmModal);
+
+actionConfirmModal.addEventListener("click", (event) => {
+  if (event.target === actionConfirmModal) closeActionConfirmModal();
 });
 
 removeDraftMember.addEventListener("click", () => {
@@ -906,6 +993,7 @@ mapViewport.addEventListener(
   (event) => {
     event.preventDefault();
     if (choosingSquadHeadquarters) return;
+    if (choosingActionTarget) return;
     const zoomIntensity = event.deltaY < 0 ? 1.08 : 1 / 1.08;
     zoomAtPoint(zoomIntensity, event.clientX, event.clientY);
   },
@@ -986,28 +1074,68 @@ async function preloadStartupResources() {
   const resources = [...new Set(PRELOAD_RESOURCES)];
   let completed = 0;
   const failures = [];
+  let preloadSettled = false;
+  let lastProgressAt = performance.now();
   const markDone = (src, failed = false) => {
+    if (preloadSettled) return;
     completed += 1;
+    lastProgressAt = performance.now();
     if (failed) failures.push(src);
     const percent = Math.round((completed / resources.length) * 100);
     updateLoadingProgress(percent, failed ? "发现缺失资源，继续尝试加载..." : "正在预加载战略资源...");
   };
 
-  await Promise.all(
-    resources.map(async (src) => {
-      try {
-        if (src === "name.json") {
-          await withTimeout(loadNameData(), 9000, src);
-        } else {
-          await preloadAsset(src);
-        }
-        markDone(src);
-      } catch {
-        if (src === "name.json") nameData = DEFAULT_NAMES;
-        markDone(src, true);
+  const preloadJobs = resources.map(async (src) => {
+    try {
+      if (src === "name.json") {
+        await loadNameData();
+      } else {
+        await preloadAsset(src);
       }
-    }),
-  );
+      markDone(src);
+    } catch {
+      if (src === "name.json") nameData = DEFAULT_NAMES;
+      markDone(src, true);
+    }
+  });
+
+  const result = await new Promise((resolve) => {
+    const startedAt = performance.now();
+    const watcher = window.setInterval(() => {
+      const now = performance.now();
+      if (completed >= resources.length) {
+        window.clearInterval(watcher);
+        resolve({ timedOut: false, stalled: false });
+        return;
+      }
+      if (now - lastProgressAt >= 5000) {
+        window.clearInterval(watcher);
+        resolve({ timedOut: false, stalled: true });
+        return;
+      }
+      if (now - startedAt >= 20000) {
+        window.clearInterval(watcher);
+        resolve({ timedOut: true, stalled: false });
+      }
+    }, 160);
+
+    Promise.allSettled(preloadJobs).then(() => {
+      window.clearInterval(watcher);
+      resolve({ timedOut: false, stalled: false });
+    });
+  });
+
+  preloadSettled = true;
+
+  if (result.stalled || result.timedOut) {
+    failures.push(result.stalled ? "stalled" : "timeout");
+    loadingStatus.textContent = result.stalled
+      ? "资源加载失败，可能是网络错误，但仍可继续"
+      : "资源加载超过 20 秒，已停止等待，但仍可继续";
+    loadingContinue.hidden = false;
+    loadingContinue.focus();
+    return;
+  }
 
   updateLoadingProgress(100, failures.length ? "部分资源加载失败，但仍可继续" : "资源加载完成");
   if (failures.length) {
@@ -1019,8 +1147,8 @@ async function preloadStartupResources() {
 }
 
 function preloadAsset(src) {
-  const loader = /\.(png|jpe?g|gif|webp|ico)$/i.test(src) ? preloadImage(src) : preloadBinary(src);
-  return withTimeout(loader, 9000, src);
+  if (/\.(png|jpe?g|gif|webp|ico)$/i.test(src)) return preloadImage(src);
+  return preloadBinary(src);
 }
 
 function preloadImage(src) {
@@ -1042,15 +1170,6 @@ async function preloadBinary(src) {
   const response = await fetch(src, { cache: "force-cache" });
   if (!response.ok) throw new Error(`${src} failed`);
   await response.blob();
-}
-
-function withTimeout(promise, timeoutMs, src) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) => {
-      window.setTimeout(() => reject(new Error(`${src} timed out`)), timeoutMs);
-    }),
-  ]);
 }
 
 function updateLoadingProgress(percent, statusText) {
@@ -1095,20 +1214,29 @@ function initializeStudentPopulation() {
   resetDailyInviteCounters();
   Object.entries(INITIAL_GRADE_COUNTS).forEach(([gradeText, range]) => {
     const grade = Number(gradeText);
-    const count = randomInt(...range);
+    const count = randomInt(range[0], range[1]);
     for (let index = 0; index < count; index += 1) {
       allStudents.push(createStudent(grade));
     }
   });
 
-  playerMembers = CORE_MEMBER_DEFS.map((member) => createCoreMember(member));
-  allStudents.push(...playerMembers);
-
+  CORE_MEMBER_DEFS.forEach((definition) => {
+    const member = createStudent(definition.grade, definition);
+    member.isCore = true;
+    member.role = definition.role;
+    member.trust = definition.trust;
+    allStudents.push(member);
+    playerMembers.push(member);
+  });
+  protectLockedMemberTrust();
+  updateStudentSchedules(true);
   appendLog(`学生生态初始化：全校 ${allStudents.length} 人，地下组织核心成员 ${playerMembers.length} 人。`);
+  updateMemberUi();
   updateResourceUi();
   updateTopMeters();
   updateAwarenessUi();
   renderRecruitList(selectedRecruitGrade);
+  renderMembersList();
 }
 
 function createCoreMember(member) {
@@ -1182,11 +1310,13 @@ function updateGameClock() {
     gameTime.dayProgressMs -= REAL_MS_PER_GAME_DAY;
     advanceGameDay();
   }
+  processSquadActions();
   updateTimeUi();
 }
 
 function advanceGameDay() {
   applyDailyStudentDrift();
+  applyDailySquadStatusEffects();
   bribeUsedDayKey = null;
   resetDailyInviteCounters();
   gameTime.totalDay += 1;
@@ -1259,6 +1389,22 @@ function applyDailyStudentDrift() {
   });
   protectLockedMemberTrust();
   resolveStressBreakdowns();
+}
+
+function applyDailySquadStatusEffects() {
+  actionSquads.forEach((squad) => {
+    if (!squad.status) squad.status = "分散";
+    if (squad.status === "潜伏") {
+      squad.hiddenDays = Number(squad.hiddenDays || 0) + 1;
+      if (squad.hiddenDays > 3) {
+        managementAwareness = clamp(managementAwareness + 1, 0, 100);
+        appendLog(`${squad.name} 连续潜伏过久，引起了管理层的轻微怀疑。`);
+      }
+    } else {
+      squad.hiddenDays = 0;
+    }
+  });
+  updateAwarenessUi();
 }
 
 function getStressRule(student) {
@@ -1442,6 +1588,7 @@ function renderSquadPanel() {
   actionSquads.forEach((squad) => {
     const card = document.createElement("article");
     card.className = "squad-card";
+    card.classList.toggle("acting", Boolean(squad.currentAction));
     card.dataset.squadId = squad.id;
     const flag = createSquadFlagNode(squad);
     const body = document.createElement("div");
@@ -1450,7 +1597,7 @@ function renderSquadPanel() {
     const meta = document.createElement("p");
     const age = Math.max(0, gameTime.totalDay - squad.createdTotalDay);
     meta.textContent = `${squad.members.length} 人 / ${squad.createdLabel} 创建 / 已存在 ${age} 天`;
-    const values = calculateSquadStats(squad.members.map((member) => member.studentId));
+    const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
     const meters = document.createElement("div");
     meters.className = "squad-card-meters";
     meters.append(createSquadMiniMeter("稳定度", values.stability, "stability"), createSquadMiniMeter("压力", values.pressure, "pressure"));
@@ -1458,6 +1605,12 @@ function renderSquadPanel() {
     abilities.className = "squad-card-abilities";
     abilities.innerHTML = `<span>宣传 ${values.propaganda}</span><span>应急 ${values.emergency}</span><span>行动 ${values.mobility}</span><span>侦查 ${values.scouting}</span>`;
     body.append(title, meta, meters);
+    if (squad.currentAction) {
+      const progress = document.createElement("div");
+      progress.className = "squad-action-progress";
+      progress.innerHTML = `<span>${squad.currentAction.name}中</span><i><b style="width:${clamp(squad.currentAction.progress || 0, 0, 100)}%"></b></i>`;
+      body.append(progress);
+    }
     card.append(flag, body, abilities);
     card.addEventListener("contextmenu", (event) => {
       event.preventDefault();
@@ -1532,6 +1685,10 @@ function closeSquadCreateModal() {
 }
 
 function handleEscapeKey() {
+  if (choosingActionTarget) {
+    exitActionTargetSelection();
+    return true;
+  }
   if (!squadCreateModal.hidden) {
     closeSquadCreateModal();
     return true;
@@ -1552,6 +1709,14 @@ function handleEscapeKey() {
     squadListContext.hidden = true;
     return true;
   }
+  if (!squadStatusMenu.hidden) {
+    squadStatusMenu.hidden = true;
+    return true;
+  }
+  if (!actionConfirmModal.hidden) {
+    closeActionConfirmModal();
+    return true;
+  }
   if (!studentDetailPanel.hidden) {
     studentDetailPanel.hidden = true;
     studentDetailSource = "";
@@ -1559,6 +1724,10 @@ function handleEscapeKey() {
   }
   if (!regionMemberPanel.hidden) {
     regionMemberPanel.hidden = true;
+    return true;
+  }
+  if (!squadMemberPanel.hidden) {
+    squadMemberPanel.hidden = true;
     return true;
   }
   if (isLeftMenuFocused() && closeActiveRailPanel()) return true;
@@ -1601,6 +1770,7 @@ function enterHeadquartersSelection(title = "选择小队总部") {
   choosingSquadHeadquarters = true;
   regionPanel.hidden = true;
   regionMemberPanel.hidden = true;
+  squadMemberPanel.hidden = true;
   squadInfoPanel.hidden = true;
   squadPanel.hidden = true;
   squadListContext.hidden = true;
@@ -1673,7 +1843,10 @@ function createSquadFlagNode(squad) {
 function appendSquadFlagVisual(target, squad) {
   target.replaceChildren();
   if (squad.flagType === "emoji") {
-    target.textContent = squad.flagValue;
+    const emoji = document.createElement("span");
+    emoji.className = "squad-flag-emoji";
+    emoji.textContent = squad.flagValue;
+    target.append(emoji);
   } else {
     const img = document.createElement("img");
     img.src = squad.flagValue;
@@ -1720,17 +1893,19 @@ function renderDraftStats() {
   });
 }
 
-function calculateSquadStats(memberIds) {
+function calculateSquadStats(memberIds, squad = null) {
   const members = memberIds.map((id) => allStudents.find((student) => student.id === id)).filter(Boolean);
   const average = (getter) => (members.length ? Math.round(members.reduce((sum, student) => sum + getter(student), 0) / members.length) : 0);
+  const abilityMultiplier = squad?.status === "潜伏" ? 0.6 : 1;
+  const abilityAverage = (getter) => Math.round(average(getter) * abilityMultiplier);
   return {
     count: members.length,
     pressure: average((student) => student.stress),
     stability: average((student) => student.trust),
-    propaganda: average((student) => getEffectiveAbilities(student).literature),
-    emergency: average((student) => getEffectiveAbilities(student).emergency),
-    mobility: average((student) => getEffectiveAbilities(student).strength),
-    scouting: average((student) => getEffectiveAbilities(student).vision),
+    propaganda: abilityAverage((student) => getEffectiveAbilities(student).literature),
+    emergency: abilityAverage((student) => getEffectiveAbilities(student).emergency),
+    mobility: abilityAverage((student) => getEffectiveAbilities(student).strength),
+    scouting: abilityAverage((student) => getEffectiveAbilities(student).vision),
   };
 }
 
@@ -2016,21 +2191,446 @@ function createDraftSquad() {
     members: draftSquad.members.map((member) => ({ ...member })),
     headquarters: null,
     status: "分散",
+    hiddenDays: 0,
+    moving: false,
+    movement: null,
   };
   closeSquadCreateModal();
   enterHeadquartersSelection();
 }
 
 function startSquadRelocationFromDraft() {
-  const squad = actionSquads.find((candidate) => candidate.id === draftSquad.editingSquadId);
+  if (!draftSquad || draftSquad.mode !== "edit") return;
+  startSquadRelocation(draftSquad.editingSquadId);
+}
+
+function startSquadRelocation(squadId) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
   if (!squad) return;
   playSound(createSound, 0.5);
   pendingHeadquartersSquad = {
     ...squad,
     mode: "relocate",
   };
-  closeSquadCreateModal();
+  if (!squadCreateModal.hidden) closeSquadCreateModal();
+  closeSquadInfoPanel();
   enterHeadquartersSelection("迁移行动小队总部");
+}
+
+function startSquadMovementToHeadquarters(squad, nextHeadquarters) {
+  const from = getSquadMapPoint(squad) || squad.headquarters || nextHeadquarters;
+  squad.moving = true;
+  squad.movement = {
+    purpose: "relocate",
+    x: Math.round(from.x),
+    y: Math.round(from.y),
+    targetX: nextHeadquarters.x,
+    targetY: nextHeadquarters.y,
+    targetRegion: nextHeadquarters.region,
+  };
+  syncSquadMemberLocations(squad);
+}
+
+function clearSquadMovement(squad) {
+  squad.moving = false;
+  squad.movement = null;
+}
+
+function updateSquadMovements(elapsedSeconds) {
+  if (paused || elapsedSeconds <= 0) return "none";
+  let renderMode = "none";
+  actionSquads.forEach((squad) => {
+    if (!squad.moving || !squad.movement) return;
+    const movement = squad.movement;
+    const dx = movement.targetX - movement.x;
+    const dy = movement.targetY - movement.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance < 2) {
+      if (movement.purpose === "action" && squad.currentAction) {
+        const region = regions.find((candidate) => candidate.name === movement.targetRegion);
+        squad.fieldPosition = {
+          region: movement.targetRegion,
+          x: Math.round(movement.targetX),
+          y: Math.round(movement.targetY),
+        };
+        clearSquadMovement(squad);
+        syncSquadMemberLocations(squad);
+        if (region) startRegionAction(squad, region, squad.currentAction.name, squad.currentAction.commandAt);
+        renderMode = "full";
+        return;
+      }
+      squad.headquarters = {
+        region: movement.targetRegion,
+        x: movement.targetX,
+        y: movement.targetY,
+      };
+      squad.fieldPosition = { ...squad.headquarters };
+      clearSquadMovement(squad);
+      syncSquadMemberLocations(squad);
+      appendLog(`${squad.name} 已抵达新的总部：${squad.headquarters.region}。`);
+      if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
+      refreshRegionPanel();
+      renderMode = "full";
+      return;
+    }
+    const speed = 36 * (0.85 + Math.min(timeSpeed, 5) * 0.16);
+    const step = Math.min(distance, speed * elapsedSeconds);
+    movement.x += (dx / distance) * step;
+    movement.y += (dy / distance) * step;
+    if (renderMode !== "full") renderMode = "position";
+  });
+  return renderMode;
+}
+
+function processSquadActions() {
+  const now = getAbsoluteGameMs();
+  let changed = false;
+  let progressed = false;
+  actionSquads.forEach((squad) => {
+    const action = squad.currentAction;
+    if (!action || action.phase !== "running") return;
+    const definition = REGION_ACTIONS[action.name];
+    action.progress = clamp(((now - action.commandAt) / definition.durationMs) * 100, 0, 100);
+    progressed = true;
+    if (now < action.endAt) return;
+    completeRegionAction(squad, action);
+    squad.currentAction = null;
+    changed = true;
+  });
+  if (!changed && !progressed) return;
+  renderSquadMapMarkers();
+  if (!squadPanel.hidden) renderSquadPanel();
+  refreshRegionPanel();
+  if (selectedSquadInfoId) showSquadInfoPanel(selectedSquadInfoId);
+}
+
+function renderSquadStatusMenu(squadId) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
+  if (!squad) return;
+  if (squad.currentAction) {
+    squadStatusMenu.hidden = true;
+    return;
+  }
+  const currentStatus = squad.status || "分散";
+  squadStatusMenu.replaceChildren();
+  SQUAD_STATUSES.forEach((status) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.disabled = status === currentStatus;
+    button.textContent = status === currentStatus ? `${status}（当前）` : status;
+    button.addEventListener("click", () => requestSquadStatusChange(squad.id, status));
+    squadStatusMenu.append(button);
+  });
+}
+
+function requestSquadStatusChange(squadId, status) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
+  if (!squad || squad.status === status || squad.currentAction) return;
+  squadStatusMenu.hidden = true;
+  openConfirmModal(
+    `你确定要将「${squad.name}」的状态设置为「${status}」吗？<br><span class="confirm-note">${SQUAD_STATUS_DESCRIPTIONS[status]}</span>`,
+    () => setSquadStatus(squad.id, status),
+  );
+}
+
+function setSquadStatus(squadId, status) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
+  if (!squad || !SQUAD_STATUSES.includes(status) || squad.currentAction) return;
+  squad.status = status;
+  if (status !== "潜伏") squad.hiddenDays = 0;
+  if (status === "分散") squad.fieldPosition = null;
+  if (status === "分散" && squad.moving && squad.movement) {
+    squad.headquarters = {
+      region: squad.movement.targetRegion,
+      x: Math.round(squad.movement.targetX),
+      y: Math.round(squad.movement.targetY),
+    };
+    squad.fieldPosition = null;
+    clearSquadMovement(squad);
+    appendLog(`${squad.name} 转为分散状态，总部迁移立即完成。`);
+  } else {
+    appendLog(`${squad.name} 的状态切换为${status}。`);
+  }
+  syncSquadMemberLocations(squad);
+  updateStudentSchedules(true);
+  renderSquadMapMarkers();
+  renderSquadPanel();
+  refreshRegionPanel();
+  if (!squadMemberPanel.hidden && selectedSquadInfoId === squad.id) renderSquadInfoMembers(squad.id);
+  if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
+}
+
+function getAbsoluteGameMs() {
+  return (gameTime.totalDay - 1) * REAL_MS_PER_GAME_DAY + gameTime.dayProgressMs;
+}
+
+function getRegionCooldown(region, actionName) {
+  return Number(region.actionCooldowns?.[actionName] || 0);
+}
+
+function isRegionActionCoolingDown(region, actionName) {
+  return getAbsoluteGameMs() < getRegionCooldown(region, actionName);
+}
+
+function getActionReadySquads() {
+  return actionSquads.filter((squad) => ["集合", "潜伏"].includes(squad.status) && !squad.currentAction && !squad.moving);
+}
+
+function canRegionActionRun(region, actionName) {
+  if (!region) return { ok: false, reason: "未选择区域" };
+  if (isRegionActionCoolingDown(region, actionName)) return { ok: false, reason: "冷却中" };
+  if (getActionReadySquads().length === 0) return { ok: false, reason: "没有可用小队" };
+  if (actionName === "招募" && getStudentsInRegion(region.name).filter((student) => !isPlayerMember(student.id)).length === 0) {
+    return { ok: false, reason: "区域内没有可招募学生" };
+  }
+  if (actionName === "侦查" && !getActionReadySquads().some((squad) => calculateSquadStats(squad.members.map((member) => member.studentId), squad).scouting >= REGION_ACTIONS.侦查.minScouting)) {
+    return { ok: false, reason: "侦查不足" };
+  }
+  return { ok: true, reason: "" };
+}
+
+function renderRegionActionList(region) {
+  regionActionList.replaceChildren();
+  Object.keys(REGION_ACTIONS).forEach((actionName) => {
+    const availability = canRegionActionRun(region, actionName);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "region-action-button";
+    button.disabled = !availability.ok;
+    button.textContent = actionName;
+    button.title = availability.ok ? `在${region.name}执行${actionName}` : availability.reason;
+    button.addEventListener("click", () => openActionConfirm(region, actionName));
+    regionActionList.append(button);
+  });
+}
+
+function openActionConfirm(region, actionName) {
+  const availability = canRegionActionRun(region, actionName);
+  if (!availability.ok) return;
+  actionConfirmTitle.textContent = actionName;
+  actionConfirmBody.textContent = `你确定要在「${region.name}」执行「${actionName}」吗？`;
+  actionSquadList.replaceChildren();
+  getSquadsForActionList(region, actionName).forEach(({ squad, disabled, label }) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "action-squad-row";
+    row.classList.toggle("disabled", disabled);
+    row.disabled = disabled;
+    const flag = createSquadFlagNode(squad);
+    const name = document.createElement("strong");
+    name.textContent = squad.name;
+    const status = document.createElement("span");
+    status.textContent = label;
+    const location = document.createElement("em");
+    location.textContent = getSquadRegionName(squad);
+    row.append(flag, name, status, location);
+    row.addEventListener("click", () => commandRegionAction(region, actionName, squad.id));
+    actionSquadList.append(row);
+  });
+  actionConfirmModal.hidden = false;
+  requestAnimationFrame(() => actionConfirmModal.classList.add("open"));
+}
+
+function closeActionConfirmModal() {
+  actionConfirmModal.classList.remove("open");
+  window.setTimeout(() => {
+    if (!actionConfirmModal.classList.contains("open")) actionConfirmModal.hidden = true;
+  }, 160);
+}
+
+function getSquadsForActionList(region, actionName) {
+  return [...actionSquads]
+    .map((squad) => {
+      const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
+      const busy = Boolean(squad.currentAction || squad.moving);
+      const wrongStatus = !["集合", "潜伏"].includes(squad.status);
+      const weakScouting = actionName === "侦查" && values.scouting < REGION_ACTIONS.侦查.minScouting;
+      const disabled = busy || wrongStatus || weakScouting;
+      const sameRegion = getSquadRegionName(squad) === region.name;
+      const actionLabel = squad.currentAction ? `${squad.currentAction.name}中` : squad.moving ? "移动中" : squad.status;
+      const label = `${actionLabel}${weakScouting ? " / 侦查不足" : ""}`;
+      return { squad, disabled, sameRegion, label };
+    })
+    .sort((a, b) => {
+      if (a.disabled !== b.disabled) return a.disabled ? 1 : -1;
+      if (a.sameRegion !== b.sameRegion) return a.sameRegion ? -1 : 1;
+      return a.squad.name.localeCompare(b.squad.name);
+    });
+}
+
+function commandRegionAction(region, actionName, squadId) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
+  if (!squad || squad.currentAction || squad.moving) return;
+  closeActionConfirmModal();
+  const commandAt = getAbsoluteGameMs();
+  setRegionActionCooldown(region, actionName, commandAt);
+  if (getSquadRegionName(squad) === region.name) {
+    startRegionAction(squad, region, actionName, commandAt);
+    return;
+  }
+  pendingRegionAction = { squadId, regionName: region.name, actionName, commandAt };
+  enterActionTargetSelection(region, actionName, squad);
+}
+
+function enterActionTargetSelection(region, actionName, squad) {
+  choosingActionTarget = true;
+  actionConfirmModal.hidden = true;
+  regionMemberPanel.hidden = true;
+  squadMemberPanel.hidden = true;
+  headquartersSelectOverlay.hidden = false;
+  headquartersSelectOverlay.querySelector("strong").textContent = "选择行动目标";
+  headquartersHintText.textContent = `移动地图，让准星中心落在${region.name}内。按 Enter 后，${squad.name} 将前往目标点并开始${actionName}。`;
+  document.body.classList.add("choosing-headquarters");
+  setMapScaleAtViewportCenter(Math.max(scale, 1.45));
+  mapViewport.focus({ preventScroll: true });
+}
+
+function exitActionTargetSelection() {
+  choosingActionTarget = false;
+  pendingRegionAction = null;
+  headquartersSelectOverlay.hidden = true;
+  document.body.classList.remove("choosing-headquarters");
+}
+
+function completeActionTargetSelection() {
+  if (!choosingActionTarget || !pendingRegionAction) return;
+  const rect = mapViewport.getBoundingClientRect();
+  const point = viewportToMapPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  const region = getRegionAtMapPoint(point.x, point.y);
+  if (!region || region.name !== pendingRegionAction.regionName) {
+    showHeadquartersError(`准星中心必须落在${pendingRegionAction.regionName}内。`);
+    return;
+  }
+  const squad = actionSquads.find((candidate) => candidate.id === pendingRegionAction.squadId);
+  if (!squad) {
+    exitActionTargetSelection();
+    return;
+  }
+  startSquadActionMovement(squad, region, pendingRegionAction.actionName, point, pendingRegionAction.commandAt);
+  appendLog(`${squad.name} 正在前往${region.name}，准备执行${pendingRegionAction.actionName}。`);
+  exitActionTargetSelection();
+  renderSquadMapMarkers();
+  if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
+}
+
+function startSquadActionMovement(squad, region, actionName, point, commandAt) {
+  const from = getSquadMapPoint(squad) || squad.headquarters || point;
+  squad.currentAction = { name: actionName, regionName: region.name, commandAt, phase: "moving", progress: 0 };
+  squad.moving = true;
+  squad.movement = {
+    purpose: "action",
+    x: Math.round(from.x),
+    y: Math.round(from.y),
+    targetX: Math.round(point.x),
+    targetY: Math.round(point.y),
+    targetRegion: region.name,
+  };
+}
+
+function startRegionAction(squad, region, actionName, commandAt = getAbsoluteGameMs()) {
+  const definition = REGION_ACTIONS[actionName];
+  const now = getAbsoluteGameMs();
+  setRegionActionCooldown(region, actionName, commandAt);
+  squad.currentAction = {
+    name: actionName,
+    regionName: region.name,
+    commandAt,
+    startAt: now,
+    endAt: commandAt + definition.durationMs,
+    phase: "running",
+    progress: clamp(((now - commandAt) / definition.durationMs) * 100, 0, 100),
+  };
+  if (actionName === "集会") {
+    getStudentsInRegion(region.name).forEach((student) => {
+      student.trust = clamp(student.trust + 10, 0, 100);
+    });
+  }
+  appendLog(`${squad.name}在${region.name}进行${actionName}。`);
+  renderSquadMapMarkers();
+  renderSquadPanel();
+  refreshRegionPanel();
+  if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
+}
+
+function setRegionActionCooldown(region, actionName, commandAt) {
+  const definition = REGION_ACTIONS[actionName];
+  if (!region.actionCooldowns) region.actionCooldowns = {};
+  region.actionCooldowns[actionName] = commandAt + definition.cooldownMs;
+}
+
+function completeRegionAction(squad, action) {
+  const region = regions.find((candidate) => candidate.name === action.regionName);
+  if (!region) return;
+  if (action.name === "宣传") completePropagandaAction(squad, region);
+  if (action.name === "招募") completeRecruitAction(squad, region);
+  if (action.name === "侦查") completeScoutAction(squad, region);
+  if (action.name === "集会") completeRallyAction(squad, region);
+  if (action.name === "休息") completeRestAction(squad, region);
+  updateTopMeters();
+  updateAwarenessUi();
+}
+
+function completePropagandaAction(squad, region) {
+  const students = getStudentsInRegion(region.name).filter((student) => !isStudentMissing(student));
+  const affected = pickRandomSubset(students, randomInt(30, 50) / 100);
+  affected.forEach((student) => {
+    student.trust = clamp(student.trust + randomInt(5, 10), 0, 100);
+  });
+  factionFame = clamp(factionFame + 5, 0, 100);
+  const supporters = students.filter((student) => student.faction === "管理层支持者").length;
+  const awarenessGain = supporters > 0 ? 10 + supporters * 2 : 0;
+  managementAwareness = clamp(managementAwareness + awarenessGain, 0, 100);
+  appendLog(`${squad.name}在${region.name}完成宣传。组织知名度 +5%，部分学生信任度上升。${awarenessGain ? `管理层支持者注意到了异常，察觉 +${awarenessGain}%。` : ""}`);
+}
+
+function completeRecruitAction(squad, region) {
+  const candidates = getStudentsInRegion(region.name).filter((student) => !isPlayerMember(student.id) && getInviteChance(student) > 0);
+  appendLog(`${squad.name}在${region.name}完成招募摸排，发现 ${candidates.length} 名可尝试邀请的学生。`);
+}
+
+function completeScoutAction(squad, region) {
+  const supporters = getStudentsInRegion(region.name).filter((student) => student.faction === "管理层支持者").length;
+  region.patrolKnown = true;
+  appendLog(`${squad.name}完成了对${region.name}的侦查。巡逻等级：${region.patrol}。管理层支持者：${supporters}人。`);
+}
+
+function completeRallyAction(squad, region) {
+  const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
+  const fameGain = Math.round(2 + values.propaganda / 20);
+  const awarenessGain = Math.round(5 + fameGain / 2);
+  factionFame = clamp(factionFame + fameGain, 0, 100);
+  managementAwareness = clamp(managementAwareness + awarenessGain, 0, 100);
+  appendLog(`${squad.name}在${region.name}组织了一场集会。组织知名度 +${fameGain}%，区域学生信任度上升，管理层察觉 +${awarenessGain}%。`);
+}
+
+function completeRestAction(squad, region) {
+  squad.members.forEach((entry) => {
+    const student = allStudents.find((candidate) => candidate.id === entry.studentId);
+    if (student) student.stress = clamp(student.stress - 5, 0, 100);
+  });
+  appendLog(`${squad.name}在${region.name}休息了一天。队员压力下降。`);
+}
+
+function pickRandomSubset(items, ratio) {
+  const count = Math.max(0, Math.round(items.length * ratio));
+  return [...items].sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+function getSquadRegionName(squad) {
+  if (squad.moving && squad.movement) return squad.movement.targetRegion;
+  if (squad.currentAction?.regionName) return squad.currentAction.regionName;
+  if (squad.fieldPosition?.region) return squad.fieldPosition.region;
+  return squad.headquarters?.region || "--";
+}
+
+function syncSquadMemberLocations(squad) {
+  if (!squad || (squad.status || "分散") === "分散" || squad.status === "潜伏") return;
+  const regionName = squad.fieldPosition?.region || squad.headquarters?.region;
+  if (!regionName) return;
+  squad.members.forEach((entry) => {
+    const student = allStudents.find((candidate) => candidate.id === entry.studentId);
+    if (student && !isStudentMissing(student)) student.location = regionName;
+  });
 }
 
 function finalizePendingSquad(region, point) {
@@ -2039,12 +2639,20 @@ function finalizePendingSquad(region, point) {
   if (pendingHeadquartersSquad.mode === "relocate") {
     const squad = actionSquads.find((candidate) => candidate.id === pendingHeadquartersSquad.id);
     if (!squad) return;
-    squad.headquarters = {
+    const nextHeadquarters = {
       region: region.name,
       x: Math.round(point.x),
       y: Math.round(point.y),
     };
-    appendLog(`${squad.name} 的总部已迁移至${region.name}。`);
+    if ((squad.status || "分散") === "分散") {
+      squad.headquarters = nextHeadquarters;
+      squad.fieldPosition = null;
+      clearSquadMovement(squad);
+      appendLog(`${squad.name} 的总部已迁移至${region.name}。`);
+    } else {
+      startSquadMovementToHeadquarters(squad, nextHeadquarters);
+      appendLog(`${squad.name} 开始向${region.name}缓慢迁移。`);
+    }
     pendingHeadquartersSquad = null;
     exitHeadquartersSelection();
     renderSquadMapMarkers();
@@ -2098,6 +2706,7 @@ function saveDraftSquadEdit() {
     student.squadName = squad.name;
     student.squadRole = entry.role;
   });
+  syncSquadMemberLocations(squad);
   appendLog(`${squad.name} 编制已更新。`);
   closeSquadCreateModal();
   renderSquadMapMarkers();
@@ -2576,7 +3185,7 @@ function updateStudentSchedules(force = false) {
 function isStudentDetachedFromSchedule(student) {
   if (!student.squadId) return false;
   const squad = actionSquads.find((candidate) => candidate.id === student.squadId);
-  return ["集合", "已集合", "召集中", "集结中", "assembled", "assembling"].includes(squad?.status);
+  return Boolean(squad && squad.status !== "分散");
 }
 
 function getScheduledRegionForStudent(student) {
@@ -2611,6 +3220,12 @@ function updateOrganizationMemberMarkers(now = performance.now()) {
   if (!document.body.classList.contains("game-active")) return;
   const elapsedSeconds = lastMarkerUpdateAt ? Math.min(0.25, (now - lastMarkerUpdateAt) / 1000) : 0;
   lastMarkerUpdateAt = now;
+  const squadMovementRenderMode = updateSquadMovements(elapsedSeconds);
+  if (squadMovementRenderMode === "full") {
+    renderSquadMapMarkers();
+  } else if (squadMovementRenderMode === "position") {
+    updateSquadMarkerPositions();
+  }
   const visible = scale >= 1.7;
   memberMarkerLayer.hidden = !visible;
   if (!visible) return;
@@ -2637,7 +3252,9 @@ function renderSquadMapMarkers() {
     if (!point) return;
     const marker = document.createElement("button");
     marker.type = "button";
-    marker.className = "squad-map-marker";
+    marker.className = `squad-map-marker ${getSquadMarkerClass(squad)}`;
+    marker.classList.toggle("moving", Boolean(squad.moving));
+    marker.classList.toggle("acting", Boolean(squad.currentAction));
     marker.dataset.squadId = squad.id;
     marker.style.left = `${point.x}px`;
     marker.style.top = `${point.y}px`;
@@ -2655,14 +3272,35 @@ function renderSquadMapMarkers() {
     marker.addEventListener("click", (event) => {
       event.stopPropagation();
       showSquadInfoPanel(squad.id);
+      mapViewport.focus({ preventScroll: true });
     });
     squadMarkerLayer.append(marker);
   });
 }
 
+function updateSquadMarkerPositions() {
+  if (squadMarkerLayer.hidden) return;
+  actionSquads.forEach((squad) => {
+    const marker = squadMarkerLayer.querySelector(`.squad-map-marker[data-squad-id="${CSS.escape(squad.id)}"]`);
+    const point = getSquadMapPoint(squad);
+    if (!marker || !point) return;
+    marker.style.left = `${point.x}px`;
+    marker.style.top = `${point.y}px`;
+    marker.style.setProperty("--marker-scale", String(1 / Math.max(scale, 1)));
+  });
+}
+
 function getSquadMapPoint(squad) {
+  if (squad.moving && squad.movement) return { x: squad.movement.x, y: squad.movement.y, region: squad.movement.targetRegion };
+  if (squad.fieldPosition) return squad.fieldPosition;
   if (squad.status === "已集合" && squad.assemblyPoint) return squad.assemblyPoint;
   return squad.headquarters;
+}
+
+function getSquadMarkerClass(squad) {
+  if (squad.status === "集合") return "status-assembled";
+  if (squad.status === "潜伏") return "status-hidden";
+  return "status-dispersed";
 }
 
 function showSquadInfoPanel(squadId) {
@@ -2671,24 +3309,62 @@ function showSquadInfoPanel(squadId) {
   selectedSquadInfoId = squadId;
   clearHover();
   clearRegionSelection();
-  const values = calculateSquadStats(squad.members.map((member) => member.studentId));
+  const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
   appendSquadFlagVisual(squadInfoFlag, squad);
   squadInfoName.textContent = squad.name;
-  squadInfoStatus.textContent = `状态：${squad.status || "分散"}`;
+  squadInfoStatus.textContent = `状态：${squad.currentAction ? `${squad.currentAction.name}中` : squad.status || "分散"}${squad.moving ? " / 移动中" : ""}`;
+  squadInfoStatus.disabled = Boolean(squad.currentAction);
+  squadInfoStatus.title = squad.currentAction ? "行动进行中，无法切换队伍状态" : "切换队伍状态";
   squadInfoCount.textContent = `${squad.members.length} 人`;
   squadInfoHeadquarters.textContent = squad.headquarters?.region || "--";
   squadInfoStability.textContent = `${values.stability}%`;
   squadInfoPressure.textContent = `${values.pressure}%`;
+  if (!squadMemberPanel.hidden) renderSquadInfoMembers(squad.id);
   squadInfoPanel.hidden = false;
+}
+
+function renderSquadInfoMembers(squadId) {
+  const squad = actionSquads.find((candidate) => candidate.id === squadId);
+  squadInfoMembers.replaceChildren();
+  squadMemberPanelTitle.textContent = squad ? `${squad.name} 成员` : "小队成员";
+  if (!squad || squad.members.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "draft-empty";
+    empty.textContent = "暂无成员。";
+    squadInfoMembers.append(empty);
+    return;
+  }
+  squad.members.forEach((entry) => {
+    const student = allStudents.find((candidate) => candidate.id === entry.studentId);
+    if (!student) return;
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "squad-info-member-row";
+    row.classList.toggle("missing", isStudentMissing(student));
+    const name = document.createElement("strong");
+    name.textContent = `${student.name}${isStudentMissing(student) ? " / 失踪" : ""}`;
+    const meta = document.createElement("span");
+    meta.textContent = `${student.grade}年级 / ${entry.role}`;
+    row.append(name, meta);
+    row.addEventListener("click", () => showStudentDetail(student.id, "squad"));
+    squadInfoMembers.append(row);
+  });
 }
 
 function closeSquadInfoPanel() {
   squadInfoPanel.hidden = true;
   selectedSquadInfoId = null;
+  squadMemberPanel.hidden = true;
+  squadStatusMenu.hidden = true;
 }
 
 function updateOrganizationMemberMarker(student, elapsedSeconds) {
   if (!student.location || isStudentMissing(student)) return;
+  const hiddenSquad = getStudentHiddenSquad(student);
+  if (hiddenSquad) {
+    updateHiddenSquadMemberMarker(student, hiddenSquad, elapsedSeconds);
+    return;
+  }
   const region = regions.find((candidate) => candidate.name === student.location);
   if (!region) return;
   let marker = memberMarkerState.get(student.id);
@@ -2700,6 +3376,7 @@ function updateOrganizationMemberMarker(student, elapsedSeconds) {
     marker = { node, x: point.x, y: point.y, targetX: point.x, targetY: point.y, regionName: region.name };
     memberMarkerState.set(student.id, marker);
   }
+  marker.node.classList.remove("hidden-squad");
   if (marker.regionName !== region.name || !isMapPointInRegion(region, marker.x, marker.y)) {
     const point = getRandomPointInRegion(region);
     Object.assign(marker, { x: point.x, y: point.y, targetX: point.x, targetY: point.y, regionName: region.name });
@@ -2734,6 +3411,58 @@ function updateOrganizationMemberMarker(student, elapsedSeconds) {
 
   marker.node.style.left = `${marker.x}px`;
   marker.node.style.top = `${marker.y}px`;
+}
+
+function updateHiddenSquadMemberMarker(student, squad, elapsedSeconds) {
+  const squadPoint = getSquadMapPoint(squad);
+  if (!squadPoint) return;
+  let marker = memberMarkerState.get(student.id);
+  if (!marker) {
+    const point = getPointNearSquadMarker(squadPoint);
+    const node = document.createElement("span");
+    node.className = "member-map-marker";
+    memberMarkerLayer.append(node);
+    marker = { node, x: point.x, y: point.y, targetX: point.x, targetY: point.y, regionName: `潜伏-${squad.id}` };
+    memberMarkerState.set(student.id, marker);
+  }
+  marker.node.classList.add("hidden-squad");
+  if (marker.regionName !== `潜伏-${squad.id}` || Math.hypot(marker.x - squadPoint.x, marker.y - squadPoint.y) > 82) {
+    const point = getPointNearSquadMarker(squadPoint);
+    Object.assign(marker, { x: point.x, y: point.y, targetX: point.x, targetY: point.y, regionName: `潜伏-${squad.id}` });
+  }
+  if (Math.hypot(marker.targetX - marker.x, marker.targetY - marker.y) < 3) {
+    const target = getPointNearSquadMarker(squadPoint);
+    marker.targetX = target.x;
+    marker.targetY = target.y;
+  }
+  if (!paused && elapsedSeconds > 0) {
+    const dx = marker.targetX - marker.x;
+    const dy = marker.targetY - marker.y;
+    const distance = Math.hypot(dx, dy);
+    const speed = 4.5 * (0.9 + Math.min(timeSpeed, 5) * 0.05);
+    const step = Math.min(distance, speed * elapsedSeconds);
+    if (distance > 0) {
+      marker.x += (dx / distance) * step;
+      marker.y += (dy / distance) * step;
+    }
+  }
+  marker.node.style.left = `${marker.x}px`;
+  marker.node.style.top = `${marker.y}px`;
+}
+
+function getPointNearSquadMarker(point) {
+  const angle = Math.random() * Math.PI * 2;
+  const distance = randomInt(10, 42);
+  return {
+    x: clamp(point.x + Math.cos(angle) * distance, 0, campusMap.naturalWidth),
+    y: clamp(point.y + Math.sin(angle) * distance, 0, campusMap.naturalHeight),
+  };
+}
+
+function getStudentHiddenSquad(student) {
+  if (!student.squadId) return null;
+  const squad = actionSquads.find((candidate) => candidate.id === student.squadId);
+  return squad?.status === "潜伏" ? squad : null;
 }
 
 function getRandomNearbyPointInRegion(region, x, y) {
@@ -2857,9 +3586,18 @@ function updateKeyboardPan() {
 function shouldCaptureMapKeys(event) {
   if (!document.body.classList.contains("game-active")) return false;
   if (event.metaKey || event.ctrlKey || event.altKey) return false;
-  if (choosingSquadHeadquarters) return true;
+  if (choosingSquadHeadquarters || choosingActionTarget) return true;
+  if (event.target?.closest?.(".squad-map-marker")) return true;
+  if (event.target?.closest?.(".time-chip, #pauseToggle, #speedControl, #zoomValue")) return true;
   const tagName = event.target?.tagName?.toLowerCase();
   return !["input", "textarea", "select", "button"].includes(tagName);
+}
+
+function focusMapAfterUiAction() {
+  if (!document.body.classList.contains("game-active")) return;
+  window.requestAnimationFrame(() => {
+    mapViewport.focus({ preventScroll: true });
+  });
 }
 
 function shouldCaptureGlobalShortcut(event) {
@@ -2964,6 +3702,9 @@ function clearRegionSelection() {
   selectedRegion = null;
   regionPanel.hidden = true;
   regionMemberPanel.hidden = true;
+  regionActionList.hidden = true;
+  regionActionsToggle.classList.remove("expanded");
+  regionActionsToggle.setAttribute("aria-expanded", "false");
   hoverCard.hidden = true;
   hoveredRegion = null;
   clearHighlight();
@@ -2980,11 +3721,12 @@ function refreshRegionPanel() {
   regionFunction.textContent = region.role;
   regionSupport.textContent = `${support}%`;
   regionPressure.textContent = `${pressure}%`;
-  regionPatrol.textContent = region.patrol;
+  regionPatrol.textContent = region.patrolKnown === false ? "???" : region.patrol;
   regionMembersButton.textContent = `${organizationStudents.length} 人`;
   regionMembersButton.disabled = organizationStudents.length === 0;
   regionStudentCount.textContent = `${regionStudents.length} 人`;
   if (!regionMemberPanel.hidden) renderRegionMemberList(region);
+  if (!regionActionList.hidden) renderRegionActionList(region);
 }
 
 function getStudentsInRegion(regionName) {

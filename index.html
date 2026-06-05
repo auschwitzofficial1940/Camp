@@ -320,28 +320,50 @@
                 <dd id="regionStudentCount">--</dd>
               </div>
             </dl>
+            <div class="region-actions">
+              <button id="regionActionsToggle" class="region-actions-toggle" type="button" aria-expanded="false">
+                <span>行动</span>
+                <img id="regionActionsArrow" src="assets/icon/时间指针.png" alt="" />
+              </button>
+              <div id="regionActionList" class="region-action-list" hidden></div>
+            </div>
           </section>
         </aside>
 
         <aside id="squadInfoPanel" class="squad-info-panel" aria-label="行动小队信息" hidden>
           <section class="panel-card">
-            <div class="panel-title">
-              <img src="assets/icon/行动小队.png" alt="" />
-              <span>行动小队</span>
+            <div class="panel-title squad-info-title">
+              <span>
+                <img src="assets/icon/行动小队.png" alt="" />
+                行动小队
+              </span>
+              <button id="squadInfoEdit" class="squad-info-edit" type="button">编辑队伍</button>
             </div>
             <div class="squad-info-head">
               <span id="squadInfoFlag" class="squad-info-flag"></span>
               <div>
                 <h2 id="squadInfoName">小队</h2>
-                <p id="squadInfoStatus">状态：--</p>
+                <button id="squadInfoStatus" class="squad-status-button" type="button">状态：--</button>
               </div>
             </div>
+            <div id="squadStatusMenu" class="squad-status-menu" hidden></div>
             <dl class="squad-info-stats">
-              <div><dt>人数</dt><dd id="squadInfoCount">--</dd></div>
+              <div><dt>人数</dt><dd><button id="squadInfoCount" class="squad-info-count" type="button">--</button></dd></div>
               <div><dt>总部</dt><dd id="squadInfoHeadquarters">--</dd></div>
               <div><dt>稳定度</dt><dd id="squadInfoStability">--</dd></div>
               <div><dt>压力</dt><dd id="squadInfoPressure">--</dd></div>
             </dl>
+            <button id="squadInfoMove" class="squad-info-move" type="button">移动</button>
+          </section>
+        </aside>
+
+        <aside id="squadMemberPanel" class="squad-member-panel" aria-label="小队成员列表" hidden>
+          <section class="panel-card">
+            <div class="panel-title">
+              <img src="assets/icon/人数.png" alt="" />
+              <span id="squadMemberPanelTitle">小队成员</span>
+            </div>
+            <div id="squadInfoMembers" class="squad-info-members"></div>
           </section>
         </aside>
 
@@ -526,6 +548,17 @@
               <button id="cancelConfirm" class="confirm-cancel" type="button">取消</button>
               <button id="acceptConfirm" class="confirm-accept" type="button">确认</button>
             </div>
+          </div>
+        </section>
+
+        <section id="actionConfirmModal" class="action-confirm-modal" aria-label="区域行动确认" hidden>
+          <div class="action-confirm-card">
+            <div class="action-confirm-head">
+              <h2 id="actionConfirmTitle">行动</h2>
+              <button id="closeActionConfirm" type="button" aria-label="关闭行动窗口">×</button>
+            </div>
+            <p id="actionConfirmBody">你确定要执行行动吗？</p>
+            <div id="actionSquadList" class="action-squad-list"></div>
           </div>
         </section>
 
