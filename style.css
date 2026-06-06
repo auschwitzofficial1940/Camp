@@ -3318,6 +3318,71 @@ body.game-active:not(.time-paused) #gameSettings img {
   transform: translateY(0) scale(1);
 }
 
+.ending-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(rgba(15, 20, 18, 0.48), rgba(15, 20, 18, 0.64)),
+    rgba(15, 20, 18, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 360ms ease;
+  backdrop-filter: blur(7px);
+}
+
+.ending-screen.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ending-screen[hidden] {
+  display: none;
+}
+
+.ending-card {
+  width: min(520px, calc(100vw - 56px));
+  padding: 32px 34px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 24px;
+  background: rgba(250, 252, 246, 0.94);
+  color: var(--ink);
+  box-shadow: 0 28px 90px rgba(4, 9, 7, 0.38);
+  text-align: center;
+  transform: translateY(14px) scale(0.98);
+  transition: transform 360ms ease;
+}
+
+.ending-screen.open .ending-card {
+  transform: translateY(0) scale(1);
+}
+
+.ending-card p {
+  margin: 0 0 10px;
+  color: var(--green);
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: 0.18em;
+}
+
+.ending-card h2 {
+  margin: 0;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.05;
+}
+
+.ending-card span {
+  display: block;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.7;
+}
+
 .action-confirm-head {
   display: flex;
   align-items: center;
@@ -3629,10 +3694,11 @@ body.game-active:not(.time-paused) #gameSettings img {
 }
 
 .region-action-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 9px;
+  padding-left: 24px;
 }
 
 .region-action-list[hidden] {
@@ -3640,17 +3706,21 @@ body.game-active:not(.time-paused) #gameSettings img {
 }
 
 .region-action-button {
-  padding: 10px 8px;
+  width: 100%;
+  padding: 10px 14px;
   border: 1px solid rgba(40, 95, 78, 0.18);
   border-radius: 11px;
-  background: rgba(226, 238, 229, 0.76);
+  background: rgba(246, 248, 244, 0.72);
   color: var(--ink);
   cursor: pointer;
+  text-align: left;
   font-weight: 950;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.42);
 }
 
 .region-action-button:hover:not(:disabled) {
-  background: rgba(210, 230, 216, 0.96);
+  background: rgba(221, 235, 224, 0.94);
+  border-color: rgba(40, 95, 78, 0.3);
 }
 
 .region-action-button:disabled {

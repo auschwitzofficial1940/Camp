@@ -173,6 +173,10 @@ const actionConfirmTitle = document.getElementById("actionConfirmTitle");
 const actionConfirmBody = document.getElementById("actionConfirmBody");
 const actionSquadList = document.getElementById("actionSquadList");
 const closeActionConfirm = document.getElementById("closeActionConfirm");
+const endingScreen = document.getElementById("endingScreen");
+const endingType = document.getElementById("endingType");
+const endingTitle = document.getElementById("endingTitle");
+const endingBody = document.getElementById("endingBody");
 
 const indexImage = new Image();
 indexImage.src = "assets/索引图.png";
@@ -254,8 +258,11 @@ const PRELOAD_RESOURCES = [
 const menuMusic = new Audio(musicTracks[0].src);
 const gameMusic = new Audio();
 const DEFAULT_NAMES = {
+  fullNames: [],
   firstNames: ["James", "Mary", "Daniel", "Sarah", "Michael", "Linda"],
   lastNames: ["Smith", "Johnson", "Brown", "Garcia", "Wilson", "Martin"],
+  nameOrder: "first-last",
+  separator: " ",
 };
 const PERSONALITY_TEMPLATES = {
   勇敢: {
@@ -286,7 +293,7 @@ const PERSONALITY_TEMPLATES = {
     vision: [20, 30],
     stressResistance: "高",
   },
-  理想主义压力: {
+  理想主义: {
     literature: [30, 40],
     emergency: [20, 30],
     strength: [20, 35],
@@ -322,7 +329,7 @@ const INITIAL_GRADE_COUNTS = {
   12: [9, 9],
 };
 const CORE_MEMBER_DEFS = [
-  { name: "Hong Xixi", role: "我", grade: 11, personality: "理想主义压力", faction: "激进学生", trust: 100 },
+  { name: "Hong Xixi", role: "我", grade: 9, personality: "理想主义", faction: "激进学生", trust: 100 },
   { name: "Li Xinyu", role: "副主席", grade: 11, personality: "忠诚", faction: "激进学生", trust: 92 },
 ];
 const ORGANIZATION_ROLES = ["副主席", "宣传部长", "情报部长", "后勤部长", "成员"];
@@ -428,6 +435,7 @@ let dailyInviteAwarenessPenaltyApplied = false;
 let dailyInviteTrustPenaltyApplied = false;
 let pendingConfirmAction = null;
 let factionFame = 6;
+let gameEnded = false;
 const pressedKeys = new Set();
 let detailDrag = null;
 let activeMapImage = campusMap;
@@ -461,6 +469,7 @@ window.tpDebug = () => ({
   pendingApplications: mailHistory.filter((mail) => mail.status === "pending").length,
   mailHistory: mailHistory.length,
   actionSquads: actionSquads.length,
+  gameEnded,
   selectedRegion: selectedRegion?.name || "",
   regionPopulation: selectedRegion ? getStudentsInRegion(selectedRegion.name).length : 0,
   dailyInviteAttempts,
@@ -715,11 +724,13 @@ speedOptions.forEach((button) => {
 });
 
 function togglePause() {
+  if (gameEnded) return;
   playSound(pauseSound, 0.62);
   setPausedState(!paused);
 }
 
 function setTimeSpeed(speed) {
+  if (gameEnded) return;
   timeSpeed = [1, 2, 5].includes(speed) ? speed : 1;
   lastTimeSpeed = timeSpeed;
   setPausedState(false, { skipSound: true });
@@ -913,7 +924,7 @@ squadInfoEdit.addEventListener("click", () => {
 squadInfoStatus.addEventListener("click", () => {
   if (!selectedSquadInfoId) return;
   const squad = actionSquads.find((candidate) => candidate.id === selectedSquadInfoId);
-  if (squad?.currentAction) return;
+  if (squad?.currentAction || squad?.moving) return;
   renderSquadStatusMenu(selectedSquadInfoId);
   squadStatusMenu.hidden = !squadStatusMenu.hidden;
 });
@@ -1195,12 +1206,25 @@ async function loadNameData() {
     const response = await fetch("name.json");
     if (!response.ok) throw new Error("name.json load failed");
     const data = await response.json();
-    if (Array.isArray(data.firstNames) && Array.isArray(data.lastNames)) {
-      nameData = data;
-    }
+    const normalized = normalizeNameData(data);
+    if (normalized.fullNames.length || (normalized.firstNames.length && normalized.lastNames.length)) nameData = normalized;
   } catch {
     nameData = DEFAULT_NAMES;
   }
+}
+
+function normalizeNameData(data) {
+  return {
+    fullNames: getStringArray(data.fullNames || data.names),
+    firstNames: getStringArray(data.firstNames || data.givenNames),
+    lastNames: getStringArray(data.lastNames || data.familyNames),
+    nameOrder: data.nameOrder === "last-first" ? "last-first" : "first-last",
+    separator: typeof data.separator === "string" ? data.separator : " ",
+  };
+}
+
+function getStringArray(value) {
+  return Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 }
 
 function initializeStudentPopulation() {
@@ -1210,6 +1234,11 @@ function initializeStudentPopulation() {
   draftSquad = null;
   resources.phones = 10;
   managementAwareness = 0;
+  gameEnded = false;
+  if (endingScreen) {
+    endingScreen.classList.remove("open");
+    endingScreen.hidden = true;
+  }
   bribeUsedDayKey = null;
   resetDailyInviteCounters();
   Object.entries(INITIAL_GRADE_COUNTS).forEach(([gradeText, range]) => {
@@ -1249,10 +1278,10 @@ function createCoreMember(member) {
 }
 
 function createStudent(grade, options = {}) {
-  const personalityName = options.forcePersonality || randomFrom(Object.keys(PERSONALITY_TEMPLATES));
+  const personalityName = options.forcePersonality || options.personality || randomFrom(Object.keys(PERSONALITY_TEMPLATES));
   const template = PERSONALITY_TEMPLATES[personalityName];
-  const faction = options.forceFaction || randomFrom(FACTIONS);
-  const trust = options.trustRange ? randomInt(...options.trustRange) : generateTrustForFaction(faction);
+  const faction = options.forceFaction || options.faction || randomFrom(FACTIONS);
+  const trust = options.trustRange ? randomInt(...options.trustRange) : Number.isFinite(options.trust) ? clamp(options.trust, 0, 100) : generateTrustForFaction(faction);
   const abilities = {
     literature: randomInt(...template.literature),
     emergency: randomInt(...template.emergency),
@@ -1262,7 +1291,7 @@ function createStudent(grade, options = {}) {
 
   return {
     id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
-    name: generateStudentName(),
+    name: options.name || generateStudentName(),
     grade,
     personality: personalityName,
     faction,
@@ -1284,7 +1313,11 @@ function generateInitialStress(grade) {
 }
 
 function generateStudentName() {
-  return `${randomFrom(nameData.firstNames)} ${randomFrom(nameData.lastNames)}`;
+  if (nameData.fullNames?.length) return randomFrom(nameData.fullNames);
+  const first = randomFrom(nameData.firstNames);
+  const last = randomFrom(nameData.lastNames);
+  const separator = nameData.separator ?? " ";
+  return nameData.nameOrder === "last-first" ? `${last}${separator}${first}` : `${first}${separator}${last}`;
 }
 
 function generateTrustForFaction(faction) {
@@ -1293,7 +1326,7 @@ function generateTrustForFaction(faction) {
 }
 
 function updateGameClock() {
-  if (!document.body.classList.contains("game-active")) return;
+  if (!document.body.classList.contains("game-active") || gameEnded) return;
 
   const now = performance.now();
   if (gameTime.lastTickAt === null) {
@@ -1357,6 +1390,7 @@ function advanceAcademicYear() {
   gameTime.year += 1;
   const graduatingIds = new Set(allStudents.filter((student) => student.grade >= 12).map((student) => student.id));
   const graduates = graduatingIds.size;
+  const playerGraduates = playerMembers.some((student) => isPlayerAvatar(student) && graduatingIds.has(student.id));
 
   allStudents = allStudents.filter((student) => !graduatingIds.has(student.id));
   playerMembers = playerMembers.filter((student) => !graduatingIds.has(student.id));
@@ -1375,6 +1409,26 @@ function advanceAcademicYear() {
 
   appendLog(`学年更替：${graduates} 名 12 年级学生离校，全体升年级，6-10 年级新增 ${newcomers} 名学生。`);
   updateMemberUi();
+  if (playerGraduates) {
+    endGame("draw", "任期结束", "玩家代表已从 12 年级毕业离校。学生自治尚未建立，管理层也未彻底瓦解，校园局势进入平局。");
+  }
+}
+
+function endGame(result, title, body) {
+  if (gameEnded) return;
+  gameEnded = true;
+  paused = true;
+  document.body.classList.add("time-paused");
+  pauseToggle.setAttribute("aria-label", "继续");
+  pauseToggle.dataset.label = "继续";
+  pauseIcon.src = "assets/icon/开始.png";
+  updateSpeedUi();
+  endingType.textContent = result === "draw" ? "平局" : result;
+  endingTitle.textContent = title;
+  endingBody.textContent = body;
+  endingScreen.hidden = false;
+  window.requestAnimationFrame(() => endingScreen.classList.add("open"));
+  appendLog(`${endingType.textContent}：${title}。`);
 }
 
 function applyDailyStudentDrift() {
@@ -2307,7 +2361,7 @@ function processSquadActions() {
 function renderSquadStatusMenu(squadId) {
   const squad = actionSquads.find((candidate) => candidate.id === squadId);
   if (!squad) return;
-  if (squad.currentAction) {
+  if (squad.currentAction || squad.moving) {
     squadStatusMenu.hidden = true;
     return;
   }
@@ -2325,7 +2379,7 @@ function renderSquadStatusMenu(squadId) {
 
 function requestSquadStatusChange(squadId, status) {
   const squad = actionSquads.find((candidate) => candidate.id === squadId);
-  if (!squad || squad.status === status || squad.currentAction) return;
+  if (!squad || squad.status === status || squad.currentAction || squad.moving) return;
   squadStatusMenu.hidden = true;
   openConfirmModal(
     `你确定要将「${squad.name}」的状态设置为「${status}」吗？<br><span class="confirm-note">${SQUAD_STATUS_DESCRIPTIONS[status]}</span>`,
@@ -2335,22 +2389,11 @@ function requestSquadStatusChange(squadId, status) {
 
 function setSquadStatus(squadId, status) {
   const squad = actionSquads.find((candidate) => candidate.id === squadId);
-  if (!squad || !SQUAD_STATUSES.includes(status) || squad.currentAction) return;
+  if (!squad || !SQUAD_STATUSES.includes(status) || squad.currentAction || squad.moving) return;
   squad.status = status;
   if (status !== "潜伏") squad.hiddenDays = 0;
   if (status === "分散") squad.fieldPosition = null;
-  if (status === "分散" && squad.moving && squad.movement) {
-    squad.headquarters = {
-      region: squad.movement.targetRegion,
-      x: Math.round(squad.movement.targetX),
-      y: Math.round(squad.movement.targetY),
-    };
-    squad.fieldPosition = null;
-    clearSquadMovement(squad);
-    appendLog(`${squad.name} 转为分散状态，总部迁移立即完成。`);
-  } else {
-    appendLog(`${squad.name} 的状态切换为${status}。`);
-  }
+  appendLog(`${squad.name} 的状态切换为${status}。`);
   syncSquadMemberLocations(squad);
   updateStudentSchedules(true);
   renderSquadMapMarkers();
@@ -3313,8 +3356,8 @@ function showSquadInfoPanel(squadId) {
   appendSquadFlagVisual(squadInfoFlag, squad);
   squadInfoName.textContent = squad.name;
   squadInfoStatus.textContent = `状态：${squad.currentAction ? `${squad.currentAction.name}中` : squad.status || "分散"}${squad.moving ? " / 移动中" : ""}`;
-  squadInfoStatus.disabled = Boolean(squad.currentAction);
-  squadInfoStatus.title = squad.currentAction ? "行动进行中，无法切换队伍状态" : "切换队伍状态";
+  squadInfoStatus.disabled = Boolean(squad.currentAction || squad.moving);
+  squadInfoStatus.title = squad.currentAction ? "行动进行中，无法切换队伍状态" : squad.moving ? "移动中，无法切换队伍状态" : "切换队伍状态";
   squadInfoCount.textContent = `${squad.members.length} 人`;
   squadInfoHeadquarters.textContent = squad.headquarters?.region || "--";
   squadInfoStability.textContent = `${values.stability}%`;
