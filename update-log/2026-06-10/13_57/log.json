@@ -1,0 +1,34 @@
+{
+  "id": "13_57",
+  "date": "2026-06-10",
+  "time": "13:57",
+  "datetime": "2026-06-10T13:57:00+09:00",
+  "layer": 1,
+  "title": "V1.6.1 SEO 基础优化",
+  "sections": [
+    {
+      "heading": "SEO 基础优化",
+      "items": [
+        "检查并整理网站现有 SEO 配置。",
+        "保留并兼容项目中已有的 Meta 信息。",
+        "覆盖 Title、Description、Keywords、Robots、Canonical、Open Graph 与 Twitter Card 等核心标签。"
+      ]
+    },
+    {
+      "heading": "搜索展示",
+      "items": [
+        "优化网站标题结构，让搜索引擎更容易理解页面内容。",
+        "强化校园政治、策略模拟、网页游戏等核心关键词。",
+        "改善搜索结果与社交平台分享时的展示效果。"
+      ]
+    },
+    {
+      "heading": "兼容性",
+      "items": [
+        "不影响现有页面功能与样式。",
+        "保持与 Google、Bing 及主流社交平台分享卡片兼容。",
+        "为后续 Sitemap、Robots.txt 与收录优化做准备。"
+      ]
+    }
+  ]
+}

@@ -48,6 +48,36 @@
       </nav>
     </section>
 
+    <nav id="quickDock" class="quick-dock" aria-label="主页快捷菜单">
+      <div class="quick-dock-panel" aria-hidden="true">
+        <button class="quick-dock-item" type="button" aria-label="百科" data-label="百科">
+          <img src="assets/icon/wiki.png" alt="" />
+        </button>
+        <button id="quickDockUpdate" class="quick-dock-item" type="button" aria-label="更新日志" data-label="更新日志">
+          <img src="assets/icon/update.png" alt="" />
+        </button>
+        <button class="quick-dock-item" type="button" aria-label="报告问题" data-label="报告问题">
+          <img src="assets/icon/bug.png" alt="" />
+        </button>
+      </div>
+      <button id="quickDockToggle" class="quick-dock-toggle" type="button" aria-label="展开快捷菜单" aria-expanded="false">
+        <img src="assets/icon/收起.png" alt="" />
+      </button>
+    </nav>
+
+    <section id="updateLogOverlay" class="update-log-overlay" aria-label="更新日志" hidden>
+      <article class="update-log-modal" role="dialog" aria-modal="true" aria-labelledby="updateLogTitle">
+        <button id="closeUpdateLog" class="update-log-close" type="button" aria-label="关闭更新日志">×</button>
+        <header class="update-log-header">
+          <span>SYSTEM CHANGELOG</span>
+          <h2 id="updateLogTitle">版本档案</h2>
+        </header>
+        <div id="updateLogContent" class="update-log-content"></div>
+      </article>
+    </section>
+
+    <div id="globalVersionBadge" class="global-version-badge" aria-label="当前版本">V1.0.0</div>
+
     <section id="factionSelect" class="faction-select" aria-label="选择阵营" hidden>
       <div class="faction-header">
         <h2>选择你的阵营</h2>
@@ -607,7 +637,3 @@
     <script src="game.js"></script>
   </body>
 </html>
-
-
-
-

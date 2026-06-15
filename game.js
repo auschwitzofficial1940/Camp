@@ -173,6 +173,13 @@ const actionConfirmTitle = document.getElementById("actionConfirmTitle");
 const actionConfirmBody = document.getElementById("actionConfirmBody");
 const actionSquadList = document.getElementById("actionSquadList");
 const closeActionConfirm = document.getElementById("closeActionConfirm");
+const quickDock = document.getElementById("quickDock");
+const quickDockToggle = document.getElementById("quickDockToggle");
+const quickDockUpdate = document.getElementById("quickDockUpdate");
+const updateLogOverlay = document.getElementById("updateLogOverlay");
+const updateLogContent = document.getElementById("updateLogContent");
+const closeUpdateLogButton = document.getElementById("closeUpdateLog");
+const globalVersionBadge = document.getElementById("globalVersionBadge");
 const endingScreen = document.getElementById("endingScreen");
 const endingType = document.getElementById("endingType");
 const endingTitle = document.getElementById("endingTitle");
@@ -211,6 +218,7 @@ const PRELOAD_RESOURCES = [
   "assets/老师阵营logo.png",
   "assets/老师代表.png",
   "assets/image/云朵.png",
+  "assets/image/火箭发射.gif",
   "assets/icon/随机.png",
   "assets/icon/管理.png",
   "assets/icon/行动小队.png",
@@ -238,6 +246,9 @@ const PRELOAD_RESOURCES = [
   "assets/icon/邮件.png",
   "assets/icon/开始.png",
   "assets/icon/收起.png",
+  "assets/icon/wiki.png",
+  "assets/icon/update.png",
+  "assets/icon/bug.png",
   "assets/icon/稳定度.png",
   "assets/icon/钱.png",
   "assets/icon/禁止.png",
@@ -348,6 +359,418 @@ const REGION_ACTIONS = {
   集会: { durationMs: REAL_MS_PER_GAME_DAY / 2, cooldownMs: REAL_MS_PER_GAME_DAY * 3 },
   休息: { durationMs: REAL_MS_PER_GAME_DAY, cooldownMs: REAL_MS_PER_GAME_DAY },
 };
+const FALLBACK_UPDATE_LOG_DATES = [
+  {
+    date: "2026-06-15",
+    label: "2026年6月15日",
+    timezone: "UTC+9",
+    latest: true,
+    updateCount: 1,
+    logs: [
+      {
+        id: "09_45",
+        date: "2026-06-15",
+        time: "09:45",
+        datetime: "2026-06-15T09:45:00+09:00",
+        layer: 1,
+        title: "V1.6.2 主页快捷菜单与更新日志系统",
+        latest: true,
+        sections: [
+          { heading: "主页快捷菜单", items: ["新增主页右下角伸展快捷菜单。", "快捷菜单仅在主页显示，游戏内、阵营选择、设置和制作人员页面不会显示。", "当前提供百科、更新日志、报告问题三个入口，并接入 hover 提示与 UI 音效。"] },
+          { heading: "更新日志弹窗", items: ["点击更新日志入口后，会在当前主页打开游戏风格弹窗。", "支持三层 URL、Esc 逐级返回、浏览器返回按钮，以及 X / 背景直接关闭。", "新增火箭 GIF 时间线视觉效果。"] },
+          { heading: "外置 JSON 系统", items: ["更新日志数据拆分为真实 JSON 文件结构。", "支持按日期与时间点读取详情，并兼容 items 与 sections 两种内容格式。", "加入缓存与 fallback 机制，读取失败时不会导致界面崩溃。"] },
+          { heading: "内容与 UI", items: ["录入从 V1.0.0 到最新版本的真实更新内容。", "隐藏原生滚动条，同时保留滚动能力。", "修复时间线点击后滚动位置跳回顶部的问题，并优化文字排版稳定性。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-10",
+    label: "2026年6月10日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "13_57",
+        date: "2026-06-10",
+        time: "13:57",
+        datetime: "2026-06-10T13:57:00+09:00",
+        layer: 1,
+        title: "V1.6.1 SEO 基础优化",
+        latest: true,
+        sections: [
+          { heading: "SEO 基础优化", items: ["检查并整理网站现有 SEO 配置。", "保留并兼容项目中已有的 Meta 信息。", "覆盖 Title、Description、Keywords、Robots、Canonical、Open Graph 与 Twitter Card 等核心标签。"] },
+          { heading: "搜索展示", items: ["优化网站标题结构，让搜索引擎更容易理解页面内容。", "强化校园政治、策略模拟、网页游戏等核心关键词。", "改善搜索结果与社交平台分享时的展示效果。"] },
+          { heading: "兼容性", items: ["不影响现有页面功能与样式。", "保持与 Google、Bing 及主流社交平台分享卡片兼容。", "为后续 Sitemap、Robots.txt 与收录优化做准备。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-06",
+    label: "2026年6月6日",
+    timezone: "UTC+9",
+    latest: true,
+    updateCount: 1,
+    logs: [
+      {
+        id: "00_30",
+        date: "2026-06-06",
+        time: "00:30",
+        datetime: "2026-06-06T00:30:00+09:00",
+        layer: 1,
+        title: "V1.6.0 区域行动系统",
+        latest: true,
+        sections: [
+          {
+            heading: "区域行动系统",
+            items: ["新增地块信息面板行动折叠栏。", "支持宣传、招募、侦查、集会、休息五种区域行动。", "不满足条件的行动会自动置灰显示。", "行动下达前会弹出确认窗口，并按本地块空闲、外地块空闲、忙碌不可用排序显示可选小队。"],
+          },
+          {
+            heading: "小队行动规则",
+            items: ["分散状态小队无法执行区域行动。", "仅集合或潜伏状态且空闲的小队可接受任务。", "若小队不在目标地块，会先移动至指定区域后再开始行动。", "行动期间小队进入忙碌状态并显示红色标记。", "地图上新增行动进度条显示当前任务进展。"],
+          },
+          {
+            heading: "行动时间机制",
+            items: ["行动持续时间与冷却时间均采用实时计时。", "不再依赖每日结算刷新。"],
+          },
+          {
+            heading: "系统联动",
+            items: ["宣传、招募、侦查、集会、休息已接入现有游戏系统。", "可影响知名度、管理层察觉度、学生信任度、压力等属性。", "行动结果会记录到游戏日志中。"],
+          },
+          {
+            heading: "地块支持率",
+            items: ["地块支持率改为基于该区域真实学生信任度平均值动态计算。", "支持率会随学生态度变化实时更新。"],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-05",
+    label: "2026年6月5日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "18_20",
+        date: "2026-06-05",
+        time: "18:20",
+        datetime: "2026-06-05T18:20:00+09:00",
+        layer: 1,
+        title: "V1.5.1 行动小队状态系统",
+        latest: true,
+        sections: [
+          {
+            heading: "行动小队状态系统",
+            items: ["新增分散 / 集合 / 潜伏三种小队状态。", "小队信息面板状态栏改为可切换按钮。", "状态切换时会显示确认窗口及对应说明。", "当前状态会在下拉菜单中标记为“当前”。"],
+          },
+          {
+            heading: "状态效果",
+            items: ["分散：成员按正常学生日程活动，总部迁移立即完成。", "集合：成员脱离日程，小队能力提升至100%。", "潜伏：成员脱离日程，小队行动能力降至60%，稳定度与压力保持不变。", "潜伏超过3天后，每天增加1点管理层察觉度。"],
+          },
+          {
+            heading: "小队移动机制",
+            items: ["集合或潜伏状态下迁移总部时，不再瞬间移动。", "小队会进入“移动中”状态，抵达后自动完成迁移。"],
+          },
+          {
+            heading: "地图显示更新",
+            items: ["分散状态使用原队旗标记。", "集合状态队旗改为菱形标记。", "潜伏状态队旗改为三角形标记。", "小队移动期间仅显示状态图标，暂时隐藏队名标签。", "抵达目的地后恢复完整队伍标记显示。"],
+          },
+          {
+            heading: "兼容性与优化",
+            items: ["兼容编辑队伍功能。", "兼容总部选择与迁移系统。", "兼容地图小队标记显示。", "兼容地块人数统计与刷新逻辑。"],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-04",
+    label: "2026年6月4日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "00_46",
+        date: "2026-06-04",
+        time: "00:46",
+        datetime: "2026-06-04T00:46:00+09:00",
+        layer: 1,
+        title: "V1.5.0 行动小队地图系统",
+        latest: true,
+        sections: [
+          { heading: "总部选择与迁移", items: ["创建小队时新增地图总部选择模式。", "编辑小队时可重新迁移总部，并继承有效地块限制。", "修复地图边缘区域难以选择的问题。"] },
+          { heading: "地图显示与交互", items: ["地图缩放后会显示行动小队标记和组织成员位置。", "小队标记支持点击查看详情，并优先于地块交互。", "优化高倍率缩放下的标记大小与队名显示。"] },
+          { heading: "面板与焦点", items: ["小队信息面板与地块面板互斥显示。", "Esc 支持按层级关闭窗口与取消选中。", "优化地图焦点逻辑，选择模式下可直接使用 WASD。"] },
+          { heading: "资源预加载", items: ["新增启动 Loading Screen。", "启动时预加载关键图片、图标、音效、音乐和 name.json。", "部分资源加载失败时会提示玩家，并允许继续进入。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-03",
+    label: "2026年6月3日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "13_20",
+        date: "2026-06-03",
+        time: "13:20",
+        datetime: "2026-06-03T13:20:00+09:00",
+        layer: 1,
+        title: "V1.4.0 时间快进与学生 AI",
+        latest: true,
+        sections: [
+          { heading: "学生日程 AI", items: ["学生会根据年级和当前时间段自动分布到不同地块。", "组织成员在小队集合前仍按普通学生日程活动。", "日程 AI 只在时间段切换时重新分配，减少地图乱跳。"] },
+          { heading: "地块信息面板", items: ["新增学生人数统计。", "组织学生列表改为独立面板，并可继续查看人员详情。", "地块支持率与压力改为根据当前区域学生动态计算。"] },
+          { heading: "时间速度系统", items: ["右上角新增 S / 1X / 2X / 5X 时间速度 UI。", "支持 Space 暂停与数字键切换速度。", "时间推进现在会根据速度档位变化。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-06-01",
+    label: "2026年6月1日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "20_30",
+        date: "2026-06-01",
+        time: "20:30",
+        datetime: "2026-06-01T20:30:00+09:00",
+        layer: 1,
+        title: "V1.3.6 顶部 hover 优化",
+        latest: true,
+        items: ["进一步修复顶部 HUD hover 菜单换行与层级问题。", "边缘项目会调整弹出方向，避免内容跑出屏幕。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-29",
+    label: "2026年5月29日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "14_55",
+        date: "2026-05-29",
+        time: "14:55",
+        datetime: "2026-05-29T14:55:00+09:00",
+        layer: 1,
+        title: "V1.3.5 顶部 hover 修复",
+        latest: true,
+        items: ["修复顶部 HUD hover 菜单文字溢出问题。", "hover 菜单现在会自动换行，并根据内容撑开高度。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-28",
+    label: "2026年5月28日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "03_15",
+        date: "2026-05-28",
+        time: "03:15",
+        datetime: "2026-05-28T03:15:00+09:00",
+        layer: 1,
+        title: "V1.3.4 顶部 HUD 数据化",
+        latest: true,
+        items: ["顶部 HUD 的压力、稳定度、学生支持、知名度和察觉接入真实数据。", "所有进度条项目新增 hover 说明，显示当前数值和简短解释。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-27",
+    label: "2026年5月27日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 2,
+    logs: [
+      {
+        id: "23_49",
+        date: "2026-05-27",
+        time: "23:49",
+        datetime: "2026-05-27T23:49:00+09:00",
+        layer: 2,
+        title: "V1.3.3 压力事件调整",
+        latest: true,
+        items: ["重做压力达到极限后的事件规则。", "失踪事件改为未知持续时间，并在详情面板显示 MISSING 标记。", "Final Exam Week 现在会影响全体学生。"],
+      },
+      {
+        id: "11_46",
+        date: "2026-05-27",
+        time: "11:46",
+        datetime: "2026-05-27T11:46:00+09:00",
+        layer: 1,
+        title: "V1.3.2 行动小队 UI",
+        latest: false,
+        items: ["行动小队创建 / 编辑面板的学生信息框新增可信度与压力进度条。", "玩家现在能更直观判断成员是否适合加入队伍。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-26",
+    label: "2026年5月26日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "09_00",
+        date: "2026-05-26",
+        time: "09:00",
+        datetime: "2026-05-26T09:00:00+09:00",
+        layer: 1,
+        title: "V1.3.1 压力显示优化",
+        latest: true,
+        items: ["学生详情中的压力抗性改为低 / 中 / 高显示。", "新增压力抗性 hover 说明，让玩家更容易理解恢复与减压效果。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-24",
+    label: "2026年5月24日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "17_14",
+        date: "2026-05-24",
+        time: "17:14",
+        datetime: "2026-05-24T17:14:00+09:00",
+        layer: 1,
+        title: "V1.3.0 压力值系统",
+        latest: true,
+        sections: [
+          { heading: "压力系统", items: ["新增学生个人压力值，不同年级拥有不同初始压力范围。", "压力会影响学生能力表现，并参与后续事件判定。"] },
+          { heading: "压力抗性", items: ["新增低 / 中 / 高压力抗性。", "压力抗性会影响压力增长与每日自然恢复。"] },
+          { heading: "考试与状态", items: ["新增 Final Exam Week，期末阶段会提高全体学生压力。", "压力过高会让学生能力下降，并同步影响行动小队平均能力。"] },
+          { heading: "崩溃事件", items: ["学生压力达到极限时可能退出组织、退出小队或暂时失踪。", "压力系统已接入学生能力与组织行动效率。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-05-23",
+    label: "2026年5月23日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 3,
+    logs: [
+      {
+        id: "16_40",
+        date: "2026-05-23",
+        time: "16:40",
+        datetime: "2026-05-23T16:40:00+09:00",
+        layer: 3,
+        title: "V1.2.2 学生能力图标",
+        latest: true,
+        items: ["小队能力图标统一到行动小队面板中。", "创建 / 编辑队伍时，学生详情中的能力也会显示对应图标。"],
+      },
+      {
+        id: "09_00",
+        date: "2026-05-23",
+        time: "09:00",
+        datetime: "2026-05-23T09:00:00+09:00",
+        layer: 2,
+        title: "V1.2.1 时间快捷键与音效",
+        latest: false,
+        items: ["新增 Space 暂停 / 继续快捷键，并同步到时间系统。", "暂停、创建队伍和更改小队职位等操作接入对应 UI 音效。"],
+      },
+      {
+        id: "00_10",
+        date: "2026-05-23",
+        time: "00:10",
+        datetime: "2026-05-23T00:10:00+09:00",
+        layer: 1,
+        title: "V1.2.0 创建条件优化",
+        latest: false,
+        sections: [
+          { heading: "创建条件", items: ["创建 / 编辑小队现在需要队名、成员和队长。", "灰色按钮可 hover 查看尚未满足的条件。", "队名重复时会明确显示队名已存在。"] },
+          { heading: "取消编辑", items: ["创建或编辑小队时按 Esc 会取消本次操作。", "编辑取消后，原队伍会保持上一次保存状态。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-05-22",
+    label: "2026年5月22日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "11_50",
+        date: "2026-05-22",
+        time: "11:50",
+        datetime: "2026-05-22T11:50:00+09:00",
+        layer: 1,
+        title: "V1.1.1 小队数值 UI",
+        latest: true,
+        items: ["创建小队左侧信息栏加入人数、稳定度、压力和小队能力图标。", "小队数值面板改为更统一的小圆角卡片风格。"],
+      },
+    ],
+  },
+  {
+    date: "2026-05-21",
+    label: "2026年5月21日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "23_22",
+        date: "2026-05-21",
+        time: "23:22",
+        datetime: "2026-05-21T23:22:00+09:00",
+        layer: 1,
+        title: "V1.1.0 行动小队编辑",
+        latest: true,
+        sections: [
+          { heading: "队伍管理", items: ["已创建小队支持右键编辑与解散。", "编辑队伍可修改名称、队旗、成员和职位。", "队名现在不能重复。"] },
+          { heading: "创建窗口优化", items: ["创建 / 编辑窗口改为固定高度，内部可滚动。", "已在其他小队的学生会排序到底部并标记为不可用。", "学生详情改为独立弹窗，避免挤占组队页面。"] },
+          { heading: "小队列表", items: ["小队卡片新增人数、创建日期、存在天数。", "稳定度、压力和主要能力现在以更清晰的卡片信息展示。"] },
+        ],
+      },
+    ],
+  },
+  {
+    date: "2026-05-20",
+    label: "2026年5月20日",
+    timezone: "UTC+9",
+    latest: false,
+    updateCount: 1,
+    logs: [
+      {
+        id: "14_00",
+        date: "2026-05-20",
+        time: "14:00",
+        datetime: "2026-05-20T14:00:00+09:00",
+        layer: 1,
+        title: "V1.0.0 行动小队",
+        latest: true,
+        sections: [
+          { heading: "行动小队基础", items: ["新增左侧行动小队菜单。", "玩家可以创建新的行动小队，并在居中弹窗中配置队伍。", "小队会记录创建日期和已存在天数。"] },
+          { heading: "队伍创建", items: ["支持设置队旗、队名和小队成员。", "新增队长、宣传员、侦查员、成员四种小队职位。", "创建队伍需要至少一名学生和一名队长。"] },
+          { heading: "成员选择", items: ["组织成员可加入编队，已选成员会高亮显示。", "已在其他小队的成员会标记为不可用。", "成员详情会显示所属小队。"] },
+        ],
+      },
+    ],
+  },
+];
 const STRESS_RESISTANCE_RULES = {
   低: { gainMultiplier: 0.9, dailyRecovery: 1 },
   中: { gainMultiplier: 0.75, dailyRecovery: 2 },
@@ -436,6 +859,20 @@ let dailyInviteTrustPenaltyApplied = false;
 let pendingConfirmAction = null;
 let factionFame = 6;
 let gameEnded = false;
+const updateLogState = {
+  open: false,
+  view: "overview",
+  date: null,
+  logId: null,
+  railScrollTop: 0,
+};
+const updateLogCache = {
+  manifest: null,
+  days: new Map(),
+  details: new Map(),
+  failed: false,
+  errorMessage: "",
+};
 const pressedKeys = new Set();
 let detailDrag = null;
 let activeMapImage = campusMap;
@@ -458,6 +895,8 @@ document.body.classList.add("loading-active", "menu-active");
 setupUiAudio();
 setupMenuMusic();
 setupMenuIdle();
+updateGlobalVersionBadge();
+refreshGlobalVersionFromLogs();
 preloadStartupResources();
 window.tpDebug = () => ({
   paused,
@@ -704,6 +1143,32 @@ expandLog.addEventListener("click", () => {
   eventLog.classList.remove("collapsed");
   expandLog.hidden = true;
 });
+
+quickDockToggle.addEventListener("click", () => {
+  const expanded = !quickDock.classList.contains("open");
+  quickDock.classList.toggle("open", expanded);
+  quickDock.classList.remove("pop");
+  quickDock.querySelector(".quick-dock-panel")?.setAttribute("aria-hidden", String(!expanded));
+  quickDockToggle.setAttribute("aria-expanded", String(expanded));
+  quickDockToggle.setAttribute("aria-label", expanded ? "收起快捷菜单" : "展开快捷菜单");
+  void quickDock.offsetWidth;
+  quickDock.classList.add("pop");
+  window.setTimeout(() => quickDock.classList.remove("pop"), 460);
+});
+
+quickDockUpdate.addEventListener("click", () => {
+  openUpdateLog();
+});
+
+closeUpdateLogButton.addEventListener("click", () => {
+  closeUpdateLog();
+});
+
+updateLogOverlay.addEventListener("click", (event) => {
+  if (event.target === updateLogOverlay) closeUpdateLog();
+});
+
+window.addEventListener("popstate", syncUpdateLogFromPath);
 
 pauseToggle.addEventListener("click", () => {
   togglePause();
@@ -1738,7 +2203,495 @@ function closeSquadCreateModal() {
   if (!squadPanel.hidden) squadButton.focus();
 }
 
+function openUpdateLog() {
+  navigateUpdateLogOverview();
+}
+
+function closeUpdateLog({ updateUrl = true } = {}) {
+  updateLogState.open = false;
+  updateLogState.view = "overview";
+  updateLogState.date = null;
+  updateLogState.logId = null;
+  updateLogState.railScrollTop = 0;
+  updateLogOverlay.classList.remove("open");
+  window.setTimeout(() => {
+    if (!updateLogState.open) updateLogOverlay.hidden = true;
+  }, 220);
+  if (updateUrl) history.replaceState({}, "", "/");
+}
+
+async function navigateUpdateLogOverview({ replace = false } = {}) {
+  updateLogState.open = true;
+  updateLogState.view = "overview";
+  updateLogState.date = null;
+  updateLogState.logId = null;
+  setUpdateLogPath("/update-log", replace);
+  await renderUpdateLog();
+}
+
+async function navigateUpdateLogDay(date, { replace = false } = {}) {
+  const day = await loadUpdateLogDay(date);
+  if (!day) {
+    await navigateUpdateLogOverview({ replace: true });
+    return;
+  }
+  updateLogState.open = true;
+  updateLogState.view = "day";
+  updateLogState.date = day.date;
+  updateLogState.logId = null;
+  setUpdateLogPath(`/update-log/${day.date}/`, replace);
+  await renderUpdateLog();
+}
+
+async function navigateUpdateLogDetail(date, logId, { replace = false } = {}) {
+  const log = await loadUpdateLogDetail(date, logId);
+  if (!log) {
+    await navigateUpdateLogDay(date, { replace: true });
+    return;
+  }
+  updateLogState.open = true;
+  updateLogState.view = "detail";
+  updateLogState.date = date;
+  updateLogState.logId = logId;
+  setUpdateLogPath(`/update-log/${date}/${logId}/`, replace);
+  await renderUpdateLog();
+}
+
+function setUpdateLogPath(path, replace = false) {
+  if (window.location.pathname === path) return;
+  const method = replace ? "replaceState" : "pushState";
+  history[method]({}, "", path);
+}
+
+async function renderUpdateLog() {
+  rememberUpdateLogRailScroll();
+  updateLogOverlay.hidden = false;
+  requestAnimationFrame(() => updateLogOverlay.classList.add("open"));
+  updateLogContent.replaceChildren();
+  renderUpdateLogLoading();
+  try {
+    if (updateLogState.view === "day") {
+      await renderUpdateLogDay(updateLogState.date);
+      return;
+    }
+    if (updateLogState.view === "detail") {
+      await renderUpdateLogDetail(updateLogState.date, updateLogState.logId);
+      return;
+    }
+    await renderUpdateLogOverview();
+  } catch (error) {
+    console.warn("Update log render failed:", error);
+    renderUpdateLogError("更新日志加载失败，请稍后再试。");
+  }
+}
+
+async function renderUpdateLogOverview() {
+  const manifest = await loadUpdateLogManifest();
+  await Promise.all((manifest.dates || []).map((day) => loadUpdateLogDay(day.date)));
+  const layout = createUpdateLogLayout();
+  const rocket = document.createElement("div");
+  rocket.className = "rocket-node";
+  const rocketImage = document.createElement("img");
+  rocketImage.src = "assets/image/火箭发射.gif";
+  rocketImage.alt = "更新日志启动";
+  rocketImage.addEventListener("error", () => {
+    rocketImage.replaceWith(createRocketFallback());
+  });
+  rocket.append(rocketImage);
+  const timeline = createDateTimeline();
+  timeline.classList.add("connected-start");
+  layout.rail.append(rocket, timeline);
+
+  const eyebrow = createTextElement("p", "update-panel-eyebrow", "UPDATE ARCHIVE");
+  const title = createTextElement("h3", "update-panel-title", "版本档案");
+  const copy = createTextElement("p", "update-panel-copy", "选择左侧日期查看当日更新。这里记录《剑拔弩张》的系统变化、功能追加和重要修复。");
+  layout.main.append(eyebrow, title);
+  appendUpdateLogFallbackNotice(layout.main);
+  layout.main.append(copy);
+  mountUpdateLogLayout(layout.root);
+}
+
+async function renderUpdateLogDay(date) {
+  const day = await loadUpdateLogDay(date);
+  if (!day) return;
+  const layout = createUpdateLogLayout();
+  layout.rail.append(createDateTimeline(date));
+
+  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${day.label} ${day.timezone}`);
+  const title = createTextElement("h3", "update-panel-title", "当日更新节点");
+  const copy = createTextElement("p", "update-panel-copy", "选择一个时间点查看详细更新说明。当天记录按时间从新到旧排列。");
+  layout.main.append(eyebrow, title);
+  appendUpdateLogFallbackNotice(layout.main);
+  layout.main.append(copy, createLogTimeline(day));
+  mountUpdateLogLayout(layout.root);
+}
+
+async function renderUpdateLogDetail(date, logId) {
+  const day = await loadUpdateLogDay(date);
+  const log = await loadUpdateLogDetail(date, logId);
+  if (!day || !log) return;
+  const layout = createUpdateLogLayout();
+  layout.rail.append(createLogTimeline(day, logId));
+
+  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${day.label} ${log.time} ${day.timezone}`);
+  const title = createTextElement("h3", "update-panel-title", log.title);
+  layout.main.append(eyebrow, title);
+  appendUpdateLogFallbackNotice(layout.main);
+  layout.main.append(createUpdateLogDetails(log));
+  mountUpdateLogLayout(layout.root);
+}
+
+function createUpdateLogLayout() {
+  const root = document.createElement("div");
+  root.className = "update-log-layout";
+  const rail = document.createElement("aside");
+  rail.className = "update-log-rail";
+  const main = document.createElement("section");
+  main.className = "update-log-main";
+  root.append(rail, main);
+  return { root, rail, main };
+}
+
+function rememberUpdateLogRailScroll() {
+  const rail = updateLogContent.querySelector(".update-log-rail");
+  if (rail) updateLogState.railScrollTop = rail.scrollTop;
+}
+
+function restoreUpdateLogRailScroll() {
+  const rail = updateLogContent.querySelector(".update-log-rail");
+  if (!rail) return;
+  const maxScroll = Math.max(0, rail.scrollHeight - rail.clientHeight);
+  rail.scrollTop = Math.min(updateLogState.railScrollTop, maxScroll);
+}
+
+function mountUpdateLogLayout(root) {
+  updateLogContent.replaceChildren(root);
+  requestAnimationFrame(restoreUpdateLogRailScroll);
+}
+
+function renderUpdateLogLoading() {
+  const loading = document.createElement("div");
+  loading.className = "update-log-message";
+  loading.textContent = "正在读取更新日志...";
+  updateLogContent.replaceChildren(loading);
+}
+
+function renderUpdateLogError(message) {
+  const error = document.createElement("div");
+  error.className = "update-log-message error";
+  error.textContent = message;
+  updateLogContent.replaceChildren(error);
+}
+
+function appendUpdateLogFallbackNotice(container) {
+  if (!updateLogCache.failed) return;
+  const notice = document.createElement("p");
+  notice.className = "update-log-fallback";
+  notice.textContent = updateLogCache.errorMessage || "更新日志加载失败，已显示本地备用记录。";
+  container.append(notice);
+}
+
+async function refreshGlobalVersionFromLogs() {
+  try {
+    const manifest = await loadUpdateLogManifest();
+    const latestDate = manifest.dates?.[0]?.date;
+    if (!latestDate) return;
+    const latestDay = await loadUpdateLogDay(latestDate);
+    const latestLog = getSortedLogs(latestDay)[0];
+    updateGlobalVersionBadge(extractVersionFromTitle(latestLog?.title));
+  } catch (error) {
+    console.warn("Failed to refresh global version:", error);
+    updateGlobalVersionBadge();
+  }
+}
+
+function updateGlobalVersionBadge(version = getFallbackLatestVersion()) {
+  if (!globalVersionBadge) return;
+  const safeVersion = version || getFallbackLatestVersion() || "V1.0.0";
+  globalVersionBadge.textContent = safeVersion;
+  globalVersionBadge.setAttribute("aria-label", `当前版本 ${safeVersion}`);
+}
+
+function getFallbackLatestVersion() {
+  const latestLog = getSortedLogs(FALLBACK_UPDATE_LOG_DATES[0] || {})[0];
+  return extractVersionFromTitle(latestLog?.title);
+}
+
+function extractVersionFromTitle(title = "") {
+  return String(title).match(/V\d+(?:\.\d+){1,3}/i)?.[0]?.toUpperCase() || "";
+}
+
+function createDateTimeline(activeDate = "") {
+  const timeline = document.createElement("div");
+  timeline.className = "update-timeline";
+  getUpdateLogDates().forEach((dateEntry, index) => {
+    const day = getUpdateLogDay(dateEntry.date) || dateEntry;
+    const updateCount = day.logs?.length ?? day.updateCount ?? 0;
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "timeline-row";
+    row.classList.toggle("latest", index === 0);
+    row.classList.toggle("active", dateEntry.date === activeDate);
+    row.append(createTextElement("span", "timeline-date", day.label), createTimelineDot(), createTextElement("span", "timeline-count", `此日更新 ${updateCount} 次`));
+    row.addEventListener("click", () => navigateUpdateLogDay(dateEntry.date));
+    timeline.append(row);
+  });
+  return timeline;
+}
+
+function createLogTimeline(day, activeLogId = "") {
+  const timeline = document.createElement("div");
+  timeline.className = "update-timeline";
+  getSortedLogs(day).forEach((log, index) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "timeline-row";
+    row.classList.toggle("latest", index === 0);
+    row.classList.toggle("active", log.id === activeLogId);
+    row.append(createTextElement("span", "timeline-time", log.time), createTimelineDot(), createTextElement("span", "timeline-title", log.title));
+    row.addEventListener("click", () => navigateUpdateLogDetail(day.date, log.id));
+    timeline.append(row);
+  });
+  return timeline;
+}
+
+function createUpdateLogDetails(log) {
+  if (Array.isArray(log.sections) && log.sections.length) {
+    const sectionList = document.createElement("div");
+    sectionList.className = "update-section-list";
+    log.sections.forEach((section) => {
+      const block = document.createElement("section");
+      block.className = "update-section";
+      block.append(createTextElement("h3", "", section.heading || section.title || "更新内容"));
+      const list = document.createElement("ul");
+      (section.items || []).forEach((item) => {
+        list.append(createTextElement("li", "", item));
+      });
+      block.append(list);
+      sectionList.append(block);
+    });
+    return sectionList;
+  }
+  const list = document.createElement("ul");
+  list.className = "update-detail-list";
+  (log.items || []).forEach((item) => {
+    list.append(createTextElement("li", "", item));
+  });
+  return list;
+}
+
+function createTimelineDot() {
+  const dot = document.createElement("span");
+  dot.className = "timeline-dot";
+  dot.setAttribute("aria-hidden", "true");
+  return dot;
+}
+
+function createRocketFallback() {
+  const fallback = document.createElement("span");
+  fallback.className = "rocket-fallback";
+  fallback.textContent = "🚀";
+  fallback.setAttribute("aria-hidden", "true");
+  return fallback;
+}
+
+function createTextElement(tagName, className, text) {
+  const element = document.createElement(tagName);
+  if (className) element.className = className;
+  element.textContent = text;
+  return element;
+}
+
+async function loadUpdateLogManifest() {
+  if (updateLogCache.manifest) return updateLogCache.manifest;
+  try {
+    const data = await fetchUpdateLogJson("update-log/manifest.json");
+    const dates = Array.isArray(data.dates) ? data.dates.map(normalizeUpdateLogDateEntry) : [];
+    updateLogCache.manifest = { dates };
+    return updateLogCache.manifest;
+  } catch (error) {
+    console.warn("Failed to load update log manifest:", error);
+    useFallbackUpdateLogs("更新日志加载失败，已显示本地备用记录。");
+    return updateLogCache.manifest;
+  }
+}
+
+async function loadUpdateLogDay(date) {
+  if (updateLogCache.days.has(date)) return updateLogCache.days.get(date);
+  if (!updateLogCache.manifest) await loadUpdateLogManifest();
+  const dateEntry = getUpdateLogDates().find((day) => day.date === date);
+  if (!dateEntry) return null;
+  try {
+    const data = await fetchUpdateLogJson(dateEntry.manifest || `update-log/${date}/manifest.json`);
+    const day = normalizeUpdateLogDayManifest(data, dateEntry);
+    updateLogCache.days.set(date, day);
+    return day;
+  } catch (error) {
+    console.warn(`Failed to load update log day ${date}:`, error);
+    const fallbackDay = getFallbackUpdateLogDay(date);
+    if (fallbackDay) {
+      useFallbackUpdateLogs("部分更新日志加载失败，已显示本地备用记录。", false);
+      updateLogCache.days.set(date, cloneUpdateLogData(fallbackDay));
+      return updateLogCache.days.get(date);
+    }
+    return null;
+  }
+}
+
+async function loadUpdateLogDetail(date, logId) {
+  const cacheKey = `${date}/${logId}`;
+  if (updateLogCache.details.has(cacheKey)) return updateLogCache.details.get(cacheKey);
+  const day = await loadUpdateLogDay(date);
+  const logMeta = day?.logs.find((log) => log.id === logId);
+  if (!logMeta) return null;
+  try {
+    const data = await fetchUpdateLogJson(logMeta.data || `update-log/${date}/${logId}/log.json`);
+    const detail = normalizeUpdateLogDetail(data, day, logMeta);
+    updateLogCache.details.set(cacheKey, detail);
+    return detail;
+  } catch (error) {
+    console.warn(`Failed to load update log detail ${cacheKey}:`, error);
+    const fallbackLog = getFallbackUpdateLogEntry(date, logId);
+    if (fallbackLog) {
+      useFallbackUpdateLogs("部分更新日志加载失败，已显示本地备用记录。", false);
+      updateLogCache.details.set(cacheKey, cloneUpdateLogData(fallbackLog));
+      return updateLogCache.details.get(cacheKey);
+    }
+    return null;
+  }
+}
+
+async function fetchUpdateLogJson(path) {
+  const response = await fetch(toRootAssetPath(path), { cache: "no-cache" });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  return response.json();
+}
+
+function toRootAssetPath(path) {
+  return `/${String(path).replace(/^\/+/, "")}`;
+}
+
+function normalizeUpdateLogDateEntry(entry) {
+  return {
+    date: entry.date,
+    label: entry.label || entry.date,
+    timezone: entry.timezone || "UTC+9",
+    manifest: entry.manifest || `update-log/${entry.date}/manifest.json`,
+  };
+}
+
+function normalizeUpdateLogDayManifest(data, dateEntry = {}) {
+  const date = data.date || dateEntry.date;
+  return {
+    date,
+    label: data.label || dateEntry.label || date,
+    timezone: data.timezone || dateEntry.timezone || "UTC+9",
+    logs: getSortedLogs({
+      logs: (Array.isArray(data.logs) ? data.logs : []).map((log) => ({
+        date,
+        id: log.id,
+        time: log.time,
+        datetime: log.datetime,
+        layer: Number(log.layer) || 0,
+        title: log.title || "更新内容",
+        data: log.data || `update-log/${date}/${log.id}/log.json`,
+      })),
+    }),
+  };
+}
+
+function normalizeUpdateLogDetail(data, day, logMeta) {
+  return {
+    id: data.id || logMeta.id,
+    date: data.date || day.date,
+    time: data.time || logMeta.time,
+    datetime: data.datetime || logMeta.datetime,
+    layer: Number(data.layer ?? logMeta.layer) || 0,
+    title: data.title || logMeta.title || "更新内容",
+    sections: Array.isArray(data.sections) ? data.sections : undefined,
+    items: Array.isArray(data.items) ? data.items : [],
+  };
+}
+
+function useFallbackUpdateLogs(message, replaceManifest = true) {
+  updateLogCache.failed = true;
+  updateLogCache.errorMessage = message;
+  if (replaceManifest || !updateLogCache.manifest) {
+    const dates = FALLBACK_UPDATE_LOG_DATES.map((day) => ({
+      date: day.date,
+      label: day.label,
+      timezone: day.timezone,
+      manifest: `update-log/${day.date}/manifest.json`,
+    }));
+    updateLogCache.manifest = { dates };
+    FALLBACK_UPDATE_LOG_DATES.forEach((day) => {
+      updateLogCache.days.set(day.date, cloneUpdateLogData(day));
+      day.logs.forEach((log) => updateLogCache.details.set(`${day.date}/${log.id}`, cloneUpdateLogData(log)));
+    });
+  }
+}
+
+function cloneUpdateLogData(data) {
+  return JSON.parse(JSON.stringify(data));
+}
+
+function getUpdateLogDates() {
+  return updateLogCache.manifest?.dates || FALLBACK_UPDATE_LOG_DATES;
+}
+
+function getUpdateLogDay(date) {
+  return updateLogCache.days.get(date) || getFallbackUpdateLogDay(date);
+}
+
+function getFallbackUpdateLogDay(date) {
+  return FALLBACK_UPDATE_LOG_DATES.find((day) => day.date === date) || null;
+}
+
+function getFallbackUpdateLogEntry(date, logId) {
+  const day = getFallbackUpdateLogDay(date);
+  return day?.logs.find((log) => log.id === logId) || null;
+}
+
+function getSortedLogs(day) {
+  return [...(day.logs || [])].sort((a, b) => {
+    if (a.datetime && b.datetime) return new Date(b.datetime) - new Date(a.datetime);
+    return (Number(b.layer) || 0) - (Number(a.layer) || 0);
+  });
+}
+
+async function syncUpdateLogFromPath() {
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  if (parts[0] !== "update-log") {
+    closeUpdateLog({ updateUrl: false });
+    return;
+  }
+  if (parts[1] && parts[2]) {
+    await navigateUpdateLogDetail(parts[1], parts[2], { replace: true });
+    return;
+  }
+  if (parts[1]) {
+    await navigateUpdateLogDay(parts[1], { replace: true });
+    return;
+  }
+  await navigateUpdateLogOverview({ replace: true });
+}
+
+function handleUpdateLogEsc() {
+  if (!updateLogState.open) return false;
+  if (updateLogState.view === "detail") {
+    navigateUpdateLogDay(updateLogState.date);
+    return true;
+  }
+  if (updateLogState.view === "day") {
+    navigateUpdateLogOverview();
+    return true;
+  }
+  closeUpdateLog();
+  return true;
+}
+
 function handleEscapeKey() {
+  if (handleUpdateLogEsc()) return true;
   if (choosingActionTarget) {
     exitActionTargetSelection();
     return true;
@@ -2421,6 +3374,7 @@ function getActionReadySquads() {
 
 function canRegionActionRun(region, actionName) {
   if (!region) return { ok: false, reason: "未选择区域" };
+  if (region.name === "校长办公室" && actionName !== "侦查") return { ok: false, reason: "校长办公室仅可侦查" };
   if (isRegionActionCoolingDown(region, actionName)) return { ok: false, reason: "冷却中" };
   if (getActionReadySquads().length === 0) return { ok: false, reason: "没有可用小队" };
   if (actionName === "招募" && getStudentsInRegion(region.name).filter((student) => !isPlayerMember(student.id)).length === 0) {
