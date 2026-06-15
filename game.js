@@ -24,6 +24,8 @@ const loadingPercent = document.getElementById("loadingPercent");
 const loadingFill = document.getElementById("loadingFill");
 const loadingStatus = document.getElementById("loadingStatus");
 const loadingContinue = document.getElementById("loadingContinue");
+const mobileNotice = document.getElementById("mobileNotice");
+const mobileNoticeConfirm = document.getElementById("mobileNoticeConfirm");
 const mapViewport = document.getElementById("mapViewport");
 const mainMenu = document.getElementById("mainMenu");
 const factionSelect = document.getElementById("factionSelect");
@@ -379,7 +381,7 @@ const FALLBACK_UPDATE_LOG_DATES = [
           { heading: "主页快捷菜单", items: ["新增主页右下角伸展快捷菜单。", "快捷菜单仅在主页显示，游戏内、阵营选择、设置和制作人员页面不会显示。", "当前提供百科、更新日志、报告问题三个入口，并接入 hover 提示与 UI 音效。"] },
           { heading: "更新日志弹窗", items: ["点击更新日志入口后，会在当前主页打开游戏风格弹窗。", "支持三层 URL、Esc 逐级返回、浏览器返回按钮，以及 X / 背景直接关闭。", "新增火箭 GIF 时间线视觉效果。"] },
           { heading: "外置 JSON 系统", items: ["更新日志数据拆分为真实 JSON 文件结构。", "支持按日期与时间点读取详情，并兼容 items 与 sections 两种内容格式。", "加入缓存与 fallback 机制，读取失败时不会导致界面崩溃。"] },
-          { heading: "内容与 UI", items: ["录入从 V1.0.0 到最新版本的真实更新内容。", "隐藏原生滚动条，同时保留滚动能力。", "修复时间线点击后滚动位置跳回顶部的问题，并优化文字排版稳定性。"] },
+          { heading: "内容与 UI", items: ["录入从 V1.0.0 到最新版本的真实更新内容。", "添加了右下角游戏版本显示。", "添加了移动端兼容性提示。", "隐藏原生滚动条，同时保留滚动能力。", "修复时间线点击后滚动位置跳回顶部的问题，并优化文字排版稳定性。"] },
         ],
       },
     ],
@@ -942,7 +944,9 @@ window.addEventListener("resize", () => {
   applyTransform();
 });
 
-loadingContinue.addEventListener("click", hideLoadingScreen);
+loadingContinue.addEventListener("click", completeStartupGate);
+
+mobileNoticeConfirm.addEventListener("click", closeMobileNotice);
 
 window.setInterval(updateGameClock, 1000);
 window.setInterval(updateKeyboardPan, 16);
@@ -1619,7 +1623,7 @@ async function preloadStartupResources() {
     loadingContinue.focus();
     return;
   }
-  window.setTimeout(hideLoadingScreen, 420);
+  window.setTimeout(completeStartupGate, 420);
 }
 
 function preloadAsset(src) {
@@ -1654,6 +1658,38 @@ function updateLoadingProgress(percent, statusText) {
   loadingPercent.textContent = `${safePercent}%`;
   loadingFill.style.width = `${safePercent}%`;
   loadingStatus.textContent = statusText;
+}
+
+function completeStartupGate() {
+  loadingContinue.hidden = true;
+  if (shouldShowMobileNotice()) {
+    hideLoadingScreen();
+    showMobileNotice();
+    return;
+  }
+  hideLoadingScreen();
+}
+
+function shouldShowMobileNotice() {
+  return window.innerWidth <= 768 || window.matchMedia?.("(max-width: 768px)")?.matches;
+}
+
+function showMobileNotice() {
+  if (!mobileNotice) return;
+  document.body.classList.add("mobile-notice-active");
+  mobileNotice.hidden = false;
+  requestAnimationFrame(() => mobileNotice.classList.add("open"));
+  window.setTimeout(() => mobileNoticeConfirm?.focus(), 80);
+}
+
+function closeMobileNotice() {
+  if (!mobileNotice) return;
+  mobileNotice.classList.remove("open");
+  document.body.classList.remove("mobile-notice-active");
+  resetMenuIdleTimer();
+  window.setTimeout(() => {
+    if (!mobileNotice.classList.contains("open")) mobileNotice.hidden = true;
+  }, 220);
 }
 
 function hideLoadingScreen() {
