@@ -1,0 +1,390 @@
+{
+  "title": {
+    "zh": "剑拔弩张 Wiki",
+    "en": "Tension Point Wiki"
+  },
+  "version": "V1.0",
+  "categories": [
+    {
+      "id": "terms",
+      "label": {
+        "zh": "术语",
+        "en": "Terms"
+      },
+      "entries": [
+        {
+          "id": "trust",
+          "title": {
+            "zh": "信任度",
+            "en": "Trust"
+          },
+          "summary": {
+            "zh": "衡量学生与玩家阵营关系的核心指标，影响招募、稳定度和区域支持率。",
+            "en": "A core relationship value that affects recruitment, stability, and regional support."
+          },
+          "data": "terms/trust.json"
+        },
+        {
+          "id": "stability",
+          "title": {
+            "zh": "稳定度",
+            "en": "Stability"
+          },
+          "summary": {
+            "zh": "玩家阵营成员信任度的平均表现，用来衡量组织内部是否稳固。",
+            "en": "The average trust of player faction members, used to measure internal organizational stability."
+          },
+          "data": "terms/stability.json"
+        },
+        {
+          "id": "support",
+          "title": {
+            "zh": "学生支持",
+            "en": "Student Support"
+          },
+          "summary": {
+            "zh": "未加入玩家阵营学生的平均信任度，代表外围学生对组织的整体态度。",
+            "en": "The average trust of students outside the player faction, representing wider student attitude toward the organization."
+          },
+          "data": "terms/support.json"
+        },
+        {
+          "id": "pressure",
+          "title": {
+            "zh": "压力",
+            "en": "Pressure"
+          },
+          "summary": {
+            "zh": "学生承受的心理负担，过高会削弱能力并可能触发崩溃事件。",
+            "en": "A student's psychological burden. High pressure reduces ability and may trigger breakdown events."
+          },
+          "data": "terms/pressure.json"
+        },
+        {
+          "id": "fame",
+          "title": {
+            "zh": "知名度",
+            "en": "Fame"
+          },
+          "summary": {
+            "zh": "玩家阵营在校园中的传播程度，影响主动申请、行动效果和组织存在感。",
+            "en": "How widely known the player faction is on campus, affecting voluntary applications, action impact, and visibility."
+          },
+          "data": "terms/fame.json"
+        },
+        {
+          "id": "awareness",
+          "title": {
+            "zh": "管理层察觉",
+            "en": "Faculty Awareness"
+          },
+          "summary": {
+            "zh": "管理层对地下组织异常活动的怀疑程度，越高越容易触发调查与封锁。",
+            "en": "How suspicious faculty are of underground activity. Higher awareness makes investigations and crackdowns more likely."
+          },
+          "data": "terms/awareness.json"
+        },
+        {
+          "id": "semester",
+          "title": {
+            "zh": "学期",
+            "en": "Semester"
+          },
+          "summary": {
+            "zh": "学校时间推进的中周期单位，影响年级变化、长期事件触发和毕业结算。",
+            "en": "The mid-term time unit that drives grade progression, long-term event triggers, and graduation checks."
+          },
+          "data": "terms/semester.json"
+        },
+        {
+          "id": "school-day",
+          "title": {
+            "zh": "校园日程",
+            "en": "School Day"
+          },
+          "summary": {
+            "zh": "一天内上课、午饭、放学后与晚上的时间段循环，决定学生日程 AI。",
+            "en": "The daily schedule loop that controls student routine AI across class, lunch, after school, and night."
+          },
+          "data": "terms/school-day.json"
+        },
+        {
+          "id": "bribery",
+          "title": {
+            "zh": "贿赂",
+            "en": "Bribery"
+          },
+          "summary": {
+            "zh": "使用资源提高学生信任度的高风险互动，可能带来关系收益，也可能暴露组织。",
+            "en": "A risky interaction that spends resources to raise trust, with a chance of exposing the organization."
+          },
+          "data": "terms/bribery.json"
+        },
+        {
+          "id": "squad-headquarters",
+          "title": {
+            "zh": "小队总部",
+            "en": "Squad Headquarters"
+          },
+          "summary": {
+            "zh": "行动小队在地图上的基准位置，影响分散显示、迁移和后续行动调度。",
+            "en": "The squad's base position on the map, used for dispersed display, relocation, and action dispatch."
+          },
+          "data": "terms/squad-headquarters.json"
+        },
+        {
+          "id": "squad-dispersed",
+          "title": {
+            "zh": "分散",
+            "en": "Dispersed"
+          },
+          "summary": {
+            "zh": "行动小队的默认状态，成员继续按普通学生日程活动，不执行区域行动。",
+            "en": "The default squad state where members follow normal student schedules and do not perform region actions."
+          },
+          "data": "terms/squad-dispersed.json"
+        },
+        {
+          "id": "squad-assembled",
+          "title": {
+            "zh": "集合",
+            "en": "Assembled"
+          },
+          "summary": {
+            "zh": "小队成员脱离普通日程并集中行动的状态，可发挥完整能力执行任务。",
+            "en": "A squad state where members leave normal routines, gather, and act at full effectiveness."
+          },
+          "data": "terms/squad-assembled.json"
+        },
+        {
+          "id": "squad-hidden",
+          "title": {
+            "zh": "潜伏",
+            "en": "Hidden"
+          },
+          "summary": {
+            "zh": "行动小队降低存在感的隐蔽状态，能力受限但更适合低调行动。",
+            "en": "A covert squad state that lowers visibility, reducing effectiveness but favoring discreet actions."
+          },
+          "data": "terms/squad-hidden.json"
+        }
+      ]
+    },
+    {
+      "id": "systems",
+      "label": {
+        "zh": "系统",
+        "en": "Systems"
+      },
+      "entries": [
+        {
+          "id": "time",
+          "title": {
+            "zh": "时间系统",
+            "en": "Time System"
+          },
+          "summary": {
+            "zh": "控制暂停、速度档位、学期日程和学生 AI 刷新的核心节奏系统。",
+            "en": "The pacing system that controls pause, speed levels, semesters, daily schedule, and student AI updates."
+          },
+          "data": "systems/time.json"
+        },
+        {
+          "id": "recruitment",
+          "title": {
+            "zh": "招募与成员管理",
+            "en": "Recruitment and Member Management"
+          },
+          "summary": {
+            "zh": "管理候选学生、邀请加入、核心成员、普通成员和成员职位调整的系统。",
+            "en": "The system for candidates, invitations, core members, regular members, and member role assignment."
+          },
+          "data": "systems/recruitment.json"
+        },
+        {
+          "id": "squads",
+          "title": {
+            "zh": "行动小队系统",
+            "en": "Action Squad System"
+          },
+          "summary": {
+            "zh": "创建、编辑、迁移和指挥行动小队的系统，连接成员能力与地图行动。",
+            "en": "The system for creating, editing, relocating, and commanding action squads on the map."
+          },
+          "data": "systems/squads.json"
+        },
+        {
+          "id": "region-actions",
+          "title": {
+            "zh": "区域行动系统",
+            "en": "Region Action System"
+          },
+          "summary": {
+            "zh": "在地块中派遣行动小队执行宣传、侦查、集会、休息等任务的系统。",
+            "en": "The system for sending action squads to perform tasks such as propaganda, scouting, rallies, and rest in provinces."
+          },
+          "data": "systems/region-actions.json"
+        },
+        {
+          "id": "regions",
+          "title": {
+            "zh": "地块系统",
+            "en": "Province System"
+          },
+          "summary": {
+            "zh": "基于地图色块的区域系统，负责地块信息、人数、支持率、压力和点击交互。",
+            "en": "The province system based on colored map regions, handling province information, population, support, pressure, and interaction."
+          },
+          "data": "systems/regions.json"
+        }
+      ]
+    },
+    {
+      "id": "resources",
+      "label": {
+        "zh": "资源",
+        "en": "Resources"
+      },
+      "entries": [
+        {
+          "id": "phones",
+          "title": {
+            "zh": "手机",
+            "en": "Phones"
+          },
+          "summary": {
+            "zh": "组织宣传与联络的重要资源，可通过黑市使用金钱购买，也可用于贿赂等互动。",
+            "en": "An important resource for propaganda and communication. Phones can be bought with money through the black market and used in interactions such as bribery."
+          },
+          "data": "resources/phones.json"
+        },
+        {
+          "id": "money",
+          "title": {
+            "zh": "金钱",
+            "en": "Money"
+          },
+          "summary": {
+            "zh": "用于购买手机、推动行动和维持组织运转的通用资源。",
+            "en": "A general resource used to buy phones, support actions, and keep the organization running."
+          },
+          "data": "resources/money.json"
+        },
+        {
+          "id": "food",
+          "title": {
+            "zh": "食物",
+            "en": "Food"
+          },
+          "summary": {
+            "zh": "影响学生压力与支持的生存资源，和平阶段可购买，暴露战争阶段需要控制供应点。",
+            "en": "A survival resource that affects pressure and support. It can be bought in peacetime, but requires control of supply points during open conflict."
+          },
+          "data": "resources/food.json"
+        }
+      ]
+    },
+    {
+      "id": "factions",
+      "label": {
+        "zh": "派系",
+        "en": "Factions"
+      },
+      "entries": [
+        {
+          "id": "students",
+          "title": {
+            "zh": "学生阵营",
+            "en": "Student Faction"
+          },
+          "summary": {
+            "zh": "玩家默认主阵营，以扩张地下组织、争取学生支持和改变学校权力结构为目标。",
+            "en": "The player's default main faction, focused on expanding the underground organization, gaining student support, and changing the school's power structure."
+          },
+          "data": "factions/students.json"
+        },
+        {
+          "id": "faculty",
+          "title": {
+            "zh": "管理层阵营",
+            "en": "Faculty Faction"
+          },
+          "summary": {
+            "zh": "老师与学校管理体系组成的对抗阵营，代表秩序、规则、监控和权威。",
+            "en": "The opposing faction formed by teachers and school administration, representing order, rules, surveillance, and authority."
+          },
+          "data": "factions/faculty.json"
+        },
+        {
+          "id": "neutral",
+          "title": {
+            "zh": "中立学生",
+            "en": "Neutral Students"
+          },
+          "summary": {
+            "zh": "学生群体中的观望者，不属于大阵营，但会根据局势、信任和压力改变倾向。",
+            "en": "A student tendency group that watches the situation and can shift based on circumstances, trust, and pressure."
+          },
+          "data": "factions/neutral.json"
+        },
+        {
+          "id": "radical-students",
+          "title": {
+            "zh": "激进学生",
+            "en": "Radical Students"
+          },
+          "summary": {
+            "zh": "更容易加入组织、行动意愿更强的学生倾向，但错误决策也可能迅速放大风险。",
+            "en": "A student tendency that is easier to recruit and more willing to act, but can quickly amplify risk after poor decisions."
+          },
+          "data": "factions/radical-students.json"
+        },
+        {
+          "id": "administration-supporters",
+          "title": {
+            "zh": "管理层支持者",
+            "en": "Administration Supporters"
+          },
+          "summary": {
+            "zh": "倾向维护学校管理体系的学生，可能举报组织、上报贿赂并提高管理层察觉。",
+            "en": "Students aligned with the school administration who may report the organization, expose bribery, and increase faculty awareness."
+          },
+          "data": "factions/administration-supporters.json"
+        },
+        {
+          "id": "self-interested",
+          "title": {
+            "zh": "利己主义者",
+            "en": "Self-Interested"
+          },
+          "summary": {
+            "zh": "追随强势一方的高波动学生倾向，可能成为机会，也可能在局势变化时转向。",
+            "en": "A volatile student tendency that follows whoever appears stronger, creating both opportunities and betrayal risk."
+          },
+          "data": "factions/self-interested.json"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "label": {
+        "zh": "事件",
+        "en": "Events"
+      },
+      "entries": [
+        {
+          "id": "final-exam",
+          "title": {
+            "zh": "期末考试",
+            "en": "Final Exam"
+          },
+          "summary": {
+            "zh": "每学期后期触发的全校压力事件，会提高所有学生压力并放大组织风险。",
+            "en": "A late-semester campus-wide stress event that raises student stress and increases organizational risk."
+          },
+          "data": "events/final-exam.json"
+        }
+      ]
+    }
+  ]
+}

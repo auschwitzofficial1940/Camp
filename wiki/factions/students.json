@@ -1,0 +1,155 @@
+{
+  "id": "students",
+  "title": {
+    "zh": "学生阵营",
+    "en": "Student Faction"
+  },
+  "summary": {
+    "zh": "学生阵营是玩家默认主阵营。它从少数地下成员开始，通过招募、宣传、资源运作和行动小队逐渐改变学校权力结构。",
+    "en": "The Student Faction is the player's default main faction. It begins with a small underground group and gradually changes the school's power structure through recruitment, propaganda, resources, and action squads."
+  },
+  "status": {
+    "zh": "玩家主阵营",
+    "en": "Player Main Faction"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "阵营目标",
+        "en": "Faction Goal"
+      },
+      "items": [
+        {
+          "zh": "扩大地下学生组织影响力。",
+          "en": "Expand the influence of the underground student organization."
+        },
+        {
+          "zh": "争取学生支持并削弱管理层控制。",
+          "en": "Gain student support and weaken faculty control."
+        },
+        {
+          "zh": "最终改变学校权力结构，建立学生自治体系。",
+          "en": "Ultimately change the school's power structure and establish student self-governance."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "核心资源",
+        "en": "Core Resources"
+      },
+      "items": [
+        {
+          "zh": "手机用于宣传、联络和部分互动。",
+          "en": "Phones are used for propaganda, communication, and certain interactions."
+        },
+        {
+          "zh": "金钱用于购买资源、推动行动和支撑组织发展。",
+          "en": "Money is used to buy resources, support actions, and sustain growth."
+        },
+        {
+          "zh": "食物影响学生压力、支持和长期行动承受能力。",
+          "en": "Food affects student pressure, support, and long-term endurance."
+        },
+        {
+          "zh": "信任度、知名度和稳定度是学生阵营最关键的软性资源。",
+          "en": "Trust, fame, and stability are the faction's most important soft resources."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "优势",
+        "en": "Strengths"
+      },
+      "items": [
+        {
+          "zh": "可以从学生群体中持续招募新成员。",
+          "en": "Can continuously recruit new members from the student body."
+        },
+        {
+          "zh": "能通过宣传和集会改变区域态度。",
+          "en": "Can shift regional attitudes through propaganda and rallies."
+        },
+        {
+          "zh": "行动小队让玩家能够主动干预地图局势。",
+          "en": "Action squads allow the player to actively intervene on the map."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "弱点",
+        "en": "Weaknesses"
+      },
+      "items": [
+        {
+          "zh": "前期人数少、资源少，不能过早暴露。",
+          "en": "Early on, the faction has few members and limited resources, so exposure is dangerous."
+        },
+        {
+          "zh": "成员压力和信任波动会影响组织稳定。",
+          "en": "Member pressure and trust volatility affect stability."
+        },
+        {
+          "zh": "管理层察觉过高会让地下发展变得困难。",
+          "en": "High faculty awareness makes underground development difficult."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "主要玩法",
+        "en": "Main Gameplay"
+      },
+      "items": [
+        {
+          "zh": "招募学生，管理成员关系和职位。",
+          "en": "Recruit students and manage member relationships and roles."
+        },
+        {
+          "zh": "创建行动小队并选择总部。",
+          "en": "Create action squads and choose headquarters."
+        },
+        {
+          "zh": "在地块中执行宣传、侦查、集会、休息等区域行动。",
+          "en": "Execute region actions such as propaganda, scouting, rallies, and rest."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "适合策略",
+        "en": "Suitable Strategy"
+      },
+      "items": [
+        {
+          "zh": "低察觉稳步扩张，先建立信任基础。",
+          "en": "Expand steadily under low awareness and build a trust base first."
+        },
+        {
+          "zh": "用小队侦查和宣传逐步控制关键区域。",
+          "en": "Use squads for scouting and propaganda to gradually control key areas."
+        },
+        {
+          "zh": "在高压期降低风险行动，保护核心成员。",
+          "en": "Reduce risky actions during high-pressure periods and protect core members."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "相关系统",
+        "en": "Related Systems"
+      },
+      "items": [
+        {
+          "zh": "招募与成员管理、行动小队系统、区域行动系统、地块系统、时间系统。",
+          "en": "Recruitment and member management, action squad system, region action system, province system, and time system."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "neutral",
+  "title": {
+    "zh": "中立学生",
+    "en": "Neutral Students"
+  },
+  "summary": {
+    "zh": "中立学生不是大阵营，而是学生群体中的人员倾向。他们通常观望局势，信任度和态度会随着环境变化而摇摆。",
+    "en": "Neutral Students are not a major faction, but a tendency within the student body. They usually watch the situation and may shift attitude as conditions change."
+  },
+  "status": {
+    "zh": "人员倾向",
+    "en": "Student Tendency"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "行为特征",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "中立学生通常不会主动冒险。",
+          "en": "Neutral students usually avoid taking risks."
+        },
+        {
+          "zh": "他们更容易受到区域支持率、组织知名度和管理层压力影响。",
+          "en": "They are more easily influenced by regional support, faction fame, and faculty pressure."
+        },
+        {
+          "zh": "态度可能随局势变化而快速转向。",
+          "en": "Their attitude may shift quickly as the situation changes."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "招募价值",
+        "en": "Recruitment Value"
+      },
+      "items": [
+        {
+          "zh": "中立学生适合作为稳定扩张的主要来源。",
+          "en": "Neutral students are a good source for steady expansion."
+        },
+        {
+          "zh": "他们通常需要更明确的信任基础才会加入。",
+          "en": "They usually need a clearer trust base before joining."
+        },
+        {
+          "zh": "成功争取中立学生可以提高外围学生支持。",
+          "en": "Winning over neutral students can raise wider student support."
+        }
+      ]
+    }
+  ]
+}

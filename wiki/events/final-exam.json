@@ -1,0 +1,75 @@
+{
+  "id": "final-exam",
+  "title": {
+    "zh": "期末考试",
+    "en": "Final Exam"
+  },
+  "summary": {
+    "zh": "期末考试是每学期后期触发的全校事件。它会提高所有学生压力，并让组织在高压环境下面临更大的稳定风险。",
+    "en": "Final Exam is a late-semester campus-wide event. It increases stress for all students and makes the organization more fragile under pressure."
+  },
+  "status": {
+    "zh": "周期事件",
+    "en": "Recurring Event"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "触发时间",
+        "en": "Timing"
+      },
+      "items": [
+        {
+          "zh": "每学期第 25 到第 30 天会进入期末考试阶段。",
+          "en": "Days 25 to 30 of each semester enter the final exam period."
+        },
+        {
+          "zh": "事件会跟随学期循环重复出现。",
+          "en": "The event repeats as semesters cycle."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "主要影响",
+        "en": "Main Effects"
+      },
+      "items": [
+        {
+          "zh": "考试期间所有学生都会获得压力。",
+          "en": "All students gain stress during the exam period."
+        },
+        {
+          "zh": "压力过高会降低学生能力表现。",
+          "en": "High stress reduces student performance."
+        },
+        {
+          "zh": "如果压力达到极限，学生可能触发崩溃、失踪、退队或退出组织等事件。",
+          "en": "If stress reaches the limit, students may trigger breakdowns, disappear, leave squads, or quit the organization."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "考试周前应优先关注高压成员。",
+          "en": "Before exam week, pay attention to highly stressed members."
+        },
+        {
+          "zh": "休息行动和压力管理能力可以降低崩溃风险。",
+          "en": "Rest actions and stress management can reduce breakdown risk."
+        },
+        {
+          "zh": "在考试期间连续推进高风险行动，可能让组织稳定度快速恶化。",
+          "en": "Pushing risky actions during exams may quickly damage organizational stability."
+        }
+      ]
+    }
+  ]
+}

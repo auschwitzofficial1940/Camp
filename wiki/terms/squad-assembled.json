@@ -1,0 +1,55 @@
+{
+  "id": "squad-assembled",
+  "title": {
+    "zh": "集合",
+    "en": "Assembled"
+  },
+  "summary": {
+    "zh": "集合是行动小队进入可执行任务的公开行动状态。成员脱离普通日程并集中在小队位置，能力按完整水平计算。",
+    "en": "Assembled is an active squad state for executing tasks. Members leave normal schedules, gather at the squad position, and use full effectiveness."
+  },
+  "status": {
+    "zh": "小队状态",
+    "en": "Squad State"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "表现",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "成员会脱离普通学生日程 AI。",
+          "en": "Members leave normal student schedule AI."
+        },
+        {
+          "zh": "小队能力按完整水平参与行动计算。",
+          "en": "Squad abilities are counted at full effectiveness."
+        },
+        {
+          "zh": "地图标记使用菱形队旗表现集合状态。",
+          "en": "The map marker uses a diamond-shaped flag to show assembled status."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "代价",
+        "en": "Costs"
+      },
+      "items": [
+        {
+          "zh": "集合状态更容易暴露组织行动。",
+          "en": "The assembled state makes organization activity easier to notice."
+        },
+        {
+          "zh": "集合状态迁移总部时，小队需要移动到目标位置，不能瞬间完成。",
+          "en": "When relocating headquarters while assembled, the squad must move to the target position instead of teleporting."
+        }
+      ]
+    }
+  ]
+}

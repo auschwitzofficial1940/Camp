@@ -1,0 +1,71 @@
+{
+  "id": "squad-hidden",
+  "title": {
+    "zh": "潜伏",
+    "en": "Hidden"
+  },
+  "summary": {
+    "zh": "潜伏是行动小队降低存在感的隐蔽状态。它适合低调行动，但小队综合行动能力会受到限制。",
+    "en": "Hidden is a covert squad state that lowers visibility. It suits discreet actions, but the squad's action effectiveness is reduced."
+  },
+  "status": {
+    "zh": "小队状态",
+    "en": "Squad State"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "表现",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "成员会脱离普通学生日程 AI，并在小队标记附近潜伏。",
+          "en": "Members leave normal student schedule AI and remain covert near the squad marker."
+        },
+        {
+          "zh": "地图标记使用倒三角队旗表现潜伏状态。",
+          "en": "The map marker uses an inverted triangle flag to show hidden status."
+        },
+        {
+          "zh": "潜伏状态下，小队行动能力只按部分水平发挥，压力和稳定度不受此状态削弱。",
+          "en": "In the hidden state, action abilities are only partially effective, while pressure and stability are not reduced by the state."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "潜伏适合降低短期暴露风险，但长期保持潜伏会逐渐引起怀疑。",
+          "en": "Hidden status reduces short-term exposure risk, but staying hidden for too long gradually raises suspicion."
+        },
+        {
+          "zh": "潜伏状态迁移总部时，小队仍需要移动到目标位置，不能瞬间完成。",
+          "en": "When relocating headquarters while hidden, the squad still has to move to the target position instead of teleporting."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "潜伏适合侦查、低调准备和避免高关注行动。",
+          "en": "Hidden status suits scouting, quiet preparation, and avoiding high-profile actions."
+        },
+        {
+          "zh": "如果需要最大行动效率，应切换到集合状态。",
+          "en": "Switch to assembled status when maximum action effectiveness is needed."
+        }
+      ]
+    }
+  ]
+}

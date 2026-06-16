@@ -1,0 +1,59 @@
+{
+  "id": "support",
+  "title": {
+    "zh": "学生支持",
+    "en": "Student Support"
+  },
+  "summary": {
+    "zh": "学生支持代表未加入玩家阵营的普通学生对组织的整体态度。它反映校园外围舆论，而不是组织内部稳定。",
+    "en": "Student Support represents the overall attitude of students outside the player faction. It reflects the wider campus mood rather than internal stability."
+  },
+  "status": {
+    "zh": "核心指标",
+    "en": "Core Metric"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "顶部 HUD 的学生支持来自未加入玩家阵营学生的平均信任度。",
+          "en": "The top HUD student support value comes from the average trust of students outside the player faction."
+        },
+        {
+          "zh": "学生支持越高，说明外围学生更容易接受组织理念。",
+          "en": "Higher student support means the wider student body is more receptive to the organization."
+        },
+        {
+          "zh": "学生支持不同于稳定度，稳定度更偏向组织内部成员。",
+          "en": "Student support is different from stability, which focuses on internal members."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "影响方式",
+        "en": "Influence"
+      },
+      "items": [
+        {
+          "zh": "宣传、集会和区域行动可能逐步提高学生支持。",
+          "en": "Propaganda, rallies, and region actions may gradually increase student support."
+        },
+        {
+          "zh": "失败的邀请、过度压榨或不受欢迎的行动可能降低学生支持。",
+          "en": "Failed invitations, exploitation, or unpopular actions may reduce student support."
+        },
+        {
+          "zh": "高学生支持可以让后续招募和舆论扩张更顺利。",
+          "en": "High student support can make future recruitment and opinion growth smoother."
+        }
+      ]
+    }
+  ]
+}

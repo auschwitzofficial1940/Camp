@@ -1,0 +1,79 @@
+{
+  "id": "self-interested",
+  "title": {
+    "zh": "利己主义者",
+    "en": "Self-Interested"
+  },
+  "summary": {
+    "zh": "利己主义者会追随更强、更有利益的一方。他们可能快速加入，也可能在局势变化时转向，是高波动但有利用价值的学生倾向。",
+    "en": "Self-interested students follow whoever appears stronger or more beneficial. They may join quickly, but can shift when conditions change, making them volatile but useful."
+  },
+  "status": {
+    "zh": "高波动人员倾向",
+    "en": "Volatile Student Tendency"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "行为特征",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "利己主义者更关注自身利益和局势强弱。",
+          "en": "Self-interested students care most about personal benefit and power balance."
+        },
+        {
+          "zh": "当玩家阵营强势时，他们可能更愿意靠近组织。",
+          "en": "When the player faction appears strong, they may be more willing to approach it."
+        },
+        {
+          "zh": "当管理层压力上升或组织失势时，他们也可能迅速后退。",
+          "en": "When faculty pressure rises or the organization weakens, they may pull back quickly."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "价值",
+        "en": "Value"
+      },
+      "items": [
+        {
+          "zh": "适合在玩家优势明显时快速吸纳。",
+          "en": "Useful to recruit quickly when the player has clear advantage."
+        },
+        {
+          "zh": "可以作为扩张期的人力补充。",
+          "en": "Can serve as manpower during expansion."
+        },
+        {
+          "zh": "他们的加入可能帮助玩家扩大表面影响力。",
+          "en": "Their joining can help increase visible influence."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "他们的信任波动较大，不适合作为绝对核心。",
+          "en": "Their trust is volatile, making them unsuitable as absolute core members."
+        },
+        {
+          "zh": "局势变化时，他们可能改变立场。",
+          "en": "They may change sides when the situation changes."
+        },
+        {
+          "zh": "需要用稳定度、资源和成功行动维持他们的信心。",
+          "en": "Stability, resources, and successful actions are needed to maintain their confidence."
+        }
+      ]
+    }
+  ]
+}

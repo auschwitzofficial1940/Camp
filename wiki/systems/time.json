@@ -1,0 +1,83 @@
+{
+  "id": "time",
+  "title": {
+    "zh": "时间系统",
+    "en": "Time System"
+  },
+  "summary": {
+    "zh": "时间系统控制游戏世界的推进速度、暂停状态、校园日程、学期循环和学生日程 AI 的刷新节奏。",
+    "en": "The time system controls game speed, pause state, school day phases, semester cycles, and the refresh rhythm of student schedule AI."
+  },
+  "status": {
+    "zh": "核心系统",
+    "en": "Core System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "速度控制",
+        "en": "Speed Control"
+      },
+      "items": [
+        {
+          "zh": "玩家可以暂停或继续时间流动。",
+          "en": "The player can pause or resume time."
+        },
+        {
+          "zh": "速度档位支持 S、1X、2X 和 5X。",
+          "en": "Speed levels include S, 1X, 2X, and 5X."
+        },
+        {
+          "zh": "Space 用于暂停或恢复，数字键可切换不同速度档位。",
+          "en": "Space pauses or resumes time, while number keys switch speed levels."
+        },
+        {
+          "zh": "右上角速度 UI 会显示当前档位，并用指针动画反馈切换。",
+          "en": "The top-right speed UI shows the current level and uses an animated pointer for feedback."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "校园日程",
+        "en": "School Day"
+      },
+      "items": [
+        {
+          "zh": "一天分为上课、午饭、上课、放学后和晚上。",
+          "en": "A day is divided into class, lunch, class, after school, and night."
+        },
+        {
+          "zh": "时间段变化会影响学生分布、地图背景和可执行行动环境。",
+          "en": "Time-block changes affect student distribution, map visuals, and action context."
+        },
+        {
+          "zh": "学生日程 AI 只在时间段切换时重新分配，不会每帧刷新。",
+          "en": "Student schedule AI is reassigned only when the time block changes, not every frame."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "学期推进",
+        "en": "Semester Progression"
+      },
+      "items": [
+        {
+          "zh": "每个学期由 30 天组成。",
+          "en": "Each semester contains 30 days."
+        },
+        {
+          "zh": "两个学期构成一个年级推进周期。",
+          "en": "Two semesters form one grade progression cycle."
+        },
+        {
+          "zh": "时间静止时，事件、日程和行动进度都会停止推进。",
+          "en": "When time is paused, events, schedules, and action progress stop advancing."
+        }
+      ]
+    }
+  ]
+}

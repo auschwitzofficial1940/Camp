@@ -1,0 +1,99 @@
+{
+  "id": "squads",
+  "title": {
+    "zh": "行动小队系统",
+    "en": "Action Squad System"
+  },
+  "summary": {
+    "zh": "行动小队系统把成员能力、小队职位、总部位置、地图标记和区域行动连接起来，是玩家主动干预校园局势的核心工具。",
+    "en": "The action squad system connects member abilities, squad roles, headquarters, map markers, and region actions. It is the player's main tool for active intervention."
+  },
+  "status": {
+    "zh": "核心系统",
+    "en": "Core System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "创建与编辑",
+        "en": "Creation and Editing"
+      },
+      "items": [
+        {
+          "zh": "玩家可以创建行动小队，并为小队设置队名和队旗。",
+          "en": "The player can create action squads and set their name and flag."
+        },
+        {
+          "zh": "创建小队需要满足名称、成员和队长等条件。",
+          "en": "Creating a squad requires conditions such as a name, members, and a leader."
+        },
+        {
+          "zh": "已创建小队可以编辑成员、职位、队名、队旗，也可以解散。",
+          "en": "Created squads can be edited, renamed, have members and roles changed, change flags, or be disbanded."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "小队能力",
+        "en": "Squad Abilities"
+      },
+      "items": [
+        {
+          "zh": "小队能力由成员能力平均值形成。",
+          "en": "Squad abilities are formed from the average abilities of members."
+        },
+        {
+          "zh": "压力和信任会影响小队稳定度与实际表现。",
+          "en": "Pressure and trust affect squad stability and practical performance."
+        },
+        {
+          "zh": "小队职位包括队长、宣传员、侦查员和成员。",
+          "en": "Squad positions include leader, propagandist, scout, and member."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "状态",
+        "en": "States"
+      },
+      "items": [
+        {
+          "zh": "分散状态下，成员继续普通学生日程，无法执行区域行动。",
+          "en": "When dispersed, members follow normal student schedules and cannot execute region actions."
+        },
+        {
+          "zh": "集合状态下，小队发挥完整能力，但更容易被注意。",
+          "en": "When assembled, the squad uses full effectiveness but becomes easier to notice."
+        },
+        {
+          "zh": "潜伏状态下，小队行动能力降低，但更适合低调行动。",
+          "en": "When hidden, squad effectiveness is reduced, but discreet actions become safer."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "地图显示",
+        "en": "Map Display"
+      },
+      "items": [
+        {
+          "zh": "地图缩放到一定比例后会显示行动小队标记。",
+          "en": "Action squad markers appear when the map is zoomed in enough."
+        },
+        {
+          "zh": "分散、集合和潜伏会使用不同形状的队旗标记。",
+          "en": "Dispersed, assembled, and hidden states use different marker shapes."
+        },
+        {
+          "zh": "点击小队标记可打开小队信息面板。",
+          "en": "Clicking a squad marker opens the squad information panel."
+        }
+      ]
+    }
+  ]
+}

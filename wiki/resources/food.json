@@ -1,0 +1,79 @@
+{
+  "id": "food",
+  "title": {
+    "zh": "食物",
+    "en": "Food"
+  },
+  "summary": {
+    "zh": "食物是维持学生状态的重要资源。和平阶段可以通过食堂和小卖部购买，暴露战争阶段则需要控制食堂或小卖部等供应点。",
+    "en": "Food is an important resource for maintaining student condition. In peacetime it can be bought from the cafeteria and shop; during open conflict, supply points such as the cafeteria or shop must be controlled."
+  },
+  "status": {
+    "zh": "生存资源",
+    "en": "Survival Resource"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "主要用途",
+        "en": "Main Uses"
+      },
+      "items": [
+        {
+          "zh": "食物会影响学生压力、支持率和长期行动承受能力。",
+          "en": "Food affects student pressure, support, and the ability to endure long-term actions."
+        },
+        {
+          "zh": "食物供应稳定时，组织更容易维持成员状态。",
+          "en": "Stable food supply helps the organization maintain member condition."
+        },
+        {
+          "zh": "食物短缺会让校园局势更容易恶化。",
+          "en": "Food shortages can make campus conditions deteriorate more easily."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "和平阶段获取",
+        "en": "Peacetime Supply"
+      },
+      "items": [
+        {
+          "zh": "和平阶段，食物可以在食堂购买。",
+          "en": "In peacetime, food can be bought from the cafeteria."
+        },
+        {
+          "zh": "和平阶段，食物也可以在小卖部购买。",
+          "en": "In peacetime, food can also be bought from the shop."
+        },
+        {
+          "zh": "价格、供应量和随机事件可能影响购买效率。",
+          "en": "Price, supply, and random events may affect purchase efficiency."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "暴露战争阶段获取",
+        "en": "Open Conflict Supply"
+      },
+      "items": [
+        {
+          "zh": "当局势进入暴露战争阶段，普通购买可能不再稳定。",
+          "en": "When the conflict becomes open, ordinary purchasing may become unstable."
+        },
+        {
+          "zh": "玩家需要通过占领食堂获得稳定食物来源。",
+          "en": "The player may need to occupy the cafeteria to secure food supply."
+        },
+        {
+          "zh": "玩家也可以通过控制小卖部获得食物。",
+          "en": "The player can also gain food by controlling the shop."
+        }
+      ]
+    }
+  ]
+}

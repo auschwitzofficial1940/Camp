@@ -1,0 +1,55 @@
+{
+  "id": "squad-dispersed",
+  "title": {
+    "zh": "分散",
+    "en": "Dispersed"
+  },
+  "summary": {
+    "zh": "分散是行动小队的默认状态。成员不会集中行动，而是继续按照普通学生日程 AI 活动。",
+    "en": "Dispersed is the default action squad state. Members do not gather and instead continue following normal student schedule AI."
+  },
+  "status": {
+    "zh": "小队状态",
+    "en": "Squad State"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "表现",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "成员继续按年级和时间段自动前往不同地块。",
+          "en": "Members continue moving between provinces based on grade and time block."
+        },
+        {
+          "zh": "地图上的小队标记显示在总部位置。",
+          "en": "The squad marker appears at headquarters on the map."
+        },
+        {
+          "zh": "分散状态不会执行区域行动。",
+          "en": "Dispersed squads cannot perform region actions."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "优势",
+        "en": "Advantages"
+      },
+      "items": [
+        {
+          "zh": "存在感最低，不会主动提高管理层察觉。",
+          "en": "It has the lowest visibility and does not actively raise faculty awareness."
+        },
+        {
+          "zh": "只有分散状态下，迁移总部可以立即完成。",
+          "en": "Only dispersed squads can relocate headquarters instantly."
+        }
+      ]
+    }
+  ]
+}

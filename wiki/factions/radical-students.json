@@ -1,0 +1,75 @@
+{
+  "id": "radical-students",
+  "title": {
+    "zh": "激进学生",
+    "en": "Radical Students"
+  },
+  "summary": {
+    "zh": "激进学生更容易接受组织理念，也更愿意参与行动。他们是扩张的快车道，但如果玩家决策失误，也可能迅速放大风险。",
+    "en": "Radical students are more receptive to the organization and more willing to act. They can accelerate expansion, but poor decisions may quickly amplify risk."
+  },
+  "status": {
+    "zh": "人员倾向",
+    "en": "Student Tendency"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "优势",
+        "en": "Strengths"
+      },
+      "items": [
+        {
+          "zh": "通常更容易被邀请加入组织。",
+          "en": "Usually easier to invite into the organization."
+        },
+        {
+          "zh": "更适合参与宣传、集会和高行动意愿任务。",
+          "en": "Better suited for propaganda, rallies, and high-commitment tasks."
+        },
+        {
+          "zh": "可以帮助玩家快速打开局面。",
+          "en": "Can help the player accelerate momentum."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "激进行动更容易引起管理层注意。",
+          "en": "Radical actions are more likely to draw faculty attention."
+        },
+        {
+          "zh": "如果玩家做出保守或失败决策，他们的信任可能快速下降。",
+          "en": "If the player acts too cautiously or fails, their trust may drop quickly."
+        },
+        {
+          "zh": "过度依赖激进学生会让组织更难保持低调。",
+          "en": "Relying too much on radical students makes the organization harder to keep quiet."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "适合策略",
+        "en": "Suitable Strategy"
+      },
+      "items": [
+        {
+          "zh": "适合需要快速提高影响力或推动关键区域行动时使用。",
+          "en": "Useful when the player needs to quickly raise influence or push key region actions."
+        },
+        {
+          "zh": "最好搭配侦查和压力管理，避免风险失控。",
+          "en": "Best paired with scouting and pressure management to prevent risks from spiraling."
+        }
+      ]
+    }
+  ]
+}

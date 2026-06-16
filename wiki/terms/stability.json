@@ -1,0 +1,75 @@
+{
+  "id": "stability",
+  "title": {
+    "zh": "稳定度",
+    "en": "Stability"
+  },
+  "summary": {
+    "zh": "稳定度代表玩家阵营内部是否稳固。它主要由组织成员对玩家阵营的信任度平均值形成，是判断组织会不会动摇的重要指标。",
+    "en": "Stability represents how solid the player faction is internally. It is mainly based on the average trust of organization members and helps indicate whether the faction may fracture."
+  },
+  "status": {
+    "zh": "核心指标",
+    "en": "Core Metric"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "计算含义",
+        "en": "Meaning"
+      },
+      "items": [
+        {
+          "zh": "顶部 HUD 的稳定度显示玩家阵营成员信任度的平均情况。",
+          "en": "The top HUD stability value reflects the average trust of player faction members."
+        },
+        {
+          "zh": "成员越信任玩家阵营，组织越不容易出现内部动摇。",
+          "en": "The more members trust the faction, the less likely the organization is to shake internally."
+        },
+        {
+          "zh": "稳定度是组织长期扩张时需要关注的基础指标。",
+          "en": "Stability is a basic metric to watch during long-term expansion."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "下降风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "成员被迫离开、压力崩溃或错误决策都可能影响稳定度。",
+          "en": "Member departures, stress breakdowns, and poor decisions can damage stability."
+        },
+        {
+          "zh": "如果组织扩张过快但信任基础不足，稳定度会更脆弱。",
+          "en": "If the organization expands too quickly without a trust base, stability becomes fragile."
+        },
+        {
+          "zh": "稳定度低时，组织更难承受管理层压力和高风险行动。",
+          "en": "Low stability makes it harder to endure faculty pressure and risky actions."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "优先维护核心成员和行动小队成员的信任。",
+          "en": "Prioritize trust among core members and action squad members."
+        },
+        {
+          "zh": "不要只追求人数增长，忽视成员关系。",
+          "en": "Do not pursue member count while ignoring member relationships."
+        }
+      ]
+    }
+  ]
+}

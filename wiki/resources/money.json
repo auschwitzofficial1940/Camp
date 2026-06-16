@@ -1,0 +1,75 @@
+{
+  "id": "money",
+  "title": {
+    "zh": "金钱",
+    "en": "Money"
+  },
+  "summary": {
+    "zh": "金钱是组织的通用资源，用于购买手机、推动行动和维持地下网络运转。它能带来灵活性，也可能带来信任代价。",
+    "en": "Money is the organization's general-purpose resource. It is used to buy phones, support actions, and keep the underground network operating. It brings flexibility, but may carry trust costs."
+  },
+  "status": {
+    "zh": "通用资源",
+    "en": "General Resource"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "主要用途",
+        "en": "Main Uses"
+      },
+      "items": [
+        {
+          "zh": "金钱可以用于黑市购买手机。",
+          "en": "Money can be used to buy phones through the black market."
+        },
+        {
+          "zh": "金钱可用于支持组织行动和后续系统解锁。",
+          "en": "Money can support organization actions and future system unlocks."
+        },
+        {
+          "zh": "金钱让玩家在资源短缺时拥有更多选择。",
+          "en": "Money gives the player more options when other resources are scarce."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "获取方式",
+        "en": "How to Obtain"
+      },
+      "items": [
+        {
+          "zh": "当前设计中，金钱可通过向学生收取保护费等方式获得。",
+          "en": "In the current design, money can be obtained through methods such as collecting protection fees from students."
+        },
+        {
+          "zh": "获取金钱过度激进时，可能伤害学生信任。",
+          "en": "Overly aggressive money collection may damage student trust."
+        },
+        {
+          "zh": "金钱来源未来可与事件、交易、控制区域或管理系统联动。",
+          "en": "Future money sources may connect to events, trades, controlled areas, or management systems."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "金钱适合解决短期资源缺口，但不能完全替代学生支持。",
+          "en": "Money can solve short-term shortages, but it cannot replace student support."
+        },
+        {
+          "zh": "如果金钱获取方式破坏信任，组织长期稳定会变差。",
+          "en": "If money generation damages trust, long-term stability will suffer."
+        }
+      ]
+    }
+  ]
+}

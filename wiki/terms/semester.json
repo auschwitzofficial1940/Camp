@@ -1,0 +1,59 @@
+{
+  "id": "semester",
+  "title": {
+    "zh": "学期",
+    "en": "Semester"
+  },
+  "summary": {
+    "zh": "学期是《剑拔弩张》的中周期时间单位。每个学期由 30 个校园日组成，并会影响年级推进、长期事件触发和长期结局。",
+    "en": "A semester is the mid-term time unit in Tension Point. Each semester contains 30 school days and affects grade progression, long-term event triggers, and long-term outcomes."
+  },
+  "status": {
+    "zh": "时间系统",
+    "en": "Time System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "周期结构",
+        "en": "Cycle Structure"
+      },
+      "items": [
+        {
+          "zh": "每个学期有 30 天。",
+          "en": "Each semester lasts 30 days."
+        },
+        {
+          "zh": "第二学期第 30 天结束后，学期显示会回到第一学期第 1 天。",
+          "en": "After the end of day 30 in the second semester, the semester display returns to Semester 1 Day 1."
+        },
+        {
+          "zh": "右上角游玩天数不会因学期循环而清零，用于记录玩家实际游玩进度。",
+          "en": "The total day counter in the top-right UI does not reset with semesters, so it can track the full playthrough length."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "年级变化",
+        "en": "Grade Progression"
+      },
+      "items": [
+        {
+          "zh": "每两个学期结束后，学生年级会在原有基础上提升 1 级。",
+          "en": "After every two semesters, students advance by one grade."
+        },
+        {
+          "zh": "12 年级学生在完成对应周期后会毕业离校。",
+          "en": "Grade 12 students graduate and leave after completing their cycle."
+        },
+        {
+          "zh": "新学年会补充低年级新生，保持校园生态继续运转。",
+          "en": "A new school year brings younger students into the campus ecosystem."
+        }
+      ]
+    }
+  ]
+}

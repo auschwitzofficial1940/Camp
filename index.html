@@ -62,7 +62,7 @@
 
     <nav id="quickDock" class="quick-dock" aria-label="主页快捷菜单">
       <div class="quick-dock-panel" aria-hidden="true">
-        <button class="quick-dock-item" type="button" aria-label="百科" data-label="百科">
+        <button id="quickDockWiki" class="quick-dock-item" type="button" aria-label="百科" data-label="百科">
           <img src="assets/icon/wiki.png" alt="" />
         </button>
         <button id="quickDockUpdate" class="quick-dock-item" type="button" aria-label="更新日志" data-label="更新日志">
@@ -85,6 +85,22 @@
           <h2 id="updateLogTitle">版本档案</h2>
         </header>
         <div id="updateLogContent" class="update-log-content"></div>
+      </article>
+    </section>
+
+    <section id="wikiOverlay" class="wiki-overlay" aria-label="百科" hidden>
+      <article class="wiki-modal" role="dialog" aria-modal="true" aria-labelledby="wikiOverlayTitle">
+        <header class="wiki-modal-header">
+          <div>
+            <span>FIELD WIKI</span>
+            <h2 id="wikiOverlayTitle">校园档案库</h2>
+          </div>
+          <div class="wiki-modal-actions">
+            <a class="wiki-fullscreen-link" href="/wiki/" target="_self">全屏打开</a>
+            <button id="closeWikiOverlay" class="wiki-close" type="button" aria-label="关闭百科">×</button>
+          </div>
+        </header>
+        <iframe id="wikiFrame" class="wiki-frame" title="剑拔弩张百科" src="about:blank"></iframe>
       </article>
     </section>
 

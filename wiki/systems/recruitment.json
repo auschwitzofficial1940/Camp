@@ -1,0 +1,83 @@
+{
+  "id": "recruitment",
+  "title": {
+    "zh": "招募与成员管理",
+    "en": "Recruitment and Member Management"
+  },
+  "summary": {
+    "zh": "招募与成员管理系统负责学生候选池、手动邀请、贿赂、成员分组、核心成员和职位调整。",
+    "en": "The recruitment and member management system handles student candidates, invitations, bribery, member grouping, core members, and role assignment."
+  },
+  "status": {
+    "zh": "组织系统",
+    "en": "Organization System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "候选学生",
+        "en": "Candidates"
+      },
+      "items": [
+        {
+          "zh": "招募菜单按年级列出尚未加入组织的学生。",
+          "en": "The recruitment menu lists students who have not joined the organization by grade."
+        },
+        {
+          "zh": "候选学生拥有姓名、年级、性格、派系、状态、信任度和压力等信息。",
+          "en": "Candidates have information such as name, grade, personality, faction, state, trust, and pressure."
+        },
+        {
+          "zh": "玩家可以查看学生详情，再决定是否贿赂或邀请。",
+          "en": "The player can inspect student details before deciding whether to bribe or invite."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "邀请与贿赂",
+        "en": "Invitation and Bribery"
+      },
+      "items": [
+        {
+          "zh": "邀请成功率主要受学生信任度影响。",
+          "en": "Invitation success is mainly affected by the student's trust."
+        },
+        {
+          "zh": "信任过低的学生无法被直接邀请。",
+          "en": "Students with very low trust cannot be directly invited."
+        },
+        {
+          "zh": "贿赂可以提高信任，但对管理层支持者使用时存在暴露风险。",
+          "en": "Bribery can raise trust, but using it on faculty supporters risks exposure."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "成员与职位",
+        "en": "Members and Roles"
+      },
+      "items": [
+        {
+          "zh": "成员菜单分为核心成员和普通成员。",
+          "en": "The member menu separates core members from regular members."
+        },
+        {
+          "zh": "玩家可以查看成员详情、所属小队、压力、信任和能力。",
+          "en": "The player can inspect member details, squad assignment, pressure, trust, and abilities."
+        },
+        {
+          "zh": "成员职位可调整为副主席、宣传部长、情报部长、后勤部长或成员。",
+          "en": "Member roles can be assigned as vice president, propaganda minister, intelligence minister, logistics minister, or member."
+        },
+        {
+          "zh": "特殊核心角色有额外限制，避免玩家误删关键人物。",
+          "en": "Special core roles have extra restrictions to prevent accidental removal of key characters."
+        }
+      ]
+    }
+  ]
+}

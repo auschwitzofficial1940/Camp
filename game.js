@@ -177,7 +177,11 @@ const actionSquadList = document.getElementById("actionSquadList");
 const closeActionConfirm = document.getElementById("closeActionConfirm");
 const quickDock = document.getElementById("quickDock");
 const quickDockToggle = document.getElementById("quickDockToggle");
+const quickDockWiki = document.getElementById("quickDockWiki");
 const quickDockUpdate = document.getElementById("quickDockUpdate");
+const wikiOverlay = document.getElementById("wikiOverlay");
+const wikiFrame = document.getElementById("wikiFrame");
+const closeWikiOverlayButton = document.getElementById("closeWikiOverlay");
 const updateLogOverlay = document.getElementById("updateLogOverlay");
 const updateLogContent = document.getElementById("updateLogContent");
 const closeUpdateLogButton = document.getElementById("closeUpdateLog");
@@ -363,10 +367,33 @@ const REGION_ACTIONS = {
 };
 const FALLBACK_UPDATE_LOG_DATES = [
   {
+    date: "2026-06-16",
+    label: "2026年6月16日",
+    timezone: "UTC+9",
+    latest: true,
+    updateCount: 1,
+    logs: [
+      {
+        id: "19_00",
+        date: "2026-06-16",
+        time: "19:00",
+        datetime: "2026-06-16T19:00:00+09:00",
+        layer: 1,
+        title: "V1.6.3 Wiki 档案库扩展",
+        latest: true,
+        sections: [
+          { heading: "百科入口", items: ["新增完整 Wiki 档案库系统。", "支持外部访问 /wiki/ 全屏页面。", "支持主页与游戏内百科弹窗嵌入模式。"] },
+          { heading: "档案内容", items: ["补充术语、系统、资源、派系与事件分类资料。", "全部 Wiki 词条改为 zh / en 双语结构，为后续 i18n 预留基础。", "新增学生阵营、管理层阵营、行动小队、区域行动、核心资源等条目。"] },
+          { heading: "界面与体验", items: ["优化游戏内百科弹窗的固定布局与内部滚动。", "修复 sidebar 词条溢出、被卡住和滚动边界问题。", "新增全屏 Wiki 导航栏，并让全屏页面锁定外层视口滚动。"] },
+        ],
+      },
+    ],
+  },
+  {
     date: "2026-06-15",
     label: "2026年6月15日",
     timezone: "UTC+9",
-    latest: true,
+    latest: false,
     updateCount: 1,
     logs: [
       {
@@ -1160,8 +1187,20 @@ quickDockToggle.addEventListener("click", () => {
   window.setTimeout(() => quickDock.classList.remove("pop"), 460);
 });
 
+quickDockWiki.addEventListener("click", () => {
+  openWikiOverlay();
+});
+
 quickDockUpdate.addEventListener("click", () => {
   openUpdateLog();
+});
+
+closeWikiOverlayButton.addEventListener("click", () => {
+  closeWikiOverlay();
+});
+
+wikiOverlay.addEventListener("click", (event) => {
+  if (event.target === wikiOverlay) closeWikiOverlay();
 });
 
 closeUpdateLogButton.addEventListener("click", () => {
@@ -2239,6 +2278,24 @@ function closeSquadCreateModal() {
   if (!squadPanel.hidden) squadButton.focus();
 }
 
+function openWikiOverlay() {
+  wikiOverlay.hidden = false;
+  if (wikiFrame.getAttribute("src") !== "/wiki/?embed=1") {
+    wikiFrame.src = "/wiki/?embed=1";
+  }
+  requestAnimationFrame(() => wikiOverlay.classList.add("open"));
+}
+
+function closeWikiOverlay() {
+  wikiOverlay.classList.remove("open");
+  window.setTimeout(() => {
+    if (!wikiOverlay.classList.contains("open")) {
+      wikiOverlay.hidden = true;
+      wikiFrame.src = "about:blank";
+    }
+  }, 220);
+}
+
 function openUpdateLog() {
   navigateUpdateLogOverview();
 }
@@ -2727,6 +2784,10 @@ function handleUpdateLogEsc() {
 }
 
 function handleEscapeKey() {
+  if (!wikiOverlay.hidden) {
+    closeWikiOverlay();
+    return true;
+  }
   if (handleUpdateLogEsc()) return true;
   if (choosingActionTarget) {
     exitActionTargetSelection();

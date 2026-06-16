@@ -1,0 +1,75 @@
+{
+  "id": "bribery",
+  "title": {
+    "zh": "贿赂",
+    "en": "Bribery"
+  },
+  "summary": {
+    "zh": "贿赂是玩家用资源换取学生信任的互动方式。它可以在短期内改善关系，但也可能被管理层支持者利用，导致组织暴露。",
+    "en": "Bribery lets the player spend resources to gain a student's trust. It can improve relationships quickly, but faculty supporters may exploit it and expose the organization."
+  },
+  "status": {
+    "zh": "互动机制",
+    "en": "Interaction Mechanic"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "贿赂通常会消耗手机等稀缺资源。",
+          "en": "Bribery usually consumes scarce resources such as phones."
+        },
+        {
+          "zh": "成功后，目标学生的信任度会上升。",
+          "en": "If successful, the target student's trust increases."
+        },
+        {
+          "zh": "贿赂不是正式招募，只是提高后续邀请或合作的可能性。",
+          "en": "Bribery is not recruitment by itself; it improves the chance of later invitation or cooperation."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "管理层支持者可能收下资源并向管理层举报。",
+          "en": "Faculty supporters may take the resource and report the organization."
+        },
+        {
+          "zh": "过度依赖贿赂会让资源压力变大。",
+          "en": "Relying too much on bribery increases resource pressure."
+        },
+        {
+          "zh": "贿赂失败或被举报可能提高管理层察觉。",
+          "en": "Failed or reported bribery may increase faculty awareness."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "优先确认学生派系，再决定是否投入资源。",
+          "en": "Check a student's faction before investing resources."
+        },
+        {
+          "zh": "贿赂适合补足临界信任度，不适合作为唯一发展方式。",
+          "en": "Bribery is useful for pushing trust past a threshold, but it should not be the only growth method."
+        }
+      ]
+    }
+  ]
+}

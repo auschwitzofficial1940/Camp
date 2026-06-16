@@ -1,0 +1,75 @@
+{
+  "id": "fame",
+  "title": {
+    "zh": "知名度",
+    "en": "Fame"
+  },
+  "summary": {
+    "zh": "知名度代表玩家阵营在校园内被多少人听说。它能扩大组织影响力，也会让组织更难完全隐藏。",
+    "en": "Fame represents how widely the player faction is known on campus. It expands influence but also makes the organization harder to hide completely."
+  },
+  "status": {
+    "zh": "阵营指标",
+    "en": "Faction Metric"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "知名度表示组织理念、传闻和存在感在校园中的扩散程度。",
+          "en": "Fame represents how far the organization's ideas, rumors, and presence have spread across campus."
+        },
+        {
+          "zh": "知名度越高，学生越可能听说组织并产生接触意愿。",
+          "en": "Higher fame makes students more likely to know about the organization and consider contact."
+        },
+        {
+          "zh": "知名度不是单纯的支持率，高知名度也可能带来更高关注。",
+          "en": "Fame is not the same as support; high fame can also bring more attention."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "获得方式",
+        "en": "How It Increases"
+      },
+      "items": [
+        {
+          "zh": "宣传和集会等区域行动可以提高知名度。",
+          "en": "Region actions such as propaganda and rallies can increase fame."
+        },
+        {
+          "zh": "某些高调行动可能带来更快的知名度增长。",
+          "en": "Some high-profile actions may increase fame more quickly."
+        },
+        {
+          "zh": "知名度提升后，符合条件的学生可能主动发送加入申请。",
+          "en": "After fame rises, eligible students may voluntarily request to join."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "知名度越高，组织越难维持完全地下状态。",
+          "en": "The higher fame becomes, the harder it is to remain fully underground."
+        },
+        {
+          "zh": "如果管理层支持者注意到组织传播，可能提高管理层察觉。",
+          "en": "If faculty supporters notice the spread, faculty awareness may rise."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "id": "trust",
+  "title": {
+    "zh": "信任度",
+    "en": "Trust"
+  },
+  "summary": {
+    "zh": "信任度代表学生对玩家阵营的认可程度。它决定学生是否愿意加入组织，也会影响顶部稳定度、区域支持率与行动结果。",
+    "en": "Trust represents how much a student accepts the player's faction. It affects recruitment, faction stability, regional support, and action outcomes."
+  },
+  "status": {
+    "zh": "核心系统",
+    "en": "Core System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "每名学生都有独立的信任度。",
+          "en": "Every student has an individual trust value."
+        },
+        {
+          "zh": "未加入组织的学生信任度会影响学生支持率。",
+          "en": "Trust from students outside the organization affects student support."
+        },
+        {
+          "zh": "已加入组织的成员信任度会影响组织稳定度。",
+          "en": "Trust from organization members affects faction stability."
+        },
+        {
+          "zh": "同一区域内学生的平均信任度会形成该地块的支持率。",
+          "en": "The average trust of students in a province becomes that province's support rate."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "招募关系",
+        "en": "Recruitment"
+      },
+      "items": [
+        {
+          "zh": "信任度过低时，学生无法被邀请加入。",
+          "en": "Students with very low trust cannot be invited."
+        },
+        {
+          "zh": "信任度越高，手动邀请成功率越高。",
+          "en": "Higher trust improves manual invitation success."
+        },
+        {
+          "zh": "高信任度学生在组织知名度足够时，可能主动发送加入申请。",
+          "en": "Highly trusting students may request to join once faction fame is high enough."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "邀请失败过多会降低全体学生对玩家阵营的信任。",
+          "en": "Too many failed invitations can reduce trust across the student body."
+        },
+        {
+          "zh": "成员压力崩溃、退出组织或错误决策可能导致信任度下降。",
+          "en": "Stress breakdowns, member departures, and poor decisions can reduce trust."
+        },
+        {
+          "zh": "管理层支持者通常更难建立高信任关系。",
+          "en": "Faculty supporters are usually harder to build trust with."
+        }
+      ]
+    }
+  ]
+}

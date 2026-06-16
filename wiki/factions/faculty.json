@@ -1,0 +1,91 @@
+{
+  "id": "faculty",
+  "title": {
+    "zh": "管理层阵营",
+    "en": "Faculty Faction"
+  },
+  "summary": {
+    "zh": "管理层阵营由老师、学校管理体系和秩序维护力量构成。当前版本中它是对抗阵营，负责巡逻、调查、封锁和压制地下组织。",
+    "en": "The Faculty Faction consists of teachers, administration, and order-maintaining forces. In the current version, it is the opposing faction responsible for patrols, investigations, lockdowns, and suppressing underground activity."
+  },
+  "status": {
+    "zh": "对抗阵营",
+    "en": "Opposing Faction"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "阵营定位",
+        "en": "Faction Role"
+      },
+      "items": [
+        {
+          "zh": "代表规则、秩序、监控和权威。",
+          "en": "Represents rules, order, surveillance, and authority."
+        },
+        {
+          "zh": "目标是维持学校稳定并瓦解地下组织。",
+          "en": "Aims to maintain school stability and dismantle the underground organization."
+        },
+        {
+          "zh": "当前版本不可玩，但会持续作为玩家的主要压力来源。",
+          "en": "Currently not playable, but remains the player's main source of pressure."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "行动方式",
+        "en": "Methods"
+      },
+      "items": [
+        {
+          "zh": "通过巡逻、检查和约谈发现异常。",
+          "en": "Uses patrols, inspections, and interviews to detect suspicious activity."
+        },
+        {
+          "zh": "在察觉升高后可能封锁区域或提高巡逻力度。",
+          "en": "May lock down areas or increase patrols as awareness rises."
+        },
+        {
+          "zh": "可借助管理层支持者获得学生内部情报。",
+          "en": "Can benefit from administration supporters inside the student body."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "对玩家的威胁",
+        "en": "Threat to Player"
+      },
+      "items": [
+        {
+          "zh": "管理层察觉越高，玩家越难进行地下发展。",
+          "en": "Higher faculty awareness makes underground development harder."
+        },
+        {
+          "zh": "管理层行动会打断资源、招募和区域行动节奏。",
+          "en": "Faculty actions can disrupt resources, recruitment, and region action pacing."
+        },
+        {
+          "zh": "核心成员被发现可能导致组织受到严重打击。",
+          "en": "If core members are exposed, the organization can suffer major setbacks."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "相关系统",
+        "en": "Related Systems"
+      },
+      "items": [
+        {
+          "zh": "管理层察觉、地块巡逻、区域行动、管理层支持者、随机事件。",
+          "en": "Faculty awareness, province patrols, region actions, administration supporters, and random events."
+        }
+      ]
+    }
+  ]
+}

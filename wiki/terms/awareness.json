@@ -1,0 +1,75 @@
+{
+  "id": "awareness",
+  "title": {
+    "zh": "管理层察觉",
+    "en": "Faculty Awareness"
+  },
+  "summary": {
+    "zh": "管理层察觉代表学校管理体系对地下组织异常活动的怀疑程度。察觉越高，校园越容易进入高压状态。",
+    "en": "Faculty Awareness represents how suspicious the school administration is of underground activity. Higher awareness makes high-pressure responses more likely."
+  },
+  "status": {
+    "zh": "对抗指标",
+    "en": "Opposition Metric"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "管理层察觉显示学校管理体系对玩家组织的怀疑程度。",
+          "en": "Faculty Awareness shows how suspicious the administration is of the player's organization."
+        },
+        {
+          "zh": "察觉越高，巡逻、调查、封锁和检查越可能出现。",
+          "en": "Higher awareness makes patrols, investigations, lockdowns, and inspections more likely."
+        },
+        {
+          "zh": "察觉是玩家地下发展阶段最重要的风险指标之一。",
+          "en": "Awareness is one of the most important risk metrics during underground development."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "上升来源",
+        "en": "Sources"
+      },
+      "items": [
+        {
+          "zh": "连续邀请、公开集会和高调宣传可能提高察觉。",
+          "en": "Repeated invitations, public rallies, and loud propaganda may raise awareness."
+        },
+        {
+          "zh": "管理层支持者发现异常时，察觉会更容易上升。",
+          "en": "When faculty supporters notice suspicious activity, awareness can rise more easily."
+        },
+        {
+          "zh": "贿赂错误对象也可能直接暴露组织。",
+          "en": "Bribing the wrong target may directly expose the organization."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "策略提示",
+        "en": "Strategy Notes"
+      },
+      "items": [
+        {
+          "zh": "察觉较高时，应减少连续高调行动。",
+          "en": "When awareness is high, reduce consecutive high-profile actions."
+        },
+        {
+          "zh": "潜伏状态和侦查行动可以帮助玩家更谨慎地推进。",
+          "en": "Hidden status and scouting actions can help the player advance more carefully."
+        }
+      ]
+    }
+  ]
+}

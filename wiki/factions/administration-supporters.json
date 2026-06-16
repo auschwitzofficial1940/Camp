@@ -1,0 +1,79 @@
+{
+  "id": "administration-supporters",
+  "title": {
+    "zh": "管理层支持者",
+    "en": "Administration Supporters"
+  },
+  "summary": {
+    "zh": "管理层支持者是倾向维护学校管理体系的学生。他们是玩家地下发展的关键风险源，可能举报、上报贿赂并提高管理层察觉。",
+    "en": "Administration Supporters are students who lean toward the school administration. They are a key risk to underground development and may report the organization, expose bribery, and raise faculty awareness."
+  },
+  "status": {
+    "zh": "高风险人员倾向",
+    "en": "High-Risk Student Tendency"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "行为特征",
+        "en": "Behavior"
+      },
+      "items": [
+        {
+          "zh": "管理层支持者更倾向相信规则、秩序和学校权威。",
+          "en": "Administration supporters tend to believe in rules, order, and school authority."
+        },
+        {
+          "zh": "他们通常更难建立高信任关系。",
+          "en": "They are usually harder to build high trust with."
+        },
+        {
+          "zh": "他们可能向管理层报告地下组织活动。",
+          "en": "They may report underground organization activity to faculty."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "贿赂风险",
+        "en": "Bribery Risk"
+      },
+      "items": [
+        {
+          "zh": "对管理层支持者使用贿赂时，对方可能拿走手机并上报管理层。",
+          "en": "When bribed, an administration supporter may take the phone and report the player to faculty."
+        },
+        {
+          "zh": "这种行为会损失资源并提高管理层察觉。",
+          "en": "This causes resource loss and increases faculty awareness."
+        },
+        {
+          "zh": "因此，贿赂前确认目标派系非常重要。",
+          "en": "Because of this, checking a target's faction before bribery is important."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "应对方式",
+        "en": "Counterplay"
+      },
+      "items": [
+        {
+          "zh": "优先通过侦查或学生详情识别他们。",
+          "en": "Use scouting or student details to identify them first."
+        },
+        {
+          "zh": "避免在他们附近执行过于高调的行动。",
+          "en": "Avoid overly visible actions around them."
+        },
+        {
+          "zh": "如果区域内管理层支持者很多，宣传和集会的风险会更高。",
+          "en": "If a province contains many administration supporters, propaganda and rallies become riskier."
+        }
+      ]
+    }
+  ]
+}

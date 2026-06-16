@@ -1,0 +1,83 @@
+{
+  "id": "school-day",
+  "title": {
+    "zh": "校园日程",
+    "en": "School Day"
+  },
+  "summary": {
+    "zh": "校园日程决定一天内的时间段流转，也决定普通学生与未集合组织成员的自动分布。",
+    "en": "The school day controls time-block progression and the routine movement of normal students and dispersed organization members."
+  },
+  "status": {
+    "zh": "时间系统",
+    "en": "Time System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "一天结构",
+        "en": "Daily Structure"
+      },
+      "items": [
+        {
+          "zh": "现实 5 分钟约等于游戏内 1 天。",
+          "en": "Five real minutes roughly equal one in-game day."
+        },
+        {
+          "zh": "一天依次经过上课、午饭、上课、放学后、晚上。",
+          "en": "A day cycles through class, lunch, class, after school, and night."
+        },
+        {
+          "zh": "底部时间条会显示当前学期、日期和一天内的进度。",
+          "en": "The bottom timeline shows the current semester, day, and daily progress."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "学生日程 AI",
+        "en": "Student Schedule AI"
+      },
+      "items": [
+        {
+          "zh": "早上上课时，6 到 8 年级主要前往主教学楼，9 到 12 年级主要前往副教学楼。",
+          "en": "During morning class, grades 6-8 mainly move to the main teaching building, while grades 9-12 mainly move to the secondary teaching building."
+        },
+        {
+          "zh": "午饭时，大多数学生前往食堂，少部分会去小卖铺、操场或宿舍。",
+          "en": "At lunch, most students go to the cafeteria, while some visit the shop, field, or dormitory."
+        },
+        {
+          "zh": "放学后，学生会分布到宿舍楼、操场、网球场、室内体育馆、艺术中心和游乐区。",
+          "en": "After school, students distribute across dorms, the field, tennis court, indoor gym, art center, and play area."
+        },
+        {
+          "zh": "晚上，多数学生回到宿舍楼，少部分仍会留在操场。",
+          "en": "At night, most students return to dorms, while a smaller group remains on the field."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "行动小队关系",
+        "en": "Action Squad Interaction"
+      },
+      "items": [
+        {
+          "zh": "组织成员在小队处于分散状态时，仍然按照普通学生日程行动。",
+          "en": "Organization members still follow normal student schedules while their squad is dispersed."
+        },
+        {
+          "zh": "小队进入集合或潜伏后，成员会脱离普通日程 AI。",
+          "en": "When a squad gathers or goes covert, its members leave the normal schedule AI."
+        },
+        {
+          "zh": "学生日程只在时间段切换时重新分配，不会每帧随机跳动。",
+          "en": "Schedules are reassigned only when the time block changes, not every frame."
+        }
+      ]
+    }
+  ]
+}

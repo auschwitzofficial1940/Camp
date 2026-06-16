@@ -1,0 +1,99 @@
+{
+  "id": "regions",
+  "title": {
+    "zh": "地块系统",
+    "en": "Province System"
+  },
+  "summary": {
+    "zh": "地块系统把学校地图拆分为可点击、可统计、可行动的 Province 区域，是地图玩法和学生分布的基础。",
+    "en": "The province system divides the school map into clickable, trackable, and actionable provinces. It is the foundation of map gameplay and student distribution."
+  },
+  "status": {
+    "zh": "地图系统",
+    "en": "Map System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "地图结构",
+        "en": "Map Structure"
+      },
+      "items": [
+        {
+          "zh": "地块基于 Province 色块索引图识别。",
+          "en": "Provinces are identified through the province color index map."
+        },
+        {
+          "zh": "玩家可以 hover 地块查看边界，并点击地块查看信息。",
+          "en": "The player can hover over provinces to see borders and click them for information."
+        },
+        {
+          "zh": "地块会记录名称、功能、巡逻、学生数量、支持率和压力等信息。",
+          "en": "Provinces track data such as name, function, patrol level, student count, support, and pressure."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "学生分布",
+        "en": "Student Distribution"
+      },
+      "items": [
+        {
+          "zh": "学生会根据年级和时间段自动分布到不同地块。",
+          "en": "Students automatically distribute across provinces based on grade and time block."
+        },
+        {
+          "zh": "地块学生人数包含普通学生和玩家阵营成员。",
+          "en": "Province student count includes both normal students and player faction members."
+        },
+        {
+          "zh": "组织成员列表可在地块信息中单独查看。",
+          "en": "Organization members in a province can be viewed separately from the province panel."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "动态数据",
+        "en": "Dynamic Data"
+      },
+      "items": [
+        {
+          "zh": "地块支持率来自当前地块内学生信任度的平均值。",
+          "en": "Province support is based on the average trust of students currently in that province."
+        },
+        {
+          "zh": "地块压力来自当前地块内学生压力的平均值。",
+          "en": "Province pressure is based on the average pressure of students currently in that province."
+        },
+        {
+          "zh": "学生日程、区域行动和管理层状态都会影响地块数据。",
+          "en": "Student schedules, region actions, and faculty state can all affect province data."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "交互关系",
+        "en": "Interaction"
+      },
+      "items": [
+        {
+          "zh": "选中地块会打开地块信息面板。",
+          "en": "Selecting a province opens the province information panel."
+        },
+        {
+          "zh": "点击行动小队标记时，地块面板会让位给小队面板。",
+          "en": "Clicking an action squad marker replaces the province panel with the squad panel."
+        },
+        {
+          "zh": "总部选择和区域行动目标选择都依赖有效地块判断。",
+          "en": "Headquarters selection and region action target selection both rely on valid province detection."
+        }
+      ]
+    }
+  ]
+}

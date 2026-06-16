@@ -1,0 +1,75 @@
+{
+  "id": "phones",
+  "title": {
+    "zh": "手机",
+    "en": "Phones"
+  },
+  "summary": {
+    "zh": "手机是组织联络、宣传和部分互动的重要资源。它象征地下组织的信息传播能力，也可能成为管理层检查的风险点。",
+    "en": "Phones are an important resource for communication, propaganda, and certain interactions. They represent the underground organization's information reach, but can also become a risk during faculty inspections."
+  },
+  "status": {
+    "zh": "战略资源",
+    "en": "Strategic Resource"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "主要用途",
+        "en": "Main Uses"
+      },
+      "items": [
+        {
+          "zh": "手机可以提高组织的宣传和联络能力。",
+          "en": "Phones improve the organization's propaganda and communication ability."
+        },
+        {
+          "zh": "部分互动会消耗手机，例如贿赂学生。",
+          "en": "Some interactions consume phones, such as bribing students."
+        },
+        {
+          "zh": "手机数量不足时，早期扩张会更受限制。",
+          "en": "When phone supply is low, early expansion becomes more limited."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "获取方式",
+        "en": "How to Obtain"
+      },
+      "items": [
+        {
+          "zh": "手机可以通过黑市使用金钱购买。",
+          "en": "Phones can be bought with money through the black market."
+        },
+        {
+          "zh": "后续版本可能加入潜入办公室、交易或事件奖励等来源。",
+          "en": "Future versions may add sources such as office infiltration, trades, or event rewards."
+        },
+        {
+          "zh": "黑市可用性可能受地图封锁或管理层行动影响。",
+          "en": "Black market access may be affected by map lockdowns or faculty actions."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "风险",
+        "en": "Risks"
+      },
+      "items": [
+        {
+          "zh": "全校查手机等事件可能让手机从资源变成风险。",
+          "en": "Events such as campus-wide phone checks can turn phones from a resource into a liability."
+        },
+        {
+          "zh": "如果把手机交给管理层支持者，对方可能拿走资源并上报。",
+          "en": "If phones are given to faculty supporters, they may take the resource and report the organization."
+        }
+      ]
+    }
+  ]
+}

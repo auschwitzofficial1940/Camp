@@ -1,0 +1,99 @@
+{
+  "id": "region-actions",
+  "title": {
+    "zh": "区域行动系统",
+    "en": "Region Action System"
+  },
+  "summary": {
+    "zh": "区域行动系统允许玩家在选中地块后，派遣符合条件的行动小队执行宣传、招募、侦查、集会或休息。",
+    "en": "The region action system allows the player to select a province and dispatch eligible action squads for propaganda, recruitment, scouting, rallies, or rest."
+  },
+  "status": {
+    "zh": "地图行动系统",
+    "en": "Map Action System"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "行动入口",
+        "en": "Action Entry"
+      },
+      "items": [
+        {
+          "zh": "玩家点击地块后，可以在地块信息面板底部展开行动列表。",
+          "en": "After selecting a province, the player can expand the action list at the bottom of the province panel."
+        },
+        {
+          "zh": "行动包含宣传、招募、侦查、集会和休息。",
+          "en": "Actions include propaganda, recruitment, scouting, rally, and rest."
+        },
+        {
+          "zh": "不满足条件的行动会显示为不可用。",
+          "en": "Actions that do not meet requirements appear unavailable."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "小队条件",
+        "en": "Squad Requirements"
+      },
+      "items": [
+        {
+          "zh": "执行区域行动需要至少一个行动小队。",
+          "en": "Executing a region action requires at least one action squad."
+        },
+        {
+          "zh": "分散状态的小队不能执行区域行动。",
+          "en": "Dispersed squads cannot execute region actions."
+        },
+        {
+          "zh": "小队必须处于集合或潜伏，并且没有正在执行其它行动。",
+          "en": "The squad must be assembled or hidden and not currently executing another action."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "移动与进度",
+        "en": "Movement and Progress"
+      },
+      "items": [
+        {
+          "zh": "如果小队不在目标地块，会先移动到玩家选择的位置再开始行动。",
+          "en": "If the squad is not in the target province, it first moves to the selected position before starting."
+        },
+        {
+          "zh": "行动进行时，小队会显示忙碌状态和进度条。",
+          "en": "During an action, the squad shows a busy state and a progress bar."
+        },
+        {
+          "zh": "行动完成后会刷新地块、小队面板和日志。",
+          "en": "When an action completes, province data, squad panels, and logs refresh."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "效果方向",
+        "en": "Effect Direction"
+      },
+      "items": [
+        {
+          "zh": "宣传和集会偏向影响信任、支持和知名度。",
+          "en": "Propaganda and rallies mainly affect trust, support, and fame."
+        },
+        {
+          "zh": "侦查偏向揭示地块巡逻与管理层支持者信息。",
+          "en": "Scouting focuses on revealing patrol levels and faculty supporters in a province."
+        },
+        {
+          "zh": "休息偏向降低小队成员压力。",
+          "en": "Rest focuses on lowering pressure among squad members."
+        }
+      ]
+    }
+  ]
+}

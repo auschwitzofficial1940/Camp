@@ -1,0 +1,79 @@
+{
+  "id": "pressure",
+  "title": {
+    "zh": "压力",
+    "en": "Pressure"
+  },
+  "summary": {
+    "zh": "压力代表学生承受的心理负担。压力升高会削弱学生能力，达到极限时可能触发失踪、退队或退出组织等事件。",
+    "en": "Pressure represents a student's psychological burden. High pressure weakens abilities, and extreme pressure may trigger disappearance, squad departure, or quitting the organization."
+  },
+  "status": {
+    "zh": "学生状态",
+    "en": "Student State"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "基础说明",
+        "en": "Basics"
+      },
+      "items": [
+        {
+          "zh": "每名学生都有自己的压力值。",
+          "en": "Every student has an individual pressure value."
+        },
+        {
+          "zh": "顶部 HUD 的压力显示玩家阵营成员压力的平均值。",
+          "en": "The top HUD pressure value shows the average pressure of player faction members."
+        },
+        {
+          "zh": "地块压力则来自当前区域内所有学生的平均压力。",
+          "en": "Province pressure comes from the average pressure of all students currently in that area."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "压力抗性",
+        "en": "Resistance"
+      },
+      "items": [
+        {
+          "zh": "学生拥有低、中、高三种压力抗性。",
+          "en": "Students have low, medium, or high pressure resistance."
+        },
+        {
+          "zh": "压力抗性会影响后续获得压力的幅度和每日自然恢复。",
+          "en": "Pressure resistance affects later pressure gains and daily recovery."
+        },
+        {
+          "zh": "抗性不会改变学生初始压力，只影响后续变化。",
+          "en": "Resistance does not change initial pressure; it only affects later changes."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "高压后果",
+        "en": "High Pressure Effects"
+      },
+      "items": [
+        {
+          "zh": "压力升高会降低学生个人能力表现。",
+          "en": "Rising pressure reduces individual student performance."
+        },
+        {
+          "zh": "能力修正会同步影响行动小队平均能力。",
+          "en": "Ability penalties also affect action squad averages."
+        },
+        {
+          "zh": "压力达到极限时，学生可能触发崩溃事件。",
+          "en": "When pressure reaches the limit, a student may trigger a breakdown event."
+        }
+      ]
+    }
+  ]
+}

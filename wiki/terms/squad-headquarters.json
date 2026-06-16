@@ -1,0 +1,59 @@
+{
+  "id": "squad-headquarters",
+  "title": {
+    "zh": "小队总部",
+    "en": "Squad Headquarters"
+  },
+  "summary": {
+    "zh": "小队总部是行动小队在地图上的基准位置。分散状态下，小队标记会显示在总部；迁移总部会改变后续行动调度的起点。",
+    "en": "A squad headquarters is the squad's base position on the map. In the dispersed state, the squad marker appears at headquarters; relocation changes the base for later dispatch."
+  },
+  "status": {
+    "zh": "行动小队术语",
+    "en": "Action Squad Term"
+  },
+  "updated": "2026-06-16",
+  "version": "V1.0",
+  "sections": [
+    {
+      "heading": {
+        "zh": "设置方式",
+        "en": "Placement"
+      },
+      "items": [
+        {
+          "zh": "创建行动小队时，玩家需要在有效地块内选择总部位置。",
+          "en": "When creating an action squad, the player must choose a headquarters inside a valid province."
+        },
+        {
+          "zh": "总部不能设置在无效区域或禁止区域。",
+          "en": "Headquarters cannot be placed in invalid or forbidden areas."
+        },
+        {
+          "zh": "总部选择会记录具体地块和地图位置。",
+          "en": "The headquarters records both the province and the map position."
+        }
+      ]
+    },
+    {
+      "heading": {
+        "zh": "状态关系",
+        "en": "State Interaction"
+      },
+      "items": [
+        {
+          "zh": "分散状态下，小队标记固定显示在总部。",
+          "en": "When dispersed, the squad marker stays at headquarters."
+        },
+        {
+          "zh": "集合或潜伏状态下迁移总部时，小队需要移动到新位置。",
+          "en": "When assembled or hidden, relocating headquarters requires the squad to move to the new location."
+        },
+        {
+          "zh": "总部是后续区域行动、集合和迁移系统的重要基准点。",
+          "en": "Headquarters are an important reference point for region actions, gathering, and relocation."
+        }
+      ]
+    }
+  ]
+}
