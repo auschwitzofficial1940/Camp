@@ -788,6 +788,10 @@ body.faction-active .faction-select {
   object-fit: contain;
 }
 
+.mode-icons b {
+  font: inherit;
+}
+
 .app-shell {
   opacity: 1;
   transition: opacity 760ms ease;

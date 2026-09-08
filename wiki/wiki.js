@@ -17,7 +17,17 @@ const UI_TEXT = {
   updated: { zh: "最后更新", en: "Updated" },
   archived: { zh: "已记录", en: "Archived" },
   unmarked: { zh: "未标注", en: "Unmarked" },
+  home: { zh: "返回主页", en: "Back to home" },
+  navName: { zh: "剑拔弩张百科", en: "Tension Point Wiki" },
+  brandTitle: { zh: "剑拔弩张 Wiki", en: "Tension Point Wiki" },
+  brandTagline: { zh: "校园政治策略模拟档案库", en: "School political strategy archive" },
+  searchLabel: { zh: "搜索档案", en: "Search Archive" },
+  searchPlaceholder: { zh: "输入关键词...", en: "Enter a keyword..." },
+  language: { zh: "语言", en: "Language" },
 };
+
+const LANGUAGE_STORAGE_KEY = "tp.language";
+const urlParams = new URLSearchParams(window.location.search);
 
 const state = {
   manifest: null,
@@ -25,21 +35,31 @@ const state = {
   category: "terms",
   articleId: null,
   search: "",
-  language: "zh",
+  language: normalizeLanguage(urlParams.get("lang") || localStorage.getItem(LANGUAGE_STORAGE_KEY)),
   expandedCategories: new Set(),
-  embed: new URLSearchParams(window.location.search).get("embed") === "1",
+  embed: urlParams.get("embed") === "1",
 };
 
 const categoryList = document.getElementById("wikiCategoryList");
 const articlePanel = document.getElementById("wikiArticle");
 const searchInput = document.getElementById("wikiSearch");
 const modeLabel = document.getElementById("wikiModeLabel");
+const languageSelect = document.getElementById("wikiLanguageSelect");
+const languageLabel = document.getElementById("wikiLanguageLabel");
+const homeLink = document.getElementById("wikiHomeLink");
+const navName = document.getElementById("wikiNavName");
+const brandTitle = document.getElementById("wikiBrandTitle");
+const brandTagline = document.getElementById("wikiBrandTagline");
+const searchLabel = document.getElementById("wikiSearchLabel");
 
 initWiki();
 
 async function initWiki() {
   document.body.classList.add(state.embed ? "wiki-embed" : "wiki-standalone");
-  modeLabel.textContent = state.embed ? "EMBEDDED FIELD WIKI" : "STANDALONE DATABASE";
+  applyWikiLanguage();
+  languageSelect.addEventListener("change", () => {
+    setWikiLanguage(languageSelect.value, { notifyParent: true });
+  });
   searchInput.addEventListener("input", () => {
     state.search = searchInput.value.trim().toLowerCase();
     if (state.search) expandCategoriesWithMatches();
@@ -55,6 +75,41 @@ async function initWiki() {
     renderError(text(UI_TEXT.loadFailed));
   }
 }
+
+function normalizeLanguage(value) {
+  return String(value || "").toLowerCase().startsWith("en") ? "en" : "zh";
+}
+
+function setWikiLanguage(nextLanguage, { notifyParent = false } = {}) {
+  state.language = normalizeLanguage(nextLanguage);
+  localStorage.setItem(LANGUAGE_STORAGE_KEY, state.language);
+  applyWikiLanguage();
+  if (state.manifest) renderCategories();
+  const entry = state.manifest && getAllEntries().find((candidate) => candidate.id === state.articleId);
+  const article = state.articles.get(state.articleId);
+  if (entry && article) renderArticle(article, entry);
+  if (notifyParent && window.parent !== window) {
+    window.parent.postMessage({ type: "tp-wiki-language-change", language: state.language }, window.location.origin);
+  }
+}
+
+function applyWikiLanguage() {
+  document.documentElement.lang = state.language === "zh" ? "zh-CN" : "en";
+  languageSelect.value = state.language;
+  languageLabel.textContent = text(UI_TEXT.language);
+  homeLink.setAttribute("aria-label", text(UI_TEXT.home));
+  navName.textContent = text(UI_TEXT.navName);
+  brandTitle.textContent = text(UI_TEXT.brandTitle);
+  brandTagline.textContent = text(UI_TEXT.brandTagline);
+  searchLabel.textContent = text(UI_TEXT.searchLabel);
+  searchInput.placeholder = text(UI_TEXT.searchPlaceholder);
+  modeLabel.textContent = state.embed ? "EMBEDDED FIELD WIKI" : "STANDALONE DATABASE";
+}
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin || event.data?.type !== "tp-language") return;
+  setWikiLanguage(event.data.language);
+});
 
 async function fetchJson(path) {
   const response = await fetch(path, { cache: "no-cache" });

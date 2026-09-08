@@ -39,6 +39,7 @@ const openSettings = document.getElementById("openSettings");
 const gameSettings = document.getElementById("gameSettings");
 const closeSettings = document.getElementById("closeSettings");
 const settingsPanel = document.getElementById("settingsPanel");
+const languageSelect = document.getElementById("languageSelect");
 const musicSelect = document.getElementById("musicSelect");
 const playMode = document.getElementById("playMode");
 const cloudTransition = document.getElementById("cloudTransition");
@@ -64,9 +65,12 @@ const speedOptions = document.querySelectorAll(".speed-option");
 const zoomValue = document.getElementById("zoomValue");
 const dayLabel = document.getElementById("dayLabel");
 const phaseLabel = document.getElementById("phaseLabel");
+const timeChip = document.getElementById("timeChip");
 const semesterDayLabel = document.getElementById("semesterDayLabel");
 const dayProgressFill = document.getElementById("dayProgressFill");
 const memberCount = document.getElementById("memberCount");
+const moneyCount = document.getElementById("moneyCount");
+const foodCount = document.getElementById("foodCount");
 const logList = document.getElementById("logList");
 const recruitButton = document.getElementById("recruitButton");
 const recruitPanel = document.getElementById("recruitPanel");
@@ -211,6 +215,8 @@ const musicTracks = [
 const PRELOAD_RESOURCES = [
   "favicon.ico",
   "name.json",
+  "assets/i18n/zh.json",
+  "assets/i18n/en.json",
   "assets/主页.png",
   "assets/学校视图.png",
   "assets/索引图.png",
@@ -810,35 +816,12 @@ const BRIBE_TRUST_GAIN = 15;
 const VOLUNTARY_TRUST_THRESHOLD = 80;
 const VOLUNTARY_FAME_THRESHOLD = 40;
 const MAIL_TEMPLATES = [
-  {
-    subject: ".......",
-    body:
-      "我不确定这封邮件会不会被看到。\n\n最近学校里有很多人在讨论一些事情。\n\n我不知道你们到底是谁，\n但如果你们真的想改变什么……\n\n也许我能帮上忙。",
-  },
-  {
-    subject: "我受够了",
-    body:
-      "每天都一样。\n\n巡逻、检查、压力、规矩。\n\n所有人都装作正常，\n但根本没人真的开心。\n\n如果你们不是在开玩笑，\n我愿意加入。",
-  },
-  {
-    subject: "不要回复太快",
-    body:
-      "有人说最近有学生被约谈了。\n\n我不知道是不是因为那个论坛。\n\n如果这封邮件有风险，\n请直接删掉。\n\n但如果安全的话……\n我想知道你们到底在做什么。",
-  },
-  {
-    subject: "今天晚上又突击检查。",
-    body: "他们翻了所有人的柜子。\n\n我已经受够这种生活了。\n\n如果你们准备行动，\n算我一个。",
-  },
-  {
-    subject: "我有条件",
-    body:
-      "我知道你们最近发展得很快。\n\n我可以帮你们。\n\n但我不想被当成炮灰。\n\n如果你们真的有能力保护成员，\n再联系我。",
-  },
-  {
-    subject: "申请加入",
-    body:
-      "我已经观察你们很久了。\n\n现在越来越多人开始意识到，\n学校并不像它表现出来的那样。\n\n我愿意正式加入组织。\n\n不用回复这封邮件。\n明天午饭后，\n我会在网球场旁边等也可以线上告诉我。",
-  },
+  { subjectKey: "mail.subject1", bodyKey: "mail.body1" },
+  { subjectKey: "mail.subject2", bodyKey: "mail.body2" },
+  { subjectKey: "mail.subject3", bodyKey: "mail.body3" },
+  { subjectKey: "mail.subject4", bodyKey: "mail.body4" },
+  { subjectKey: "mail.subject5", bodyKey: "mail.body5" },
+  { subjectKey: "mail.subject6", bodyKey: "mail.body6" },
 ];
 
 let indexReady = false;
@@ -878,6 +861,8 @@ let selectedStudentId = null;
 let studentDetailSource = "";
 let resources = {
   phones: 10,
+  money: 35,
+  food: 18,
 };
 let managementAwareness = 0;
 let bribeUsedDayKey = null;
@@ -920,7 +905,79 @@ let gameTime = {
   lastTickAt: null,
 };
 
+function tr(key, variables = {}) {
+  return window.tpI18n?.t(key, variables) || key;
+}
+
+function tv(value) {
+  if (value == null || value === "") return "";
+  const key = `value.${value}`;
+  const translated = tr(key);
+  return translated === key ? String(value) : translated;
+}
+
+function regionText(value) {
+  const name = typeof value === "string" ? value : value?.name;
+  if (!name) return "";
+  const key = `region.${name}`;
+  const translated = tr(key);
+  return translated === key ? name : translated;
+}
+
+function regionRoleText(value) {
+  const role = typeof value === "string" ? value : value?.role;
+  if (!role) return "";
+  const key = `regionRole.${role}`;
+  const translated = tr(key);
+  return translated === key ? role : translated;
+}
+
+async function initializeI18n() {
+  const activeLanguage = await window.tpI18n?.init();
+  if (languageSelect && activeLanguage) languageSelect.value = activeLanguage;
+}
+
+window.addEventListener("tp:languagechange", (event) => {
+  const language = event.detail?.language || "zh";
+  if (languageSelect) languageSelect.value = language;
+  document.title = language === "en"
+    ? "Tension Point | School Political Strategy Simulation"
+    : "剑拔弩张 Tension Point | 校园政治策略模拟网页游戏";
+  pauseToggle?.setAttribute("aria-label", tr(paused ? "time.resume" : "time.pause"));
+  pauseToggle?.setAttribute("data-label", tr(paused ? "time.resume" : "time.pause"));
+  if (wikiFrame?.contentWindow && wikiFrame.src !== "about:blank") {
+    wikiFrame.contentWindow.postMessage({ type: "tp-language", language }, window.location.origin);
+  }
+  refreshLocalizedGameUi();
+});
+
+function refreshLocalizedGameUi() {
+  updateTimeUi();
+  updateResourceUi();
+  updateTopMeters();
+  updateAwarenessUi();
+  updateGlobalVersionBadge(globalVersionBadge?.textContent);
+  if (!recruitPanel.hidden) renderRecruitList(selectedRecruitGrade);
+  if (!membersPanel.hidden) renderMembersList();
+  if (!squadPanel.hidden) renderSquadPanel();
+  if (!squadCreateModal.hidden && draftSquad) renderDraftSquad();
+  if (selectedRegion) refreshRegionPanel();
+  if (selectedSquadInfoId) showSquadInfoPanel(selectedSquadInfoId);
+  if (!mailPanel.hidden) renderMailList();
+  if (!studentDetailPanel.hidden) {
+    const student = getSelectedStudent();
+    if (student) showStudentDetail(student.id, studentDetailSource);
+  }
+  if (updateLogState.open) void renderUpdateLog();
+}
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin || event.data?.type !== "tp-wiki-language-change") return;
+  window.tpI18n?.setLanguage(event.data.language);
+});
+
 document.body.classList.add("loading-active", "menu-active");
+initializeI18n();
 setupUiAudio();
 setupMenuMusic();
 setupMenuIdle();
@@ -1063,12 +1120,12 @@ startGame.addEventListener("click", () => {
 });
 
 selectFaculty.addEventListener("pointerenter", () => {
-  selectFaculty.querySelector("strong").textContent = "敬请谅解";
+  selectFaculty.querySelector("strong").textContent = tr("faction.comingSoon");
   selectFaculty.querySelector("span").textContent = "COMING SOON";
 });
 
 selectFaculty.addEventListener("pointerleave", () => {
-  selectFaculty.querySelector("strong").textContent = "加入老师阵营";
+  selectFaculty.querySelector("strong").textContent = tr("faction.joinFaculty");
   selectFaculty.querySelector("span").textContent = "JOIN THE FACULTY";
 });
 
@@ -1165,6 +1222,13 @@ playMode.addEventListener("change", () => {
   gameMusic.loop = musicMode === "loop";
 });
 
+languageSelect.addEventListener("change", async () => {
+  languageSelect.disabled = true;
+  await window.tpI18n?.setLanguage(languageSelect.value);
+  languageSelect.disabled = false;
+  languageSelect.focus();
+});
+
 collapseLog.addEventListener("click", () => {
   eventLog.classList.add("collapsed");
   expandLog.hidden = false;
@@ -1181,7 +1245,7 @@ quickDockToggle.addEventListener("click", () => {
   quickDock.classList.remove("pop");
   quickDock.querySelector(".quick-dock-panel")?.setAttribute("aria-hidden", String(!expanded));
   quickDockToggle.setAttribute("aria-expanded", String(expanded));
-  quickDockToggle.setAttribute("aria-label", expanded ? "收起快捷菜单" : "展开快捷菜单");
+  quickDockToggle.setAttribute("aria-label", tr(expanded ? "dock.collapse" : "dock.expand"));
   void quickDock.offsetWidth;
   quickDock.classList.add("pop");
   window.setTimeout(() => quickDock.classList.remove("pop"), 460);
@@ -1248,8 +1312,8 @@ function setPausedState(nextPaused) {
   paused = nextPaused;
   gameTime.lastTickAt = performance.now();
   document.body.classList.toggle("time-paused", paused);
-  pauseToggle.setAttribute("aria-label", paused ? "继续" : "暂停");
-  pauseToggle.dataset.label = paused ? "继续" : "暂停";
+  pauseToggle.setAttribute("aria-label", tr(paused ? "time.resume" : "time.pause"));
+  pauseToggle.dataset.label = tr(paused ? "time.resume" : "time.pause");
   pauseIcon.src = paused ? "assets/icon/开始.png" : "assets/icon/停.png";
   if (!paused) timeSpeed = lastTimeSpeed;
   updateSpeedUi();
@@ -1476,18 +1540,15 @@ document.querySelectorAll(".grade-tab").forEach((button) => {
 bribeStudent.addEventListener("click", () => {
   const student = getSelectedStudent();
   if (!student || !canBribeStudent(student)) return;
-  openConfirmModal(
-    `你确定要使用 <strong class="phone-emphasis">${BRIBE_PHONE_COST}个手机</strong> 来增加这个学生的信任度吗？`,
-    () => confirmBribeStudent(student),
-  );
+  openConfirmModal(tr("student.bribeConfirm", { cost: BRIBE_PHONE_COST }), () => confirmBribeStudent(student));
 });
 
 inviteStudent.addEventListener("click", () => {
   const student = getSelectedStudent();
   if (!student || getInviteChance(student) <= 0 || isPlayerMember(student.id)) return;
   const chance = getInviteChance(student);
-  const riskText = chance >= 0.75 ? "有较小概率失败。" : "有极大概率失败。";
-  openConfirmModal(`你确定要邀请这个学生吗？<br><span class="confirm-note">${riskText}</span>`, () => confirmInviteStudent(student));
+  const riskText = tr(chance >= 0.75 ? "student.inviteRiskLow" : "student.inviteRiskHigh");
+  openConfirmModal(tr("student.inviteConfirm", { risk: riskText }), () => confirmInviteStudent(student));
 });
 
 removeMember.addEventListener("click", () => {
@@ -1589,7 +1650,7 @@ function resetView() {
 }
 
 async function preloadStartupResources() {
-  updateLoadingProgress(0, "正在检查校园档案...");
+  updateLoadingProgress(0, tr("loading.checking"));
   const resources = [...new Set(PRELOAD_RESOURCES)];
   let completed = 0;
   const failures = [];
@@ -1601,7 +1662,7 @@ async function preloadStartupResources() {
     lastProgressAt = performance.now();
     if (failed) failures.push(src);
     const percent = Math.round((completed / resources.length) * 100);
-    updateLoadingProgress(percent, failed ? "发现缺失资源，继续尝试加载..." : "正在预加载战略资源...");
+    updateLoadingProgress(percent, failed ? tr("loading.missing") : tr("loading.preloading"));
   };
 
   const preloadJobs = resources.map(async (src) => {
@@ -1648,15 +1709,13 @@ async function preloadStartupResources() {
 
   if (result.stalled || result.timedOut) {
     failures.push(result.stalled ? "stalled" : "timeout");
-    loadingStatus.textContent = result.stalled
-      ? "资源加载失败，可能是网络错误，但仍可继续"
-      : "资源加载超过 20 秒，已停止等待，但仍可继续";
+    loadingStatus.textContent = result.stalled ? tr("loading.stalled") : tr("loading.timeout");
     loadingContinue.hidden = false;
     loadingContinue.focus();
     return;
   }
 
-  updateLoadingProgress(100, failures.length ? "部分资源加载失败，但仍可继续" : "资源加载完成");
+  updateLoadingProgress(100, failures.length ? tr("loading.partial") : tr("loading.complete"));
   if (failures.length) {
     loadingContinue.hidden = false;
     loadingContinue.focus();
@@ -1799,7 +1858,7 @@ function initializeStudentPopulation() {
   });
   protectLockedMemberTrust();
   updateStudentSchedules(true);
-  appendLog(`学生生态初始化：全校 ${allStudents.length} 人，地下组织核心成员 ${playerMembers.length} 人。`);
+  appendLog(tr("log.initialized", { students: allStudents.length, members: playerMembers.length }));
   updateMemberUi();
   updateResourceUi();
   updateTopMeters();
@@ -1901,7 +1960,7 @@ function advanceGameDay() {
   }
 
   checkVoluntaryApplications();
-  appendLog(`${getSemesterName()} 第 ${gameTime.day} 天开始：校园时间进入${getCurrentPhase()}。`);
+  appendLog(tr("log.dayStarted", { semester: tv(getSemesterName()), day: gameTime.day, phase: tv(getCurrentPhase()) }));
   updateTopMeters();
   if (!membersPanel.hidden) renderMembersList();
   if (!recruitPanel.hidden) renderRecruitList(selectedRecruitGrade);
@@ -1915,7 +1974,7 @@ function advanceGameDay() {
 
 function finishSemester() {
   const endingSemester = gameTime.semester;
-  appendLog(`${getSemesterName(endingSemester)} 第 ${DAYS_PER_SEMESTER} 天结束。学生压力与信任关系进入新一轮波动。`);
+  appendLog(tr("log.semesterEnded", { semester: tv(getSemesterName(endingSemester)), day: DAYS_PER_SEMESTER }));
 
   if (endingSemester >= SEMESTERS_PER_YEAR) {
     advanceAcademicYear();
@@ -1947,10 +2006,10 @@ function advanceAcademicYear() {
     }
   }
 
-  appendLog(`学年更替：${graduates} 名 12 年级学生离校，全体升年级，6-10 年级新增 ${newcomers} 名学生。`);
+  appendLog(tr("log.schoolYear", { graduates, newcomers }));
   updateMemberUi();
   if (playerGraduates) {
-    endGame("draw", "任期结束", "玩家代表已从 12 年级毕业离校。学生自治尚未建立，管理层也未彻底瓦解，校园局势进入平局。");
+    endGame("draw", tr("ending.termEnded"), tr("ending.graduated"));
   }
 }
 
@@ -1959,16 +2018,16 @@ function endGame(result, title, body) {
   gameEnded = true;
   paused = true;
   document.body.classList.add("time-paused");
-  pauseToggle.setAttribute("aria-label", "继续");
-  pauseToggle.dataset.label = "继续";
+  pauseToggle.setAttribute("aria-label", tr("time.resume"));
+  pauseToggle.dataset.label = tr("time.resume");
   pauseIcon.src = "assets/icon/开始.png";
   updateSpeedUi();
-  endingType.textContent = result === "draw" ? "平局" : result;
+  endingType.textContent = result === "draw" ? tr("ending.draw") : result;
   endingTitle.textContent = title;
   endingBody.textContent = body;
   endingScreen.hidden = false;
   window.requestAnimationFrame(() => endingScreen.classList.add("open"));
-  appendLog(`${endingType.textContent}：${title}。`);
+  appendLog(tr("log.ending", { result: endingType.textContent, title }));
 }
 
 function applyDailyStudentDrift() {
@@ -1992,7 +2051,7 @@ function applyDailySquadStatusEffects() {
       squad.hiddenDays = Number(squad.hiddenDays || 0) + 1;
       if (squad.hiddenDays > 3) {
         managementAwareness = clamp(managementAwareness + 1, 0, 100);
-        appendLog(`${squad.name} 连续潜伏过久，引起了管理层的轻微怀疑。`);
+        appendLog(tr("log.hiddenTooLong", { name: squad.name }));
       }
     } else {
       squad.hiddenDays = 0;
@@ -2023,7 +2082,7 @@ function tickMissingStudent(student) {
   student.missingDays = Math.max(0, student.missingDays - 1);
   if (!student.missingDays) {
     student.status = "怀疑";
-    appendLog(`${student.name} 重新出现了，但状态仍然很不稳定。`);
+    appendLog(tr("log.studentReturned", { name: student.name }));
   }
 }
 
@@ -2043,7 +2102,7 @@ function triggerStressBreakdown(student) {
     removeStudentFromSquad(student);
     removeStudentFromOrganization(student, 30);
     student.stress = clamp(student.stress - 20, 0, 100);
-    appendLog(`${student.name} 压力达到极限，退出了组织。`);
+    appendLog(tr("log.leftOrganizationStress", { name: student.name }));
     refreshStudentViews(student);
     if (!squadPanel.hidden) renderSquadPanel();
     if (!squadCreateModal.hidden) renderDraftSquad();
@@ -2053,7 +2112,7 @@ function triggerStressBreakdown(student) {
     removeStudentFromSquad(student);
     student.stress = clamp(student.stress - 15, 0, 100);
     student.status = "恐惧";
-    appendLog(`${student.name} 压力达到极限，退出了行动小队。`);
+    appendLog(tr("log.leftSquadStress", { name: student.name }));
     refreshStudentViews(student);
     if (!squadPanel.hidden) renderSquadPanel();
     if (!squadCreateModal.hidden) renderDraftSquad();
@@ -2061,16 +2120,17 @@ function triggerStressBreakdown(student) {
   }
   student.missingDays = randomInt(2, 5);
   student.status = "失踪";
-  appendLog(`${student.name} 压力达到极限，暂时失踪了。`);
+  appendLog(tr("log.missingStress", { name: student.name }));
   refreshStudentViews(student);
   if (!squadPanel.hidden) renderSquadPanel();
   if (!squadCreateModal.hidden) renderDraftSquad();
 }
 
 function updateTimeUi() {
-  dayLabel.textContent = `第 ${gameTime.totalDay} 天`;
-  phaseLabel.textContent = getCurrentPhase();
-  semesterDayLabel.textContent = `${getSemesterName()} 第 ${gameTime.day} 天`;
+  dayLabel.textContent = tr("time.day", { day: gameTime.totalDay });
+  phaseLabel.textContent = tv(getCurrentPhase());
+  timeChip.title = tr("time.summary", { day: gameTime.totalDay, phase: tv(getCurrentPhase()) });
+  semesterDayLabel.textContent = tr("time.semesterDay", { semester: tv(getSemesterName()), day: gameTime.day });
   dayProgressFill.style.width = `${Math.min(100, (gameTime.dayProgressMs / REAL_MS_PER_GAME_DAY) * 100)}%`;
   updateStudentSchedules();
   updateMapVisual();
@@ -2078,6 +2138,7 @@ function updateTimeUi() {
 
 function updateMemberUi() {
   memberCount.textContent = String(playerMembers.length);
+  memberCount.closest(".resource-chip").title = tr("resource.members", { count: playerMembers.length });
 }
 
 function updateTopMeters() {
@@ -2087,10 +2148,10 @@ function updateTopMeters() {
   const outsideStudents = allStudents.filter((student) => !memberIds.has(student.id));
   const studentSupport = averageStudents(outsideStudents, (student) => student.trust);
 
-  setHudMeter(pressureMeter, pressureChip, pressureTip, organizationPressure, "玩家阵营成员压力", "当前组织成员压力的平均值。越高越容易出现失踪、退队或退出组织。");
-  setHudMeter(stabilityMeter, stabilityChip, stabilityTip, organizationStability, "玩家阵营稳定度", "当前组织成员信任度的平均值。越高代表内部关系越稳。");
-  setHudMeter(studentSupportMeter, studentSupportChip, studentSupportTip, studentSupport, "学生支持", "未加入玩家阵营的学生信任度平均值。代表外围学生对你的整体态度。");
-  setHudMeter(fameMeter, fameChip, fameTip, factionFame, "知名度", "地下组织在校园里的被知晓程度。目前主要影响高信任学生是否主动发来申请。");
+  setHudMeter(pressureMeter, pressureChip, pressureTip, organizationPressure, tr("hud.pressure"), tr("hud.pressureDesc"));
+  setHudMeter(stabilityMeter, stabilityChip, stabilityTip, organizationStability, tr("hud.stability"), tr("hud.stabilityDesc"));
+  setHudMeter(studentSupportMeter, studentSupportChip, studentSupportTip, studentSupport, tr("hud.support"), tr("hud.supportDesc"));
+  setHudMeter(fameMeter, fameChip, fameTip, factionFame, tr("hud.fame"), tr("hud.fameDesc"));
 }
 
 function averageStudents(students, getter) {
@@ -2105,7 +2166,7 @@ function setHudMeter(meter, chip, tip, value, label, description) {
 
   const title = document.createElement("span");
   title.className = "hud-tooltip-title";
-  title.textContent = `${label}：`;
+  title.textContent = tr("common.labelColon", { label });
 
   const valueRow = document.createElement("span");
   valueRow.className = "hud-tooltip-value";
@@ -2120,24 +2181,28 @@ function setHudMeter(meter, chip, tip, value, label, description) {
 
   const copy = document.createElement("span");
   copy.className = "hud-tooltip-copy";
-  copy.textContent = `解释：${description}`;
+  copy.textContent = tr("hud.explanation", { description });
 
   tip.append(title, valueRow, copy);
 }
 
 function updateResourceUi() {
   phoneCount.textContent = String(resources.phones);
-  phoneCount.closest(".resource-chip").title = `手机：${resources.phones}`;
+  phoneCount.closest(".resource-chip").title = tr("resource.phones", { count: resources.phones });
+  moneyCount.textContent = String(resources.money);
+  moneyCount.closest(".resource-chip").title = tr("resource.money", { count: resources.money });
+  foodCount.textContent = String(resources.food);
+  foodCount.closest(".resource-chip").title = tr("resource.food", { count: resources.food });
 }
 
 function updateAwarenessUi() {
   awarenessMeter.style.width = `${managementAwareness}%`;
-  awarenessChip.title = `管理层察觉：${managementAwareness}%`;
-  setHudMeter(awarenessMeter, awarenessChip, awarenessTip, managementAwareness, "管理层察觉", "管理层对地下组织的怀疑程度。越高越容易触发巡查、封锁和调查。");
+  awarenessChip.title = tr("common.labelColon", { label: tr("hud.awareness") }) + `${managementAwareness}%`;
+  setHudMeter(awarenessMeter, awarenessChip, awarenessTip, managementAwareness, tr("hud.awareness"), tr("hud.awarenessDesc"));
 }
 
 function renderRecruitList(grade) {
-  recruitTitle.textContent = `${grade} 年级学生`;
+  recruitTitle.textContent = tr("format.gradeStudents", { grade });
   recruitList.replaceChildren();
   const students = allStudents.filter((student) => student.grade === grade);
 
@@ -2158,7 +2223,7 @@ function renderMembersList() {
   if (membersList.children.length === 0) {
     const empty = document.createElement("p");
     empty.className = "empty-member-list";
-    empty.textContent = "暂无普通成员。";
+    empty.textContent = tr("members.empty");
     membersList.append(empty);
   }
 }
@@ -2169,10 +2234,10 @@ function renderSquadPanel() {
     const empty = document.createElement("section");
     empty.className = "squad-empty";
     const text = document.createElement("p");
-    text.textContent = "你目前没有任何行动小队";
+    text.textContent = tr("squads.empty");
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = "创建新的行动小队";
+    button.textContent = tr("squads.create");
     button.addEventListener("click", openSquadCreateModal);
     empty.append(text, button);
     squadList.append(empty);
@@ -2190,19 +2255,22 @@ function renderSquadPanel() {
     title.textContent = squad.name;
     const meta = document.createElement("p");
     const age = Math.max(0, gameTime.totalDay - squad.createdTotalDay);
-    meta.textContent = `${squad.members.length} 人 / ${squad.createdLabel} 创建 / 已存在 ${age} 天`;
+    const created = squad.createdSemester
+      ? tr("time.semesterDay", { semester: tv(getSemesterName(squad.createdSemester)), day: squad.createdDay })
+      : squad.createdLabel;
+    meta.textContent = tr("format.squadMeta", { count: squad.members.length, created, days: age });
     const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
     const meters = document.createElement("div");
     meters.className = "squad-card-meters";
-    meters.append(createSquadMiniMeter("稳定度", values.stability, "stability"), createSquadMiniMeter("压力", values.pressure, "pressure"));
+    meters.append(createSquadMiniMeter(tr("hud.stability"), values.stability, "stability"), createSquadMiniMeter(tr("student.stress"), values.pressure, "pressure"));
     const abilities = document.createElement("div");
     abilities.className = "squad-card-abilities";
-    abilities.innerHTML = `<span>宣传 ${values.propaganda}</span><span>应急 ${values.emergency}</span><span>行动 ${values.mobility}</span><span>侦查 ${values.scouting}</span>`;
+    abilities.innerHTML = `<span>${tv("宣传")} ${values.propaganda}</span><span>${tr("student.emergency")} ${values.emergency}</span><span>${tr("label.mobility")} ${values.mobility}</span><span>${tv("侦查")} ${values.scouting}</span>`;
     body.append(title, meta, meters);
     if (squad.currentAction) {
       const progress = document.createElement("div");
       progress.className = "squad-action-progress";
-      progress.innerHTML = `<span>${squad.currentAction.name}中</span><i><b style="width:${clamp(squad.currentAction.progress || 0, 0, 100)}%"></b></i>`;
+      progress.innerHTML = `<span>${tr("format.actioning", { action: tv(squad.currentAction.name) })}</span><i><b style="width:${clamp(squad.currentAction.progress || 0, 0, 100)}%"></b></i>`;
       body.append(progress);
     }
     card.append(flag, body, abilities);
@@ -2219,7 +2287,7 @@ function renderSquadPanel() {
   const createAnother = document.createElement("button");
   createAnother.type = "button";
   createAnother.className = "squad-create-small";
-  createAnother.textContent = "创建新的行动小队";
+  createAnother.textContent = tr("squads.create");
   createAnother.addEventListener("click", openSquadCreateModal);
   squadList.append(createAnother);
 }
@@ -2280,8 +2348,9 @@ function closeSquadCreateModal() {
 
 function openWikiOverlay() {
   wikiOverlay.hidden = false;
-  if (wikiFrame.getAttribute("src") !== "/wiki/?embed=1") {
-    wikiFrame.src = "/wiki/?embed=1";
+  const wikiSource = `/wiki/?embed=1&lang=${window.tpI18n?.getLanguage?.() || "zh"}`;
+  if (wikiFrame.getAttribute("src") !== wikiSource) {
+    wikiFrame.src = wikiSource;
   }
   requestAnimationFrame(() => wikiOverlay.classList.add("open"));
 }
@@ -2374,7 +2443,7 @@ async function renderUpdateLog() {
     await renderUpdateLogOverview();
   } catch (error) {
     console.warn("Update log render failed:", error);
-    renderUpdateLogError("更新日志加载失败，请稍后再试。");
+    renderUpdateLogError(tr("updates.loadFailed"));
   }
 }
 
@@ -2386,7 +2455,7 @@ async function renderUpdateLogOverview() {
   rocket.className = "rocket-node";
   const rocketImage = document.createElement("img");
   rocketImage.src = "assets/image/火箭发射.gif";
-  rocketImage.alt = "更新日志启动";
+  rocketImage.alt = tr("updates.rocketAlt");
   rocketImage.addEventListener("error", () => {
     rocketImage.replaceWith(createRocketFallback());
   });
@@ -2396,8 +2465,8 @@ async function renderUpdateLogOverview() {
   layout.rail.append(rocket, timeline);
 
   const eyebrow = createTextElement("p", "update-panel-eyebrow", "UPDATE ARCHIVE");
-  const title = createTextElement("h3", "update-panel-title", "版本档案");
-  const copy = createTextElement("p", "update-panel-copy", "选择左侧日期查看当日更新。这里记录《剑拔弩张》的系统变化、功能追加和重要修复。");
+  const title = createTextElement("h3", "update-panel-title", tr("updates.archive"));
+  const copy = createTextElement("p", "update-panel-copy", tr("updates.overviewHint"));
   layout.main.append(eyebrow, title);
   appendUpdateLogFallbackNotice(layout.main);
   layout.main.append(copy);
@@ -2410,9 +2479,9 @@ async function renderUpdateLogDay(date) {
   const layout = createUpdateLogLayout();
   layout.rail.append(createDateTimeline(date));
 
-  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${day.label} ${day.timezone}`);
-  const title = createTextElement("h3", "update-panel-title", "当日更新节点");
-  const copy = createTextElement("p", "update-panel-copy", "选择一个时间点查看详细更新说明。当天记录按时间从新到旧排列。");
+  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${formatUpdateLogDate(day)} ${day.timezone}`);
+  const title = createTextElement("h3", "update-panel-title", tr("updates.dayTitle"));
+  const copy = createTextElement("p", "update-panel-copy", tr("updates.dayHint"));
   layout.main.append(eyebrow, title);
   appendUpdateLogFallbackNotice(layout.main);
   layout.main.append(copy, createLogTimeline(day));
@@ -2426,7 +2495,7 @@ async function renderUpdateLogDetail(date, logId) {
   const layout = createUpdateLogLayout();
   layout.rail.append(createLogTimeline(day, logId));
 
-  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${day.label} ${log.time} ${day.timezone}`);
+  const eyebrow = createTextElement("p", "update-panel-eyebrow", `${formatUpdateLogDate(day)} ${log.time} ${day.timezone}`);
   const title = createTextElement("h3", "update-panel-title", log.title);
   layout.main.append(eyebrow, title);
   appendUpdateLogFallbackNotice(layout.main);
@@ -2465,7 +2534,7 @@ function mountUpdateLogLayout(root) {
 function renderUpdateLogLoading() {
   const loading = document.createElement("div");
   loading.className = "update-log-message";
-  loading.textContent = "正在读取更新日志...";
+  loading.textContent = tr("updates.loading");
   updateLogContent.replaceChildren(loading);
 }
 
@@ -2480,7 +2549,7 @@ function appendUpdateLogFallbackNotice(container) {
   if (!updateLogCache.failed) return;
   const notice = document.createElement("p");
   notice.className = "update-log-fallback";
-  notice.textContent = updateLogCache.errorMessage || "更新日志加载失败，已显示本地备用记录。";
+  notice.textContent = updateLogCache.errorMessage || tr("updates.fallback");
   container.append(notice);
 }
 
@@ -2502,7 +2571,7 @@ function updateGlobalVersionBadge(version = getFallbackLatestVersion()) {
   if (!globalVersionBadge) return;
   const safeVersion = version || getFallbackLatestVersion() || "V1.0.0";
   globalVersionBadge.textContent = safeVersion;
-  globalVersionBadge.setAttribute("aria-label", `当前版本 ${safeVersion}`);
+  globalVersionBadge.setAttribute("aria-label", tr("updates.currentVersion", { version: safeVersion }));
 }
 
 function getFallbackLatestVersion() {
@@ -2512,6 +2581,18 @@ function getFallbackLatestVersion() {
 
 function extractVersionFromTitle(title = "") {
   return String(title).match(/V\d+(?:\.\d+){1,3}/i)?.[0]?.toUpperCase() || "";
+}
+
+function formatUpdateLogDate(day) {
+  if (window.tpI18n?.getLanguage?.() !== "en") return day.label || day.date || "";
+  const [year, month, date] = String(day.date || "").split("-").map(Number);
+  if (!year || !month || !date) return day.label || day.date || "";
+  return new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(Date.UTC(year, month - 1, date)));
 }
 
 function createDateTimeline(activeDate = "") {
@@ -2525,7 +2606,7 @@ function createDateTimeline(activeDate = "") {
     row.className = "timeline-row";
     row.classList.toggle("latest", index === 0);
     row.classList.toggle("active", dateEntry.date === activeDate);
-    row.append(createTextElement("span", "timeline-date", day.label), createTimelineDot(), createTextElement("span", "timeline-count", `此日更新 ${updateCount} 次`));
+    row.append(createTextElement("span", "timeline-date", formatUpdateLogDate(day)), createTimelineDot(), createTextElement("span", "timeline-count", tr("updates.count", { count: updateCount })));
     row.addEventListener("click", () => navigateUpdateLogDay(dateEntry.date));
     timeline.append(row);
   });
@@ -2555,7 +2636,7 @@ function createUpdateLogDetails(log) {
     log.sections.forEach((section) => {
       const block = document.createElement("section");
       block.className = "update-section";
-      block.append(createTextElement("h3", "", section.heading || section.title || "更新内容"));
+      block.append(createTextElement("h3", "", section.heading || section.title || tr("updates.content")));
       const list = document.createElement("ul");
       (section.items || []).forEach((item) => {
         list.append(createTextElement("li", "", item));
@@ -2604,7 +2685,7 @@ async function loadUpdateLogManifest() {
     return updateLogCache.manifest;
   } catch (error) {
     console.warn("Failed to load update log manifest:", error);
-    useFallbackUpdateLogs("更新日志加载失败，已显示本地备用记录。");
+    useFallbackUpdateLogs(tr("updates.fallback"));
     return updateLogCache.manifest;
   }
 }
@@ -2623,7 +2704,7 @@ async function loadUpdateLogDay(date) {
     console.warn(`Failed to load update log day ${date}:`, error);
     const fallbackDay = getFallbackUpdateLogDay(date);
     if (fallbackDay) {
-      useFallbackUpdateLogs("部分更新日志加载失败，已显示本地备用记录。", false);
+      useFallbackUpdateLogs(tr("updates.partialFallback"), false);
       updateLogCache.days.set(date, cloneUpdateLogData(fallbackDay));
       return updateLogCache.days.get(date);
     }
@@ -2646,7 +2727,7 @@ async function loadUpdateLogDetail(date, logId) {
     console.warn(`Failed to load update log detail ${cacheKey}:`, error);
     const fallbackLog = getFallbackUpdateLogEntry(date, logId);
     if (fallbackLog) {
-      useFallbackUpdateLogs("部分更新日志加载失败，已显示本地备用记录。", false);
+      useFallbackUpdateLogs(tr("updates.partialFallback"), false);
       updateLogCache.details.set(cacheKey, cloneUpdateLogData(fallbackLog));
       return updateLogCache.details.get(cacheKey);
     }
@@ -2686,7 +2767,7 @@ function normalizeUpdateLogDayManifest(data, dateEntry = {}) {
         time: log.time,
         datetime: log.datetime,
         layer: Number(log.layer) || 0,
-        title: log.title || "更新内容",
+        title: log.title || tr("updates.content"),
         data: log.data || `update-log/${date}/${log.id}/log.json`,
       })),
     }),
@@ -2700,7 +2781,7 @@ function normalizeUpdateLogDetail(data, day, logMeta) {
     time: data.time || logMeta.time,
     datetime: data.datetime || logMeta.datetime,
     layer: Number(data.layer ?? logMeta.layer) || 0,
-    title: data.title || logMeta.title || "更新内容",
+    title: data.title || logMeta.title || tr("updates.content"),
     sections: Array.isArray(data.sections) ? data.sections : undefined,
     items: Array.isArray(data.items) ? data.items : [],
   };
@@ -2870,7 +2951,7 @@ function resetRailFocus() {
   document.querySelector(".left-rail .rail-button")?.classList.add("active");
 }
 
-function enterHeadquartersSelection(title = "选择小队总部") {
+function enterHeadquartersSelection(title = tr("headquarters.choose")) {
   choosingSquadHeadquarters = true;
   regionPanel.hidden = true;
   regionMemberPanel.hidden = true;
@@ -2882,7 +2963,7 @@ function enterHeadquartersSelection(title = "选择小队总部") {
   candidateInfoPopup.hidden = true;
   headquartersSelectOverlay.hidden = false;
   headquartersSelectOverlay.querySelector("strong").textContent = title;
-  headquartersHintText.textContent = "移动地图，让准星中心对准有效地块。按 Enter 完成选择。";
+  headquartersHintText.textContent = tr("headquarters.hint");
   document.body.classList.add("choosing-headquarters");
   setMapScaleAtViewportCenter(1.6);
   mapViewport.focus({ preventScroll: true });
@@ -2900,11 +2981,11 @@ function completeHeadquartersSelection() {
   const point = viewportToMapPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
   const region = getRegionAtMapPoint(point.x, point.y);
   if (!region) {
-    showHeadquartersError("准星中心没有落在有效地块上。");
+    showHeadquartersError(tr("headquarters.invalid"));
     return;
   }
   if (region.name === "校长办公室") {
-    showHeadquartersError("不能把行动小队总部设在校长办公室。");
+    showHeadquartersError(tr("headquarters.officeBlocked"));
     return;
   }
   finalizePendingSquad(region, point);
@@ -2963,13 +3044,13 @@ function renderDraftStats() {
   draftSquadStats.replaceChildren();
   const stats = calculateSquadStats(draftSquad.members.map((member) => member.studentId));
   [
-    { label: "人数", value: stats.count, icon: "assets/icon/人数.png", type: "value" },
-    { label: "稳定度", value: stats.stability, icon: "assets/icon/稳定度.png", type: "meter", className: "stability" },
-    { label: "压力", value: stats.pressure, icon: "assets/icon/压力.png", type: "meter", className: "pressure" },
-    { label: "宣传", value: stats.propaganda, icon: "assets/icon/文学能力.png", type: "value" },
-    { label: "应急", value: stats.emergency, icon: "assets/icon/突发事件.png", type: "value" },
-    { label: "行动力", value: stats.mobility, icon: "assets/icon/行动小队.png", type: "value" },
-    { label: "侦查", value: stats.scouting, icon: "assets/icon/巡逻.png", type: "value" },
+    { label: tr("label.people"), value: stats.count, icon: "assets/icon/人数.png", type: "value" },
+    { label: tr("label.stability"), value: stats.stability, icon: "assets/icon/稳定度.png", type: "meter", className: "stability" },
+    { label: tr("student.stress"), value: stats.pressure, icon: "assets/icon/压力.png", type: "meter", className: "pressure" },
+    { label: tv("宣传"), value: stats.propaganda, icon: "assets/icon/文学能力.png", type: "value" },
+    { label: tr("student.emergency"), value: stats.emergency, icon: "assets/icon/突发事件.png", type: "value" },
+    { label: tr("label.mobility"), value: stats.mobility, icon: "assets/icon/行动小队.png", type: "value" },
+    { label: tv("侦查"), value: stats.scouting, icon: "assets/icon/巡逻.png", type: "value" },
   ].forEach((item) => {
     const row = document.createElement("div");
     row.className = `squad-stat-card ${item.type === "meter" ? "meter-stat" : "value-stat"} ${item.className || ""}`;
@@ -3046,7 +3127,7 @@ function renderDraftMembers() {
   if (draftSquad.members.length === 0) {
     const empty = document.createElement("p");
     empty.className = "draft-empty";
-    empty.textContent = "从右侧选择成员加入编队。";
+    empty.textContent = tr("squads.selectMembers");
     draftSquadMembers.append(empty);
     return;
   }
@@ -3059,12 +3140,12 @@ function renderDraftMembers() {
     row.classList.toggle("missing", isStudentMissing(student));
     row.dataset.studentId = student.id;
     const name = document.createElement("strong");
-    name.textContent = `${student.name} ${student.grade}年级${isStudentMissing(student) ? " / 失踪" : ""}`;
+    name.textContent = `${student.name} ${tr("format.grade", { grade: student.grade })}${isStudentMissing(student) ? ` / ${tv("失踪")}` : ""}`;
     const select = document.createElement("select");
     SQUAD_MEMBER_ROLES.forEach((role) => {
       const option = document.createElement("option");
       option.value = role;
-      option.textContent = role;
+      option.textContent = tv(role);
       option.disabled = isDraftRoleOccupied(role, student.id);
       select.append(option);
     });
@@ -3106,9 +3187,9 @@ function renderSquadCandidates() {
     row.classList.toggle("blocked", isCandidateInOtherSquad(student) || isStudentMissing(student));
     row.dataset.studentId = student.id;
     const name = document.createElement("strong");
-    name.textContent = isStudentMissing(student) ? `${student.name} / 失踪` : student.name;
+    name.textContent = isStudentMissing(student) ? tr("format.missingName", { name: student.name }) : student.name;
     const grade = document.createElement("span");
-    grade.textContent = `${student.grade}年级`;
+    grade.textContent = tr("format.grade", { grade: student.grade });
     row.append(name, grade);
     row.addEventListener("click", () => {
       selectedCandidateId = student.id;
@@ -3132,12 +3213,16 @@ function openCandidateInfoPopup(studentId) {
   title.textContent = student.name;
   const meta = document.createElement("div");
   meta.className = "candidate-meta-card";
-  meta.textContent = `${student.grade}年级 / ${student.role || "成员"}${stressState ? ` / ${stressState}` : ""}`;
+  meta.textContent = tr("format.studentMeta", {
+    grade: student.grade,
+    role: tv(student.role || "成员"),
+    stress: stressState ? ` / ${tv(stressState)}` : "",
+  });
   const meters = document.createElement("div");
   meters.className = "candidate-meter-stack";
   [
-    { label: "可信度", value: student.trust, icon: "assets/icon/稳定度.png", className: "trust" },
-    { label: "压力", value: student.stress, icon: "assets/icon/压力.png", className: "pressure" },
+    { label: tr("student.trust"), value: student.trust, icon: "assets/icon/稳定度.png", className: "trust" },
+    { label: tr("student.stress"), value: student.stress, icon: "assets/icon/压力.png", className: "pressure" },
   ].forEach((meter) => {
     const item = document.createElement("div");
     item.className = `candidate-meter-card ${meter.className}`;
@@ -3158,10 +3243,10 @@ function openCandidateInfoPopup(studentId) {
   const stats = document.createElement("div");
   stats.className = "candidate-stat-grid";
   [
-    { label: "文学", value: effectiveAbilities.literature, icon: "assets/icon/文学能力.png" },
-    { label: "应急", value: effectiveAbilities.emergency, icon: "assets/icon/突发事件.png" },
-    { label: "体力", value: effectiveAbilities.strength, icon: "assets/icon/行动小队.png" },
-    { label: "视力", value: effectiveAbilities.vision, icon: "assets/icon/巡逻.png" },
+    { label: tr("student.literature"), value: effectiveAbilities.literature, icon: "assets/icon/文学能力.png" },
+    { label: tr("student.emergency"), value: effectiveAbilities.emergency, icon: "assets/icon/突发事件.png" },
+    { label: tr("student.strength"), value: effectiveAbilities.strength, icon: "assets/icon/行动小队.png" },
+    { label: tr("student.vision"), value: effectiveAbilities.vision, icon: "assets/icon/巡逻.png" },
   ].forEach((stat) => {
     const item = document.createElement("div");
     const icon = document.createElement("img");
@@ -3179,17 +3264,17 @@ function openCandidateInfoPopup(studentId) {
   if (isStudentMissing(student)) {
     add.disabled = true;
     add.className = "candidate-add blocked";
-    add.textContent = "该学生正在失踪";
+    add.textContent = tr("squads.studentMissing");
   } else if (isCandidateInOtherSquad(student)) {
     add.disabled = true;
     add.className = "candidate-add blocked";
-    add.textContent = `该学生已在“${student.squadName}”`;
+    add.textContent = tr("squads.studentInSquad", { name: student.squadName });
   } else if (draftSquad.members.some((member) => member.studentId === student.id)) {
     add.className = "candidate-add selected";
-    add.textContent = "已加入编队";
+    add.textContent = tr("squads.joined");
   } else {
     add.className = "candidate-add";
-    add.textContent = "加入编队";
+    add.textContent = tr("squads.join");
     add.addEventListener("click", () => addDraftMember(student));
   }
   candidateInfoPopup.append(title, meta, meters, stats, add);
@@ -3230,11 +3315,11 @@ function canCreateDraftSquad() {
 
 function getDraftSquadBlockReason() {
   const requirements = getDraftSquadRequirements();
-  if (!requirements.hasName) return "请输入队名";
-  if (!requirements.hasMember) return "至少需要一名成员";
-  if (!requirements.hasCaptain) return "需要一名队长";
-  if (hasDraftRoleOverflow()) return "职位超出限制";
-  if (isSquadNameTaken(draftSquad.name, draftSquad.editingSquadId)) return "队名已存在";
+  if (!requirements.hasName) return "squads.requireName";
+  if (!requirements.hasMember) return "squads.requireMember";
+  if (!requirements.hasCaptain) return "squads.requireCaptain";
+  if (hasDraftRoleOverflow()) return "squads.roleOverflow";
+  if (isSquadNameTaken(draftSquad.name, draftSquad.editingSquadId)) return "squads.nameTaken";
   return "";
 }
 
@@ -3250,10 +3335,10 @@ function getDraftSquadRequirements() {
 function getRequirementTooltip() {
   const requirements = getDraftSquadRequirements();
   return [
-    "需要：",
-    `${requirements.hasName ? "☑" : "☐"} 队伍名称`,
-    `${requirements.hasMember ? "☑" : "☐"} 至少1名成员`,
-    `${requirements.hasCaptain ? "☑" : "☐"} 至少1名队长`,
+    tr("squads.requirements"),
+    `${requirements.hasName ? "☑" : "☐"} ${tr("squads.requirementName")}`,
+    `${requirements.hasMember ? "☑" : "☐"} ${tr("squads.requirementMember")}`,
+    `${requirements.hasCaptain ? "☑" : "☐"} ${tr("squads.requirementCaptain")}`,
   ].join("\n");
 }
 
@@ -3264,11 +3349,11 @@ function renderCreateSquadButton() {
   createSquadConfirm.classList.toggle("invalid", Boolean(reason));
   createSquadConfirm.setAttribute("aria-disabled", String(Boolean(reason)));
   createSquadConfirm.dataset.requirements = reason ? getRequirementTooltip() : "";
-  if (reason === "队名已存在") {
-    createSquadConfirm.textContent = "队名已存在";
+  if (reason === "squads.nameTaken") {
+    createSquadConfirm.textContent = tr("squads.nameTaken");
     return;
   }
-  createSquadConfirm.textContent = draftSquad?.mode === "edit" ? "保存队伍" : "创建队伍";
+  createSquadConfirm.textContent = tr(draftSquad?.mode === "edit" ? "squads.save" : "squads.createAction");
 }
 
 function isSquadNameTaken(name, ignoredSquadId = "") {
@@ -3318,7 +3403,7 @@ function startSquadRelocation(squadId) {
   };
   if (!squadCreateModal.hidden) closeSquadCreateModal();
   closeSquadInfoPanel();
-  enterHeadquartersSelection("迁移行动小队总部");
+  enterHeadquartersSelection(tr("headquarters.relocate"));
 }
 
 function startSquadMovementToHeadquarters(squad, nextHeadquarters) {
@@ -3371,7 +3456,7 @@ function updateSquadMovements(elapsedSeconds) {
       squad.fieldPosition = { ...squad.headquarters };
       clearSquadMovement(squad);
       syncSquadMemberLocations(squad);
-      appendLog(`${squad.name} 已抵达新的总部：${squad.headquarters.region}。`);
+      appendLog(tr("log.arrivedHeadquarters", { name: squad.name, region: regionText(squad.headquarters.region) }));
       if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
       refreshRegionPanel();
       renderMode = "full";
@@ -3421,7 +3506,7 @@ function renderSquadStatusMenu(squadId) {
     const button = document.createElement("button");
     button.type = "button";
     button.disabled = status === currentStatus;
-    button.textContent = status === currentStatus ? `${status}（当前）` : status;
+    button.textContent = status === currentStatus ? tr("squads.statusCurrent", { status: tv(status) }) : tv(status);
     button.addEventListener("click", () => requestSquadStatusChange(squad.id, status));
     squadStatusMenu.append(button);
   });
@@ -3432,7 +3517,11 @@ function requestSquadStatusChange(squadId, status) {
   if (!squad || squad.status === status || squad.currentAction || squad.moving) return;
   squadStatusMenu.hidden = true;
   openConfirmModal(
-    `你确定要将「${squad.name}」的状态设置为「${status}」吗？<br><span class="confirm-note">${SQUAD_STATUS_DESCRIPTIONS[status]}</span>`,
+    tr("squads.statusConfirm", {
+      name: squad.name,
+      status: tv(status),
+      description: tr(`squads.statusDesc.${status}`),
+    }),
     () => setSquadStatus(squad.id, status),
   );
 }
@@ -3443,7 +3532,7 @@ function setSquadStatus(squadId, status) {
   squad.status = status;
   if (status !== "潜伏") squad.hiddenDays = 0;
   if (status === "分散") squad.fieldPosition = null;
-  appendLog(`${squad.name} 的状态切换为${status}。`);
+  appendLog(tr("log.statusChanged", { name: squad.name, status: tv(status) }));
   syncSquadMemberLocations(squad);
   updateStudentSchedules(true);
   renderSquadMapMarkers();
@@ -3470,15 +3559,15 @@ function getActionReadySquads() {
 }
 
 function canRegionActionRun(region, actionName) {
-  if (!region) return { ok: false, reason: "未选择区域" };
-  if (region.name === "校长办公室" && actionName !== "侦查") return { ok: false, reason: "校长办公室仅可侦查" };
-  if (isRegionActionCoolingDown(region, actionName)) return { ok: false, reason: "冷却中" };
-  if (getActionReadySquads().length === 0) return { ok: false, reason: "没有可用小队" };
+  if (!region) return { ok: false, reason: "action.noRegion" };
+  if (region.name === "校长办公室" && actionName !== "侦查") return { ok: false, reason: "action.officeOnlyScout" };
+  if (isRegionActionCoolingDown(region, actionName)) return { ok: false, reason: "action.cooldown" };
+  if (getActionReadySquads().length === 0) return { ok: false, reason: "action.noSquad" };
   if (actionName === "招募" && getStudentsInRegion(region.name).filter((student) => !isPlayerMember(student.id)).length === 0) {
-    return { ok: false, reason: "区域内没有可招募学生" };
+    return { ok: false, reason: "action.noStudents" };
   }
   if (actionName === "侦查" && !getActionReadySquads().some((squad) => calculateSquadStats(squad.members.map((member) => member.studentId), squad).scouting >= REGION_ACTIONS.侦查.minScouting)) {
-    return { ok: false, reason: "侦查不足" };
+    return { ok: false, reason: "action.scoutingLow" };
   }
   return { ok: true, reason: "" };
 }
@@ -3491,8 +3580,10 @@ function renderRegionActionList(region) {
     button.type = "button";
     button.className = "region-action-button";
     button.disabled = !availability.ok;
-    button.textContent = actionName;
-    button.title = availability.ok ? `在${region.name}执行${actionName}` : availability.reason;
+    button.textContent = tv(actionName);
+    button.title = availability.ok
+      ? tr("action.runHere", { region: regionText(region), action: tv(actionName) })
+      : tr(availability.reason);
     button.addEventListener("click", () => openActionConfirm(region, actionName));
     regionActionList.append(button);
   });
@@ -3501,8 +3592,8 @@ function renderRegionActionList(region) {
 function openActionConfirm(region, actionName) {
   const availability = canRegionActionRun(region, actionName);
   if (!availability.ok) return;
-  actionConfirmTitle.textContent = actionName;
-  actionConfirmBody.textContent = `你确定要在「${region.name}」执行「${actionName}」吗？`;
+  actionConfirmTitle.textContent = tv(actionName);
+  actionConfirmBody.textContent = tr("action.confirm", { region: regionText(region), action: tv(actionName) });
   actionSquadList.replaceChildren();
   getSquadsForActionList(region, actionName).forEach(({ squad, disabled, label }) => {
     const row = document.createElement("button");
@@ -3516,7 +3607,7 @@ function openActionConfirm(region, actionName) {
     const status = document.createElement("span");
     status.textContent = label;
     const location = document.createElement("em");
-    location.textContent = getSquadRegionName(squad);
+    location.textContent = regionText(getSquadRegionName(squad));
     row.append(flag, name, status, location);
     row.addEventListener("click", () => commandRegionAction(region, actionName, squad.id));
     actionSquadList.append(row);
@@ -3541,8 +3632,10 @@ function getSquadsForActionList(region, actionName) {
       const weakScouting = actionName === "侦查" && values.scouting < REGION_ACTIONS.侦查.minScouting;
       const disabled = busy || wrongStatus || weakScouting;
       const sameRegion = getSquadRegionName(squad) === region.name;
-      const actionLabel = squad.currentAction ? `${squad.currentAction.name}中` : squad.moving ? "移动中" : squad.status;
-      const label = `${actionLabel}${weakScouting ? " / 侦查不足" : ""}`;
+      const actionLabel = squad.currentAction
+        ? tr("format.actioning", { action: tv(squad.currentAction.name) })
+        : tv(squad.moving ? "移动中" : squad.status);
+      const label = `${actionLabel}${weakScouting ? ` / ${tr("action.scoutingLow")}` : ""}`;
       return { squad, disabled, sameRegion, label };
     })
     .sort((a, b) => {
@@ -3572,8 +3665,12 @@ function enterActionTargetSelection(region, actionName, squad) {
   regionMemberPanel.hidden = true;
   squadMemberPanel.hidden = true;
   headquartersSelectOverlay.hidden = false;
-  headquartersSelectOverlay.querySelector("strong").textContent = "选择行动目标";
-  headquartersHintText.textContent = `移动地图，让准星中心落在${region.name}内。按 Enter 后，${squad.name} 将前往目标点并开始${actionName}。`;
+  headquartersSelectOverlay.querySelector("strong").textContent = tr("action.chooseTarget");
+  headquartersHintText.textContent = tr("action.targetHint", {
+    region: regionText(region),
+    name: squad.name,
+    action: tv(actionName),
+  });
   document.body.classList.add("choosing-headquarters");
   setMapScaleAtViewportCenter(Math.max(scale, 1.45));
   mapViewport.focus({ preventScroll: true });
@@ -3592,7 +3689,7 @@ function completeActionTargetSelection() {
   const point = viewportToMapPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
   const region = getRegionAtMapPoint(point.x, point.y);
   if (!region || region.name !== pendingRegionAction.regionName) {
-    showHeadquartersError(`准星中心必须落在${pendingRegionAction.regionName}内。`);
+    showHeadquartersError(tr("action.targetInvalid", { region: regionText(pendingRegionAction.regionName) }));
     return;
   }
   const squad = actionSquads.find((candidate) => candidate.id === pendingRegionAction.squadId);
@@ -3601,7 +3698,7 @@ function completeActionTargetSelection() {
     return;
   }
   startSquadActionMovement(squad, region, pendingRegionAction.actionName, point, pendingRegionAction.commandAt);
-  appendLog(`${squad.name} 正在前往${region.name}，准备执行${pendingRegionAction.actionName}。`);
+  appendLog(tr("log.movingForAction", { name: squad.name, region: regionText(region), action: tv(pendingRegionAction.actionName) }));
   exitActionTargetSelection();
   renderSquadMapMarkers();
   if (selectedSquadInfoId === squad.id) showSquadInfoPanel(squad.id);
@@ -3639,7 +3736,7 @@ function startRegionAction(squad, region, actionName, commandAt = getAbsoluteGam
       student.trust = clamp(student.trust + 10, 0, 100);
     });
   }
-  appendLog(`${squad.name}在${region.name}进行${actionName}。`);
+  appendLog(tr("log.actionStarted", { name: squad.name, region: regionText(region), action: tv(actionName) }));
   renderSquadMapMarkers();
   renderSquadPanel();
   refreshRegionPanel();
@@ -3674,18 +3771,22 @@ function completePropagandaAction(squad, region) {
   const supporters = students.filter((student) => student.faction === "管理层支持者").length;
   const awarenessGain = supporters > 0 ? 10 + supporters * 2 : 0;
   managementAwareness = clamp(managementAwareness + awarenessGain, 0, 100);
-  appendLog(`${squad.name}在${region.name}完成宣传。组织知名度 +5%，部分学生信任度上升。${awarenessGain ? `管理层支持者注意到了异常，察觉 +${awarenessGain}%。` : ""}`);
+  appendLog(tr("log.propagandaComplete", {
+    name: squad.name,
+    region: regionText(region),
+    awareness: awarenessGain ? tr("log.supporterAwareness", { amount: awarenessGain }) : "",
+  }));
 }
 
 function completeRecruitAction(squad, region) {
   const candidates = getStudentsInRegion(region.name).filter((student) => !isPlayerMember(student.id) && getInviteChance(student) > 0);
-  appendLog(`${squad.name}在${region.name}完成招募摸排，发现 ${candidates.length} 名可尝试邀请的学生。`);
+  appendLog(tr("log.recruitComplete", { name: squad.name, region: regionText(region), count: candidates.length }));
 }
 
 function completeScoutAction(squad, region) {
   const supporters = getStudentsInRegion(region.name).filter((student) => student.faction === "管理层支持者").length;
   region.patrolKnown = true;
-  appendLog(`${squad.name}完成了对${region.name}的侦查。巡逻等级：${region.patrol}。管理层支持者：${supporters}人。`);
+  appendLog(tr("log.scoutComplete", { name: squad.name, region: regionText(region), patrol: tv(region.patrol), count: supporters }));
 }
 
 function completeRallyAction(squad, region) {
@@ -3694,7 +3795,7 @@ function completeRallyAction(squad, region) {
   const awarenessGain = Math.round(5 + fameGain / 2);
   factionFame = clamp(factionFame + fameGain, 0, 100);
   managementAwareness = clamp(managementAwareness + awarenessGain, 0, 100);
-  appendLog(`${squad.name}在${region.name}组织了一场集会。组织知名度 +${fameGain}%，区域学生信任度上升，管理层察觉 +${awarenessGain}%。`);
+  appendLog(tr("log.rallyComplete", { name: squad.name, region: regionText(region), fame: fameGain, awareness: awarenessGain }));
 }
 
 function completeRestAction(squad, region) {
@@ -3702,7 +3803,7 @@ function completeRestAction(squad, region) {
     const student = allStudents.find((candidate) => candidate.id === entry.studentId);
     if (student) student.stress = clamp(student.stress - 5, 0, 100);
   });
-  appendLog(`${squad.name}在${region.name}休息了一天。队员压力下降。`);
+  appendLog(tr("log.restComplete", { name: squad.name, region: regionText(region) }));
 }
 
 function pickRandomSubset(items, ratio) {
@@ -3742,10 +3843,10 @@ function finalizePendingSquad(region, point) {
       squad.headquarters = nextHeadquarters;
       squad.fieldPosition = null;
       clearSquadMovement(squad);
-      appendLog(`${squad.name} 的总部已迁移至${region.name}。`);
+      appendLog(tr("log.headquartersMoved", { name: squad.name, region: regionText(region) }));
     } else {
       startSquadMovementToHeadquarters(squad, nextHeadquarters);
-      appendLog(`${squad.name} 开始向${region.name}缓慢迁移。`);
+      appendLog(tr("log.headquartersMoving", { name: squad.name, region: regionText(region) }));
     }
     pendingHeadquartersSquad = null;
     exitHeadquartersSelection();
@@ -3770,7 +3871,7 @@ function finalizePendingSquad(region, point) {
     student.squadName = squad.name;
     student.squadRole = entry.role;
   });
-  appendLog(`${squad.name} 创建完成，总部设于${region.name}，共 ${squad.members.length} 名成员。`);
+  appendLog(tr("log.squadCreated", { name: squad.name, region: regionText(region), count: squad.members.length }));
   pendingHeadquartersSquad = null;
   exitHeadquartersSelection();
   renderSquadMapMarkers();
@@ -3801,7 +3902,7 @@ function saveDraftSquadEdit() {
     student.squadRole = entry.role;
   });
   syncSquadMemberLocations(squad);
-  appendLog(`${squad.name} 编制已更新。`);
+  appendLog(tr("log.squadUpdated", { name: squad.name }));
   closeSquadCreateModal();
   renderSquadMapMarkers();
   renderSquadPanel();
@@ -3818,7 +3919,7 @@ function disbandActionSquad(squadId) {
     student.squadRole = "";
   });
   actionSquads = actionSquads.filter((candidate) => candidate.id !== squadId);
-  appendLog(`${squad.name} 已解散。`);
+  appendLog(tr("log.squadDisbanded", { name: squad.name }));
   if (selectedSquadInfoId === squadId) {
     selectedSquadInfoId = null;
     squadInfoPanel.hidden = true;
@@ -3854,13 +3955,13 @@ function createStudentRow(student, showRole = false) {
 
   const body = document.createElement("span");
   const name = document.createElement("strong");
-  name.textContent = showRole && student.role ? `${student.name} - ${student.role}` : student.name;
+  name.textContent = showRole && student.role ? `${student.name} - ${tv(student.role)}` : student.name;
   const meta = document.createElement("span");
-  meta.textContent = `${student.personality} / ${student.faction}${isStudentMissing(student) ? " / 失踪" : ""}`;
+  meta.textContent = `${tv(student.personality)} / ${tv(student.faction)}${isStudentMissing(student) ? ` / ${tv("失踪")}` : ""}`;
   body.append(name, meta);
 
   const trust = document.createElement("em");
-  trust.textContent = isPlayerMember(student.id) && !showRole ? "已加入" : `${student.trust}%`;
+  trust.textContent = isPlayerMember(student.id) && !showRole ? tr("student.joined") : `${student.trust}%`;
 
   row.append(avatar, body, trust);
   row.addEventListener("click", () => showStudentDetail(student.id));
@@ -3876,22 +3977,25 @@ function showStudentDetail(studentId, source = "") {
   studentDetailSource = source;
   document.querySelectorAll(".student-row").forEach((row) => row.classList.toggle("active", row.dataset.studentId === studentId));
 
-  studentDetailName.textContent = student.role ? `${student.name} - ${student.role}` : student.name;
+  studentDetailName.textContent = student.role ? `${student.name} - ${tv(student.role)}` : student.name;
   studentDetailPanel.classList.toggle("missing", isStudentMissing(student));
-  studentDetailGrade.textContent = `${student.grade} 年级`;
-  studentDetailPersonality.textContent = student.personality;
-  studentDetailFaction.textContent = student.faction;
-  studentDetailStatus.textContent = stressState || student.status;
+  studentDetailGrade.textContent = tr("format.grade", { grade: student.grade });
+  studentDetailPersonality.textContent = tv(student.personality);
+  studentDetailFaction.textContent = tv(student.faction);
+  studentDetailStatus.textContent = tv(stressState || student.status);
   studentDetailTrust.textContent = `${student.trust}%`;
   studentDetailStress.textContent = `${student.stress}%`;
-  studentDetailSquad.textContent = student.squadName || "无";
+  studentDetailSquad.textContent = student.squadName || tr("common.none");
   const stressRule = getStressRule(student);
-  studentDetailResistance.textContent = student.stressResistance;
-  studentDetailResistanceTip.textContent = `每日恢复${stressRule.dailyRecovery}%\n压力减免${100 - Math.round(stressRule.gainMultiplier * 100)}%`;
-  studentLiterature.textContent = `文学 ${effectiveAbilities.literature}`;
-  studentEmergency.textContent = `应急 ${effectiveAbilities.emergency}`;
-  studentStrength.textContent = `体力 ${effectiveAbilities.strength}`;
-  studentVision.textContent = `视力 ${effectiveAbilities.vision}`;
+  studentDetailResistance.textContent = tv(student.stressResistance);
+  studentDetailResistanceTip.textContent = tr("student.resistanceTip", {
+    recovery: stressRule.dailyRecovery,
+    reduction: 100 - Math.round(stressRule.gainMultiplier * 100),
+  });
+  studentLiterature.textContent = `${tr("student.literature")} ${effectiveAbilities.literature}`;
+  studentEmergency.textContent = `${tr("student.emergency")} ${effectiveAbilities.emergency}`;
+  studentStrength.textContent = `${tr("student.strength")} ${effectiveAbilities.strength}`;
+  studentVision.textContent = `${tr("student.vision")} ${effectiveAbilities.vision}`;
   updateStudentActionButtons(student);
   renderPositionOptions(student);
   studentDetailPanel.hidden = false;
@@ -3911,12 +4015,12 @@ function updateStudentActionButtons(student) {
   removeMember.parentElement.classList.toggle("member-mode", selectedFromMembers && !selectedFromRegion);
 
   bribeStudent.disabled = alreadyMember || Boolean(bribeDisabledReason);
-  bribeStudent.title = alreadyMember ? "该学生已经是组织成员" : bribeDisabledReason || "使用 5 个手机提高信任度";
+  bribeStudent.title = alreadyMember ? tr("student.alreadyMember") : bribeDisabledReason ? tr(bribeDisabledReason) : tr("student.bribeHint", { cost: BRIBE_PHONE_COST });
 
   inviteStudent.disabled = alreadyMember || inviteChance <= 0;
-  inviteStudent.title = alreadyMember ? "该学生已经是组织成员" : inviteChance <= 0 ? "信任度低于 20%，无法邀请" : `成功概率 ${Math.round(inviteChance * 100)}%`;
+  inviteStudent.title = alreadyMember ? tr("student.alreadyMember") : inviteChance <= 0 ? tr("student.inviteTrustLow") : tr("student.successChance", { chance: Math.round(inviteChance * 100) });
   removeMember.disabled = protectedMember;
-  removeMember.title = protectedMember ? "初始核心成员不可移除" : "从组织成员中移除，信任度下降 30%";
+  removeMember.title = protectedMember ? tr("student.coreLocked") : tr("student.removeHint");
 }
 
 function renderPositionOptions(student) {
@@ -3929,7 +4033,7 @@ function renderPositionOptions(student) {
   if (isPlayerAvatar(student)) {
     const locked = document.createElement("p");
     locked.className = "position-locked";
-    locked.textContent = "玩家身份固定为主席。";
+    locked.textContent = tr("student.playerRoleLocked");
     positionOptions.append(locked);
     return;
   }
@@ -3942,8 +4046,10 @@ function renderPositionOptions(student) {
     button.className = "position-option";
     button.classList.toggle("active", student.role === role);
     button.disabled = occupiedByOther;
-    button.textContent = role === "成员" ? "成员" : `${role} ${occupant ? "1/1" : "0/1"}`;
-    button.title = occupiedByOther ? `${role} 已由 ${occupant.name} 担任` : `任命为${role}`;
+    button.textContent = role === "成员" ? tv(role) : `${tv(role)} ${occupant ? "1/1" : "0/1"}`;
+    button.title = occupiedByOther
+      ? tr("student.roleOccupied", { role: tv(role), name: occupant.name })
+      : tr("student.appointRole", { role: tv(role) });
     button.addEventListener("click", () => changeMemberRole(student, role));
     positionOptions.append(button);
   });
@@ -3962,7 +4068,7 @@ function changeMemberRole(student, role) {
   student.role = role;
   renderMembersList();
   showStudentDetail(student.id);
-  appendLog(`${student.name} 的职位变更为 ${role}。`);
+  appendLog(tr("log.roleChanged", { name: student.name, role: tv(role) }));
 }
 
 function getSelectedStudent() {
@@ -3996,10 +4102,10 @@ function getCurrentDayKey() {
 }
 
 function getBribeDisabledReason(student) {
-  if (isStudentMissing(student)) return "该学生正在失踪";
-  if (resources.phones < BRIBE_PHONE_COST) return "手机不足";
-  if (bribeUsedDayKey === getCurrentDayKey()) return "今天已经贿赂过一名学生";
-  if (student.trust >= 100) return "该学生信任度已经满值";
+  if (isStudentMissing(student)) return "student.missing";
+  if (resources.phones < BRIBE_PHONE_COST) return "student.noPhones";
+  if (bribeUsedDayKey === getCurrentDayKey()) return "student.bribedToday";
+  if (student.trust >= 100) return "student.trustFull";
   return "";
 }
 
@@ -4039,7 +4145,7 @@ function confirmBribeStudent(student) {
     updateResourceUi();
     updateAwarenessUi();
     refreshStudentViews(student);
-    appendLog(`${student.name} 收下手机后向管理层上报，察觉值上升到 ${managementAwareness}%。`);
+    appendLog(tr("log.bribeReported", { name: student.name, awareness: managementAwareness }));
     return;
   }
 
@@ -4047,7 +4153,7 @@ function confirmBribeStudent(student) {
   student.status = "热情";
   updateResourceUi();
   refreshStudentViews(student);
-  appendLog(`${student.name} 的信任度提高到 ${student.trust}%。`);
+  appendLog(tr("log.trustRaised", { name: student.name, trust: student.trust }));
 }
 
 function confirmInviteStudent(student) {
@@ -4060,12 +4166,12 @@ function confirmInviteStudent(student) {
 
   if (Math.random() <= chance) {
     addStudentToOrganization(student, "手动邀请");
-    appendLog(`${student.name} 同意加入地下组织。`);
+    appendLog(tr("log.joined", { name: student.name }));
   } else {
     dailyInviteFailures += 1;
     student.status = "怀疑";
     student.trust = clamp(student.trust - randomInt(2, 6), 0, 100);
-    appendLog(`${student.name} 拒绝了邀请，关系出现动摇。`);
+    appendLog(tr("log.inviteRejected", { name: student.name }));
     applyInviteFailurePressure();
     refreshStudentViews(student);
   }
@@ -4076,7 +4182,7 @@ function applyInviteAttemptPressure() {
   dailyInviteAwarenessPenaltyApplied = true;
   managementAwareness = clamp(managementAwareness + 5, 0, 100);
   updateAwarenessUi();
-  appendLog(`频繁邀请引起管理层注意，察觉值上升到 ${managementAwareness}%。`);
+  appendLog(tr("log.inviteAwareness", { awareness: managementAwareness }));
 }
 
 function applyInviteFailurePressure() {
@@ -4087,7 +4193,7 @@ function applyInviteFailurePressure() {
   });
   protectLockedMemberTrust();
   refreshStudentViews(getSelectedStudent() || allStudents[0]);
-  appendLog("一天内邀请失败过多，学生群体信任度整体下降 5%。");
+  appendLog(tr("log.inviteFailures"));
 }
 
 function resetDailyInviteCounters() {
@@ -4135,7 +4241,7 @@ function removeStudentFromOrganization(student) {
   renderMembersList();
   if (!recruitPanel.hidden) renderRecruitList(selectedRecruitGrade);
   showStudentDetail(student.id);
-  appendLog(`${student.name} 离开了组织，信任度下降到 ${student.trust}%。`);
+  appendLog(tr("log.memberLeft", { name: student.name, trust: student.trust }));
 }
 
 function refreshStudentViews(student) {
@@ -4161,12 +4267,12 @@ function checkVoluntaryApplications() {
   mailHistory.unshift({
     id: crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`,
     studentId: student.id,
-    subject: template.subject,
-    body: template.body,
+    subjectKey: template.subjectKey,
+    bodyKey: template.bodyKey,
     dayKey: getCurrentDayKey(),
     status: "pending",
   });
-  appendLog(`${student.name} 发来一封加入申请邮件。`);
+  appendLog(tr("log.applicationReceived", { name: student.name }));
   if (!mailPanel.hidden) renderMailList();
 }
 
@@ -4175,7 +4281,7 @@ function renderMailList() {
   if (mailHistory.length === 0) {
     const empty = document.createElement("p");
     empty.className = "empty-mail";
-    empty.textContent = "暂无邮件记录。";
+    empty.textContent = tr("mail.empty");
     mailList.append(empty);
     return;
   }
@@ -4188,10 +4294,10 @@ function renderMailList() {
     card.classList.toggle("handled", mail.status !== "pending");
 
     const subject = document.createElement("h3");
-    subject.textContent = `主题：${mail.subject}`;
+    subject.textContent = tr("mail.subjectLine", { subject: mail.subjectKey ? tr(mail.subjectKey) : mail.subject });
 
     const body = document.createElement("p");
-    body.textContent = `${mail.body}\n${student?.name || "已离校学生"}`;
+    body.textContent = `${mail.bodyKey ? tr(mail.bodyKey) : mail.body}\n${student?.name || tr("mail.departedStudent")}`;
 
     const status = document.createElement("span");
     status.className = `mail-status ${mail.status}`;
@@ -4204,13 +4310,13 @@ function renderMailList() {
       const reject = document.createElement("button");
       reject.type = "button";
       reject.className = "mail-reject";
-      reject.textContent = "拒绝";
+      reject.textContent = tr("mail.reject");
       reject.addEventListener("click", () => rejectApplication(mail.id, student));
 
       const accept = document.createElement("button");
       accept.type = "button";
       accept.className = "mail-accept";
-      accept.textContent = "同意";
+      accept.textContent = tr("mail.accept");
       accept.addEventListener("click", () => acceptApplication(mail.id, student));
 
       actions.append(reject, accept);
@@ -4229,7 +4335,7 @@ function acceptApplication(mailId, student) {
     mail.handledDayKey = getCurrentDayKey();
   }
   addStudentToOrganization(student, "自愿申请");
-  appendLog(`${student.name} 的加入申请已通过。`);
+  appendLog(tr("log.applicationAccepted", { name: student.name }));
 }
 
 function rejectApplication(mailId, student) {
@@ -4242,13 +4348,13 @@ function rejectApplication(mailId, student) {
   student.trust = clamp(student.trust - randomInt(1, 4), 0, 100);
   renderMailList();
   refreshStudentViews(student);
-  appendLog(`${student.name} 的加入申请被拒绝。`);
+  appendLog(tr("log.applicationRejected", { name: student.name }));
 }
 
 function getMailStatusText(status) {
-  if (status === "accepted") return "已同意";
-  if (status === "rejected") return "已拒绝";
-  return "未处理";
+  if (status === "accepted") return tr("mail.accepted");
+  if (status === "rejected") return tr("mail.rejected");
+  return tr("mail.pending");
 }
 
 function getCurrentPhaseIndex() {
@@ -4406,11 +4512,14 @@ function showSquadInfoPanel(squadId) {
   const values = calculateSquadStats(squad.members.map((member) => member.studentId), squad);
   appendSquadFlagVisual(squadInfoFlag, squad);
   squadInfoName.textContent = squad.name;
-  squadInfoStatus.textContent = `状态：${squad.currentAction ? `${squad.currentAction.name}中` : squad.status || "分散"}${squad.moving ? " / 移动中" : ""}`;
+  const status = squad.currentAction
+    ? tr("format.actioning", { action: tv(squad.currentAction.name) })
+    : tv(squad.status || "分散");
+  squadInfoStatus.textContent = tr("squads.status", { status, moving: squad.moving ? ` / ${tv("移动中")}` : "" });
   squadInfoStatus.disabled = Boolean(squad.currentAction || squad.moving);
-  squadInfoStatus.title = squad.currentAction ? "行动进行中，无法切换队伍状态" : squad.moving ? "移动中，无法切换队伍状态" : "切换队伍状态";
-  squadInfoCount.textContent = `${squad.members.length} 人`;
-  squadInfoHeadquarters.textContent = squad.headquarters?.region || "--";
+  squadInfoStatus.title = squad.currentAction ? tr("squads.actionLocked") : squad.moving ? tr("squads.movingLocked") : tr("squads.switchStatus");
+  squadInfoCount.textContent = tr("format.people", { count: squad.members.length });
+  squadInfoHeadquarters.textContent = squad.headquarters?.region ? regionText(squad.headquarters.region) : "--";
   squadInfoStability.textContent = `${values.stability}%`;
   squadInfoPressure.textContent = `${values.pressure}%`;
   if (!squadMemberPanel.hidden) renderSquadInfoMembers(squad.id);
@@ -4420,11 +4529,11 @@ function showSquadInfoPanel(squadId) {
 function renderSquadInfoMembers(squadId) {
   const squad = actionSquads.find((candidate) => candidate.id === squadId);
   squadInfoMembers.replaceChildren();
-  squadMemberPanelTitle.textContent = squad ? `${squad.name} 成员` : "小队成员";
+  squadMemberPanelTitle.textContent = squad ? tr("squads.memberPanel", { name: squad.name }) : tr("squads.membersTitle");
   if (!squad || squad.members.length === 0) {
     const empty = document.createElement("p");
     empty.className = "draft-empty";
-    empty.textContent = "暂无成员。";
+    empty.textContent = tr("squads.membersEmpty");
     squadInfoMembers.append(empty);
     return;
   }
@@ -4436,9 +4545,9 @@ function renderSquadInfoMembers(squadId) {
     row.className = "squad-info-member-row";
     row.classList.toggle("missing", isStudentMissing(student));
     const name = document.createElement("strong");
-    name.textContent = `${student.name}${isStudentMissing(student) ? " / 失踪" : ""}`;
+    name.textContent = isStudentMissing(student) ? tr("format.missingName", { name: student.name }) : student.name;
     const meta = document.createElement("span");
-    meta.textContent = `${student.grade}年级 / ${entry.role}`;
+    meta.textContent = `${tr("format.grade", { grade: student.grade })} / ${tv(entry.role)}`;
     row.append(name, meta);
     row.addEventListener("click", () => showStudentDetail(student.id, "squad"));
     squadInfoMembers.append(row);
@@ -4610,7 +4719,7 @@ function getSemesterName(semester = gameTime.semester) {
 function appendLog(message) {
   const item = document.createElement("li");
   const time = document.createElement("time");
-  time.textContent = `第${gameTime.day}天`;
+  time.textContent = tr("log.time", { day: gameTime.day });
   item.append(time, ` ${message}`);
   logList.prepend(item);
 
@@ -4762,8 +4871,8 @@ function updateHover(region, clientX, clientY) {
   }
 
   hoverCard.hidden = false;
-  hoverName.textContent = region.name;
-  hoverFunction.textContent = region.role;
+  hoverName.textContent = regionText(region);
+  hoverFunction.textContent = regionRoleText(region);
   hoverCard.style.left = `${clientX + 14}px`;
   hoverCard.style.top = `${clientY + 14}px`;
 
@@ -4811,14 +4920,14 @@ function refreshRegionPanel() {
   const organizationStudents = getOrganizationStudentsInRegion(region.name);
   const support = averageStudents(regionStudents, (student) => student.trust);
   const pressure = averageStudents(regionStudents, (student) => student.stress);
-  regionName.textContent = region.name;
-  regionFunction.textContent = region.role;
+  regionName.textContent = regionText(region);
+  regionFunction.textContent = regionRoleText(region);
   regionSupport.textContent = `${support}%`;
   regionPressure.textContent = `${pressure}%`;
-  regionPatrol.textContent = region.patrolKnown === false ? "???" : region.patrol;
-  regionMembersButton.textContent = `${organizationStudents.length} 人`;
+  regionPatrol.textContent = region.patrolKnown === false ? "???" : tv(region.patrol);
+  regionMembersButton.textContent = tr("format.people", { count: organizationStudents.length });
   regionMembersButton.disabled = organizationStudents.length === 0;
-  regionStudentCount.textContent = `${regionStudents.length} 人`;
+  regionStudentCount.textContent = tr("format.people", { count: regionStudents.length });
   if (!regionMemberPanel.hidden) renderRegionMemberList(region);
   if (!regionActionList.hidden) renderRegionActionList(region);
 }
@@ -4833,11 +4942,11 @@ function getOrganizationStudentsInRegion(regionName) {
 
 function renderRegionMemberList(region) {
   const members = getOrganizationStudentsInRegion(region.name);
-  regionMemberPanelTitle.textContent = `${region.name} / 组织学生`;
+  regionMemberPanelTitle.textContent = tr("format.regionMembers", { region: regionText(region) });
   regionMemberList.replaceChildren();
   if (members.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "此区域暂无我方成员。";
+    empty.textContent = tr("region.noMembers");
     regionMemberList.append(empty);
     return;
   }
@@ -4846,9 +4955,13 @@ function renderRegionMemberList(region) {
     row.type = "button";
     row.className = "region-member-row";
     const name = document.createElement("strong");
-    name.textContent = student.role ? `${student.name} - ${student.role}` : student.name;
+    name.textContent = student.role ? `${student.name} - ${tv(student.role)}` : student.name;
     const meta = document.createElement("span");
-    meta.textContent = `${student.grade}年级 / 信任 ${student.trust}% / 压力 ${student.stress}%`;
+    meta.textContent = tr("format.regionMemberMeta", {
+      grade: student.grade,
+      trust: student.trust,
+      stress: student.stress,
+    });
     row.append(name, meta);
     row.addEventListener("click", () => showStudentDetail(student.id, "region"));
     regionMemberList.append(row);
@@ -5056,6 +5169,7 @@ function getRandomTrackIndex(previousIndex, minIndex = 0) {
 }
 
 function openSettingsPanel() {
+  languageSelect.value = window.tpI18n?.getLanguage?.() || "zh";
   settingsPanel.hidden = false;
   requestAnimationFrame(() => {
     document.body.classList.add("settings-open");

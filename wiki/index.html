@@ -15,12 +15,12 @@
   </head>
   <body>
     <nav class="wiki-global-nav" aria-label="Wiki 导航">
-      <a class="wiki-home-link" href="/" aria-label="返回主页">
+      <a id="wikiHomeLink" class="wiki-home-link" href="/" aria-label="返回主页">
         <img src="../assets/学生阵营logo.png" alt="" />
       </a>
       <div class="wiki-nav-title">
         <span>TENSION POINT ARCHIVE</span>
-        <strong>剑拔弩张百科</strong>
+        <strong id="wikiNavName">剑拔弩张百科</strong>
       </div>
     </nav>
 
@@ -28,12 +28,12 @@
       <aside class="wiki-sidebar">
         <header class="wiki-brand">
           <span>TP ARCHIVE</span>
-          <h1>剑拔弩张 Wiki</h1>
-          <p>校园政治策略模拟档案库</p>
+          <h1 id="wikiBrandTitle">剑拔弩张 Wiki</h1>
+          <p id="wikiBrandTagline">校园政治策略模拟档案库</p>
         </header>
 
         <label class="wiki-search">
-          <span>搜索档案</span>
+          <span id="wikiSearchLabel">搜索档案</span>
           <input id="wikiSearch" type="search" placeholder="输入关键词..." autocomplete="off" />
         </label>
 
@@ -43,6 +43,13 @@
         <section class="wiki-main">
           <div class="wiki-topline">
             <span id="wikiModeLabel">STANDALONE DATABASE</span>
+            <label class="wiki-language" for="wikiLanguageSelect">
+              <span id="wikiLanguageLabel">语言</span>
+              <select id="wikiLanguageSelect">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+              </select>
+            </label>
           </div>
 
         <article id="wikiArticle" class="wiki-article" aria-live="polite">

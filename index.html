@@ -22,82 +22,82 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <section id="loadingScreen" class="loading-screen" aria-label="资源加载中">
+    <section id="loadingScreen" class="loading-screen" aria-label="资源加载中" data-i18n-aria-label="loading.label">
       <div class="loading-core">
         <div class="loading-spinner" aria-hidden="true"></div>
         <div class="loading-percent" id="loadingPercent">0%</div>
         <div class="loading-bar" aria-hidden="true">
           <i id="loadingFill"></i>
         </div>
-        <p id="loadingStatus">正在检查校园档案...</p>
-        <button id="loadingContinue" class="loading-continue" type="button" hidden>继续进入</button>
+        <p id="loadingStatus" data-i18n="loading.checking">正在检查校园档案...</p>
+        <button id="loadingContinue" class="loading-continue" type="button" data-i18n="common.continue" hidden>继续进入</button>
       </div>
     </section>
 
-    <section id="mobileNotice" class="mobile-notice" aria-label="移动端提示" hidden>
+    <section id="mobileNotice" class="mobile-notice" aria-label="移动端提示" data-i18n-aria-label="mobile.label" hidden>
       <article class="mobile-notice-card" role="dialog" aria-modal="true" aria-labelledby="mobileNoticeTitle">
         <span class="mobile-notice-kicker">DEVICE NOTICE</span>
-        <h2 id="mobileNoticeTitle">检测到移动端设备</h2>
-        <p>
+        <h2 id="mobileNoticeTitle" data-i18n="mobile.title">检测到移动端设备</h2>
+        <p data-i18n="mobile.body">
           当前设备可能无法获得完整游戏体验。部分按钮、地图拖动、右键菜单或快捷键功能可能无法正常工作。
           建议使用电脑端或横屏模式游玩，以获得最佳体验。
         </p>
-        <button id="mobileNoticeConfirm" type="button">我已知晓</button>
+        <button id="mobileNoticeConfirm" type="button" data-i18n="mobile.confirm">我已知晓</button>
       </article>
     </section>
 
-    <section id="mainMenu" class="main-menu" aria-label="主菜单">
+    <section id="mainMenu" class="main-menu" aria-label="主菜单" data-i18n-aria-label="menu.label">
       <div class="title-block">
         <p>Tension Point</p>
         <h1>剑拔弩张</h1>
       </div>
 
       <nav class="main-options" aria-label="主菜单选项">
-        <button id="startGame" class="menu-option active" type="button">开始新游戏</button>
-        <button class="menu-option disabled" type="button" disabled>继续游戏</button>
-        <button id="openSettings" class="menu-option" type="button">设置</button>
-        <button id="showCredits" class="menu-option" type="button">制作人员</button>
+        <button id="startGame" class="menu-option active" type="button" data-i18n="menu.start">开始新游戏</button>
+        <button class="menu-option disabled" type="button" data-i18n="menu.continue" disabled>继续游戏</button>
+        <button id="openSettings" class="menu-option" type="button" data-i18n="menu.settings">设置</button>
+        <button id="showCredits" class="menu-option" type="button" data-i18n="menu.credits">制作人员</button>
       </nav>
     </section>
 
-    <nav id="quickDock" class="quick-dock" aria-label="主页快捷菜单">
+    <nav id="quickDock" class="quick-dock" aria-label="主页快捷菜单" data-i18n-aria-label="dock.label">
       <div class="quick-dock-panel" aria-hidden="true">
-        <button id="quickDockWiki" class="quick-dock-item" type="button" aria-label="百科" data-label="百科">
+        <button id="quickDockWiki" class="quick-dock-item" type="button" aria-label="百科" data-label="百科" data-i18n-aria-label="dock.wiki" data-i18n-data-label="dock.wiki">
           <img src="assets/icon/wiki.png" alt="" />
         </button>
-        <button id="quickDockUpdate" class="quick-dock-item" type="button" aria-label="更新日志" data-label="更新日志">
+        <button id="quickDockUpdate" class="quick-dock-item" type="button" aria-label="更新日志" data-label="更新日志" data-i18n-aria-label="dock.updates" data-i18n-data-label="dock.updates">
           <img src="assets/icon/update.png" alt="" />
         </button>
-        <button class="quick-dock-item" type="button" aria-label="报告问题" data-label="报告问题">
+        <button class="quick-dock-item" type="button" aria-label="报告问题" data-label="报告问题" data-i18n-aria-label="dock.bug" data-i18n-data-label="dock.bug">
           <img src="assets/icon/bug.png" alt="" />
         </button>
       </div>
-      <button id="quickDockToggle" class="quick-dock-toggle" type="button" aria-label="展开快捷菜单" aria-expanded="false">
+      <button id="quickDockToggle" class="quick-dock-toggle" type="button" aria-label="展开快捷菜单" aria-expanded="false" data-i18n-aria-label="dock.expand">
         <img src="assets/icon/收起.png" alt="" />
       </button>
     </nav>
 
-    <section id="updateLogOverlay" class="update-log-overlay" aria-label="更新日志" hidden>
+    <section id="updateLogOverlay" class="update-log-overlay" aria-label="更新日志" data-i18n-aria-label="dock.updates" hidden>
       <article class="update-log-modal" role="dialog" aria-modal="true" aria-labelledby="updateLogTitle">
-        <button id="closeUpdateLog" class="update-log-close" type="button" aria-label="关闭更新日志">×</button>
+        <button id="closeUpdateLog" class="update-log-close" type="button" aria-label="关闭更新日志" data-i18n-aria-label="updates.close">×</button>
         <header class="update-log-header">
           <span>SYSTEM CHANGELOG</span>
-          <h2 id="updateLogTitle">版本档案</h2>
+          <h2 id="updateLogTitle" data-i18n="updates.archive">版本档案</h2>
         </header>
         <div id="updateLogContent" class="update-log-content"></div>
       </article>
     </section>
 
-    <section id="wikiOverlay" class="wiki-overlay" aria-label="百科" hidden>
+    <section id="wikiOverlay" class="wiki-overlay" aria-label="百科" data-i18n-aria-label="wiki.overlayLabel" hidden>
       <article class="wiki-modal" role="dialog" aria-modal="true" aria-labelledby="wikiOverlayTitle">
         <header class="wiki-modal-header">
           <div>
             <span>FIELD WIKI</span>
-            <h2 id="wikiOverlayTitle">校园档案库</h2>
+            <h2 id="wikiOverlayTitle" data-i18n="wiki.archive">校园档案库</h2>
           </div>
           <div class="wiki-modal-actions">
-            <a class="wiki-fullscreen-link" href="/wiki/" target="_self">全屏打开</a>
-            <button id="closeWikiOverlay" class="wiki-close" type="button" aria-label="关闭百科">×</button>
+            <a class="wiki-fullscreen-link" href="/wiki/" target="_self" data-i18n="wiki.fullscreen">全屏打开</a>
+            <button id="closeWikiOverlay" class="wiki-close" type="button" aria-label="关闭百科" data-i18n-aria-label="wiki.close">×</button>
           </div>
         </header>
         <iframe id="wikiFrame" class="wiki-frame" title="剑拔弩张百科" src="about:blank"></iframe>
@@ -106,44 +106,44 @@
 
     <div id="globalVersionBadge" class="global-version-badge" aria-label="当前版本">V1.0.0</div>
 
-    <section id="factionSelect" class="faction-select" aria-label="选择阵营" hidden>
+    <section id="factionSelect" class="faction-select" aria-label="选择阵营" data-i18n-aria-label="faction.choose" hidden>
       <div class="faction-header">
-        <h2>选择你的阵营</h2>
+        <h2 data-i18n="faction.choose">选择你的阵营</h2>
         <p>CHOOSE YOUR FACTION</p>
       </div>
 
-      <article class="faction-side faction-faculty" aria-label="老师阵营">
+      <article class="faction-side faction-faculty" aria-label="老师阵营" data-i18n-aria-label="faction.faculty">
         <img class="faction-bg" src="assets/老师阵营背景.png" alt="" />
         <div class="faction-shade"></div>
         <img class="faction-logo" src="assets/老师阵营logo.png" alt="" />
         <img class="faction-representative" src="assets/老师代表.png" alt="" />
         <div class="faction-copy">
           <span>FACTION 01</span>
-          <h3>老师阵营</h3>
+          <h3 data-i18n="faction.faculty">老师阵营</h3>
           <p class="faction-en">FACULTY FACTION</p>
-          <p class="faction-values">信仰 · 责任 · 引导</p>
-          <p class="faction-desc">秩序需要信念来支撑，学生需要引导来成长。</p>
+          <p class="faction-values" data-i18n="faction.facultyValues">信仰 · 责任 · 引导</p>
+          <p class="faction-desc" data-i18n="faction.facultyDescription">秩序需要信念来支撑，学生需要引导来成长。</p>
         </div>
         <button id="selectFaculty" class="faction-button faculty-button" type="button">
-          <strong>加入老师阵营</strong>
+          <strong data-i18n="faction.joinFaculty">加入老师阵营</strong>
           <span>JOIN THE FACULTY</span>
         </button>
       </article>
 
-      <article class="faction-side faction-students" aria-label="学生阵营">
+      <article class="faction-side faction-students" aria-label="学生阵营" data-i18n-aria-label="faction.students">
         <img class="faction-bg" src="assets/学生阵营背景.png" alt="" />
         <div class="faction-shade"></div>
         <img class="faction-logo" src="assets/学生阵营logo.png" alt="" />
         <img class="faction-representative" src="assets/学生代表.png" alt="" />
         <div class="faction-copy">
           <span>FACTION 02</span>
-          <h3>学生阵营</h3>
+          <h3 data-i18n="faction.students">学生阵营</h3>
           <p class="faction-en">STUDENT FACTION</p>
-          <p class="faction-values">自由 · 反抗 · 改变</p>
-          <p class="faction-desc">规则束缚思想，改变源于行动。</p>
+          <p class="faction-values" data-i18n="faction.studentValues">自由 · 反抗 · 改变</p>
+          <p class="faction-desc" data-i18n="faction.studentDescription">规则束缚思想，改变源于行动。</p>
         </div>
         <button id="selectStudents" class="faction-button student-button" type="button">
-          <strong>加入学生阵营</strong>
+          <strong data-i18n="faction.joinStudents">加入学生阵营</strong>
           <span>JOIN THE STUDENTS</span>
         </button>
       </article>
@@ -152,11 +152,18 @@
     <section id="settingsPanel" class="settings-panel" aria-label="主页设置" hidden>
       <div class="settings-card">
         <div class="settings-head">
-          <h2><img src="assets/icon/音频.png" alt="" />设置</h2>
-          <button id="closeSettings" type="button" aria-label="关闭设置">×</button>
+          <h2><img src="assets/icon/音频.png" alt="" /><span data-i18n="settings.title">设置</span></h2>
+          <button id="closeSettings" type="button" aria-label="关闭设置" data-i18n-aria-label="settings.close">×</button>
         </div>
+        <label class="setting-row" for="languageSelect">
+          <span data-i18n="settings.language">语言</span>
+          <select id="languageSelect">
+            <option value="zh" data-i18n="settings.chinese">中文</option>
+            <option value="en" data-i18n="settings.english">English</option>
+          </select>
+        </label>
         <label class="setting-row" for="musicSelect">
-          <span>音乐</span>
+          <span data-i18n="settings.music">音乐</span>
           <select id="musicSelect">
             <option value="0">Aphelion</option>
             <option value="1">Phoenix</option>
@@ -165,23 +172,23 @@
           </select>
         </label>
         <label class="setting-row" for="playMode">
-          <span>播放方式</span>
+          <span data-i18n="settings.playMode">播放方式</span>
           <select id="playMode">
-            <option value="sequence">顺序播放</option>
-            <option value="loop">循环播放</option>
-            <option value="random">随机播放</option>
+            <option value="sequence" data-i18n="settings.sequence">顺序播放</option>
+            <option value="loop" data-i18n="settings.loop">循环播放</option>
+            <option value="random" data-i18n="settings.random">随机播放</option>
           </select>
         </label>
         <div class="mode-icons" aria-label="播放模式图标">
-          <span><img src="assets/icon/音频.png" alt="" />顺序</span>
-          <span><img src="assets/icon/循环.png" alt="" />循环</span>
-          <span><img src="assets/icon/随机.png" alt="" />随机</span>
+          <span><img src="assets/icon/音频.png" alt="" /><b data-i18n="settings.sequenceShort">顺序</b></span>
+          <span><img src="assets/icon/循环.png" alt="" /><b data-i18n="settings.loopShort">循环</b></span>
+          <span><img src="assets/icon/随机.png" alt="" /><b data-i18n="settings.randomShort">随机</b></span>
         </div>
       </div>
     </section>
 
     <section id="creditsScreen" class="credits-screen" aria-label="制作人员" hidden>
-      <button id="backToMenu" class="credits-back" type="button">返回主菜单</button>
+      <button id="backToMenu" class="credits-back" type="button" data-i18n="credits.back">返回主菜单</button>
       <div class="credits-roll">
         <p class="credits-title">《Tension Point》</p>
         <p>A Game By Umbra.</p>
@@ -220,7 +227,7 @@
 
     <div class="app-shell">
       <header class="topbar">
-        <section class="hud-stack" aria-label="全局状态">
+        <section class="hud-stack" aria-label="全局状态" data-i18n-aria-label="game.globalStatus">
           <div class="hud-row resource-row">
             <article class="resource-chip" title="手机：2">
               <img src="assets/icon/手机.png" alt="" />
@@ -228,11 +235,11 @@
             </article>
             <article class="resource-chip" title="金钱：35">
               <img src="assets/icon/钱.png" alt="" />
-              <strong>35</strong>
+              <strong id="moneyCount">35</strong>
             </article>
             <article class="resource-chip" title="食物：18">
               <img src="assets/icon/食物.png" alt="" />
-              <strong>18</strong>
+              <strong id="foodCount">18</strong>
             </article>
             <article class="resource-chip" title="人数：2">
               <img src="assets/icon/人数.png" alt="" />
@@ -240,13 +247,13 @@
             </article>
             <article id="pressureChip" class="meter-chip hud-tip-chip">
               <img src="assets/icon/压力.png" alt="" />
-              <span>压力</span>
+              <span data-i18n="student.stress">压力</span>
               <div class="meter"><i id="pressureMeter" style="width: 0%"></i></div>
               <span id="pressureTip" class="hud-tooltip">压力：0%</span>
             </article>
             <article id="fameChip" class="meter-chip fame hud-tip-chip">
               <img src="assets/icon/知名度.png" alt="" />
-              <span>知名度</span>
+              <span data-i18n="hud.fame">知名度</span>
               <div class="meter"><i id="fameMeter" style="width: 6%"></i></div>
               <span id="fameTip" class="hud-tooltip">知名度：6%</span>
             </article>
@@ -255,19 +262,19 @@
           <div class="hud-row status-row">
             <article id="stabilityChip" class="meter-chip hud-tip-chip">
               <img src="assets/icon/稳定度.png" alt="" />
-              <span>稳定度</span>
+              <span data-i18n="label.stability">稳定度</span>
               <div class="meter"><i id="stabilityMeter" style="width: 0%"></i></div>
               <span id="stabilityTip" class="hud-tooltip">稳定度：0%</span>
             </article>
             <article id="studentSupportChip" class="meter-chip hud-tip-chip">
               <img src="assets/icon/支持率.png" alt="" />
-              <span>学生支持</span>
+              <span data-i18n="hud.support">学生支持</span>
               <div class="meter"><i id="studentSupportMeter" style="width: 0%"></i></div>
               <span id="studentSupportTip" class="hud-tooltip">学生支持：0%</span>
             </article>
             <article id="awarenessChip" class="meter-chip danger hud-tip-chip">
               <img src="assets/icon/察觉.png" alt="" />
-              <span>察觉</span>
+              <span data-i18n="hud.awareness">察觉</span>
               <div class="meter"><i id="awarenessMeter" style="width: 0%"></i></div>
               <span id="awarenessTip" class="hud-tooltip">察觉：0%</span>
             </article>
@@ -275,17 +282,17 @@
         </section>
       </header>
 
-      <section class="top-actions" aria-label="时间与系统控制">
-        <article id="zoomValue" class="zoom-value" aria-label="地图缩放">100%</article>
-        <article class="time-chip" title="第 1 天：上课">
+      <section class="top-actions" aria-label="时间与系统控制" data-i18n-aria-label="game.controls">
+        <article id="zoomValue" class="zoom-value" aria-label="地图缩放" data-i18n-aria-label="game.zoom">100%</article>
+        <article id="timeChip" class="time-chip" title="第 1 天：上课">
           <img src="assets/icon/时间.png" alt="" />
           <span id="dayLabel">第 1 天</span>
           <strong id="phaseLabel">上课</strong>
         </article>
-        <button id="gameSettings" class="action-chip" type="button" aria-label="设置" data-label="设置">
+        <button id="gameSettings" class="action-chip" type="button" aria-label="设置" data-label="设置" data-i18n-aria-label="menu.settings" data-i18n-data-label="menu.settings">
           <img src="assets/icon/设置.png" alt="" />
         </button>
-        <div id="speedControl" class="speed-control" style="--speed-index: 1" aria-label="时间速度">
+        <div id="speedControl" class="speed-control" style="--speed-index: 1" aria-label="时间速度" data-i18n-aria-label="game.timeSpeed">
           <img id="speedPointer" class="speed-pointer" src="assets/icon/时间指针.png" alt="" />
           <button class="speed-option" type="button" data-speed="0">S</button>
           <span></span>
@@ -300,40 +307,40 @@
         </button>
       </section>
 
-      <section class="day-progress-hud" aria-label="日程进度">
+      <section class="day-progress-hud" aria-label="日程进度" data-i18n-aria-label="game.schedule">
         <div id="semesterDayLabel" class="semester-day-label">第一学期 第 1 天</div>
         <div class="day-progress-track">
           <div id="dayProgressFill" class="day-progress-fill"></div>
-          <span class="timeline-marker marker-lunch">午饭</span>
-          <span class="timeline-marker marker-after">放学后</span>
-          <span class="timeline-label label-day">白天</span>
-          <span class="timeline-label label-night">晚上</span>
+          <span class="timeline-marker marker-lunch" data-i18n="game.lunch">午饭</span>
+          <span class="timeline-marker marker-after" data-i18n="game.afterSchool">放学后</span>
+          <span class="timeline-label label-day" data-i18n="game.daytime">白天</span>
+          <span class="timeline-label label-night" data-i18n="game.evening">晚上</span>
         </div>
       </section>
 
       <main class="game-layout">
-        <aside class="left-rail" aria-label="战略菜单">
-          <button class="rail-button active" type="button" aria-label="管理" data-label="管理">
+        <aside class="left-rail" aria-label="战略菜单" data-i18n-aria-label="game.strategyMenu">
+          <button class="rail-button active" type="button" aria-label="管理" data-label="管理" data-i18n-aria-label="game.management" data-i18n-data-label="game.management">
             <img src="assets/icon/管理.png" alt="" />
           </button>
-          <button id="membersButton" class="rail-button" type="button" aria-label="成员" data-label="成员">
+          <button id="membersButton" class="rail-button" type="button" aria-label="成员" data-label="成员" data-i18n-aria-label="game.members" data-i18n-data-label="game.members">
             <img src="assets/icon/人数.png" alt="" />
           </button>
-          <button id="recruitButton" class="rail-button" type="button" aria-label="招募" data-label="招募">
+          <button id="recruitButton" class="rail-button" type="button" aria-label="招募" data-label="招募" data-i18n-aria-label="game.recruit" data-i18n-data-label="game.recruit">
             <img src="assets/icon/招募.png" alt="" />
           </button>
-          <button id="squadButton" class="rail-button" type="button" aria-label="行动小队" data-label="行动小队">
+          <button id="squadButton" class="rail-button" type="button" aria-label="行动小队" data-label="行动小队" data-i18n-aria-label="game.squads" data-i18n-data-label="game.squads">
             <img src="assets/icon/行动小队.png" alt="" />
           </button>
-          <button class="rail-button" type="button" aria-label="科技树" data-label="科技树">
+          <button class="rail-button" type="button" aria-label="科技树" data-label="科技树" data-i18n-aria-label="game.techTree" data-i18n-data-label="game.techTree">
             <img src="assets/icon/科技树.png" alt="" />
           </button>
-          <button id="mailButton" class="rail-button" type="button" aria-label="邮件" data-label="邮件">
+          <button id="mailButton" class="rail-button" type="button" aria-label="邮件" data-label="邮件" data-i18n-aria-label="game.mail" data-i18n-data-label="game.mail">
             <img src="assets/icon/邮件.png" alt="" />
           </button>
         </aside>
 
-        <section class="map-stage" aria-label="校园战略地图">
+        <section class="map-stage" aria-label="校园战略地图" data-i18n-aria-label="game.map">
           <div id="mapViewport" class="map-viewport" tabindex="-1">
             <div id="mapContent" class="map-content">
               <img id="campusMap" class="map-image active" src="assets/学校视图.png" alt="学校卫星战略地图" draggable="false" />
@@ -365,36 +372,36 @@
           <section class="panel-card selected-region">
             <div class="panel-title">
               <img src="assets/icon/区域.png" alt="" />
-              <span>选中区域</span>
+              <span data-i18n="region.selected">选中区域</span>
             </div>
-            <h2 id="regionName">未选择区域</h2>
-            <p id="regionFunction">点击地图上的彩色 Province 区域查看基础信息。</p>
+            <h2 id="regionName" data-i18n="region.unselected">未选择区域</h2>
+            <p id="regionFunction" data-i18n="region.hint">点击地图上的彩色 Province 区域查看基础信息。</p>
 
             <dl class="region-stats">
               <div>
-                <dt><img src="assets/icon/支持率.png" alt="" />支持率</dt>
+                <dt><img src="assets/icon/支持率.png" alt="" /><span data-i18n="region.support">支持率</span></dt>
                 <dd id="regionSupport">--</dd>
               </div>
               <div>
-                <dt><img src="assets/icon/压力.png" alt="" />压力</dt>
+                <dt><img src="assets/icon/压力.png" alt="" /><span data-i18n="region.pressure">压力</span></dt>
                 <dd id="regionPressure">--</dd>
               </div>
               <div>
-                <dt><img src="assets/icon/巡逻.png" alt="" />巡逻</dt>
+                <dt><img src="assets/icon/巡逻.png" alt="" /><span data-i18n="region.patrol">巡逻</span></dt>
                 <dd id="regionPatrol">--</dd>
               </div>
               <div>
-                <dt><img src="assets/icon/人数.png" alt="" />组织学生</dt>
+                <dt><img src="assets/icon/人数.png" alt="" /><span data-i18n="region.organizationStudents">组织学生</span></dt>
                 <dd><button id="regionMembersButton" class="region-members-button" type="button">--</button></dd>
               </div>
               <div>
-                <dt><img src="assets/icon/人.png" alt="" />学生人数</dt>
+                <dt><img src="assets/icon/人.png" alt="" /><span data-i18n="region.studentCount">学生人数</span></dt>
                 <dd id="regionStudentCount">--</dd>
               </div>
             </dl>
             <div class="region-actions">
               <button id="regionActionsToggle" class="region-actions-toggle" type="button" aria-expanded="false">
-                <span>行动</span>
+                <span data-i18n="region.actions">行动</span>
                 <img id="regionActionsArrow" src="assets/icon/时间指针.png" alt="" />
               </button>
               <div id="regionActionList" class="region-action-list" hidden></div>
@@ -407,9 +414,9 @@
             <div class="panel-title squad-info-title">
               <span>
                 <img src="assets/icon/行动小队.png" alt="" />
-                行动小队
+                <span data-i18n="squads.info">行动小队</span>
               </span>
-              <button id="squadInfoEdit" class="squad-info-edit" type="button">编辑队伍</button>
+              <button id="squadInfoEdit" class="squad-info-edit" type="button" data-i18n="squads.edit">编辑队伍</button>
             </div>
             <div class="squad-info-head">
               <span id="squadInfoFlag" class="squad-info-flag"></span>
@@ -420,12 +427,12 @@
             </div>
             <div id="squadStatusMenu" class="squad-status-menu" hidden></div>
             <dl class="squad-info-stats">
-              <div><dt>人数</dt><dd><button id="squadInfoCount" class="squad-info-count" type="button">--</button></dd></div>
-              <div><dt>总部</dt><dd id="squadInfoHeadquarters">--</dd></div>
-              <div><dt>稳定度</dt><dd id="squadInfoStability">--</dd></div>
-              <div><dt>压力</dt><dd id="squadInfoPressure">--</dd></div>
+              <div><dt data-i18n="squads.count">人数</dt><dd><button id="squadInfoCount" class="squad-info-count" type="button">--</button></dd></div>
+              <div><dt data-i18n="squads.headquarters">总部</dt><dd id="squadInfoHeadquarters">--</dd></div>
+              <div><dt data-i18n="squads.stability">稳定度</dt><dd id="squadInfoStability">--</dd></div>
+              <div><dt data-i18n="squads.pressure">压力</dt><dd id="squadInfoPressure">--</dd></div>
             </dl>
-            <button id="squadInfoMove" class="squad-info-move" type="button">移动</button>
+            <button id="squadInfoMove" class="squad-info-move" type="button" data-i18n="squads.move">移动</button>
           </section>
         </aside>
 
@@ -472,14 +479,14 @@
           <section class="members-list-wrap core-list-wrap">
             <div class="panel-title">
               <img src="assets/icon/人数.png" alt="" />
-              <span>核心成员</span>
+              <span data-i18n="panel.coreMembers">核心成员</span>
             </div>
             <div id="coreMembersList" class="recruit-list"></div>
           </section>
           <section class="members-list-wrap regular-list-wrap">
             <div class="panel-title">
               <img src="assets/icon/人数.png" alt="" />
-              <span>成员</span>
+              <span data-i18n="panel.members">成员</span>
             </div>
             <div id="membersList" class="recruit-list"></div>
           </section>
@@ -489,7 +496,7 @@
           <section class="mail-list-wrap">
             <div class="panel-title">
               <img src="assets/icon/邮件.png" alt="" />
-              <span>地下邮件</span>
+              <span data-i18n="panel.undergroundMail">地下邮件</span>
             </div>
             <div id="mailList" class="mail-list"></div>
           </section>
@@ -499,7 +506,7 @@
           <section class="squad-list-wrap">
             <div class="panel-title">
               <img src="assets/icon/行动小队.png" alt="" />
-              <span>行动小队</span>
+              <span data-i18n="game.squads">行动小队</span>
             </div>
             <div id="squadList" class="squad-list"></div>
           </section>
@@ -510,7 +517,7 @@
             <div class="squad-create-head">
               <div class="panel-title">
                 <img src="assets/icon/行动小队.png" alt="" />
-                <span>创建新的行动小队</span>
+                <span data-i18n="panel.createSquad">创建新的行动小队</span>
               </div>
               <button id="closeSquadCreate" class="squad-close" type="button" aria-label="关闭创建窗口">×</button>
             </div>
@@ -523,19 +530,19 @@
                     <span id="squadFlagEmoji" hidden>🏴‍☠️</span>
                   </button>
                   <label class="squad-name-field" for="squadNameInput">
-                    <span>队伍名称</span>
-                    <input id="squadNameInput" type="text" value="" maxlength="16" placeholder="点击输入文本" />
+                    <span data-i18n="panel.squadName">队伍名称</span>
+                    <input id="squadNameInput" type="text" value="" maxlength="16" placeholder="点击输入文本" data-i18n-placeholder="squads.namePlaceholder" />
                   </label>
                 </div>
                 <dl id="draftSquadStats" class="squad-stats-grid"></dl>
-                <button id="createSquadConfirm" class="create-squad-confirm" type="button" disabled>创建队伍</button>
-                <button id="relocateSquadButton" class="relocate-squad-button" type="button" hidden>迁移新位置</button>
+                <button id="createSquadConfirm" class="create-squad-confirm" type="button" data-i18n="squads.createAction" disabled>创建队伍</button>
+                <button id="relocateSquadButton" class="relocate-squad-button" type="button" data-i18n="headquarters.relocate" hidden>迁移新位置</button>
               </section>
 
               <section class="squad-roster-column">
                 <div class="panel-title">
                   <img src="assets/icon/人数.png" alt="" />
-                  <span>编队成员</span>
+                  <span data-i18n="panel.squadMembers">编队成员</span>
                 </div>
                 <div id="draftSquadMembers" class="draft-squad-members"></div>
               </section>
@@ -543,7 +550,7 @@
               <section class="squad-pick-column">
                 <div class="panel-title">
                   <img src="assets/icon/人.png" alt="" />
-                  <span>成员选择</span>
+                  <span data-i18n="panel.memberSelection">成员选择</span>
                 </div>
                 <div id="squadCandidateList" class="squad-candidate-list"></div>
               </section>
@@ -552,7 +559,7 @@
         </section>
 
         <div id="flagPicker" class="flag-picker" hidden>
-          <button type="button" data-flag-type="image" data-flag-value="assets/学生阵营logo.png">默认</button>
+          <button type="button" data-flag-type="image" data-flag-value="assets/学生阵营logo.png" data-i18n="squads.defaultFlag">默认</button>
           <button type="button" data-flag-type="emoji" data-flag-value="🏴‍☠️">🏴‍☠️</button>
           <button type="button" data-flag-type="emoji" data-flag-value="🇺🇸">🇺🇸</button>
           <button type="button" data-flag-type="emoji" data-flag-value="🇯🇵">🇯🇵</button>
@@ -560,13 +567,13 @@
         </div>
 
         <div id="squadMemberContext" class="squad-member-context" hidden>
-          <button id="removeDraftMember" type="button">移出队伍</button>
-          <button id="inspectDraftMember" type="button">查看成员信息</button>
+          <button id="removeDraftMember" type="button" data-i18n="squads.removeDraftMember">移出队伍</button>
+          <button id="inspectDraftMember" type="button" data-i18n="squads.inspectMember">查看成员信息</button>
         </div>
 
         <div id="squadListContext" class="squad-member-context" hidden>
-          <button id="editSquad" type="button">编辑队伍</button>
-          <button id="disbandSquad" type="button">解散队伍</button>
+          <button id="editSquad" type="button" data-i18n="squads.edit">编辑队伍</button>
+          <button id="disbandSquad" type="button" data-i18n="squads.disband">解散队伍</button>
         </div>
 
         <section id="candidateInfoPopup" class="candidate-info-popup" aria-label="成员信息" hidden></section>
@@ -575,19 +582,19 @@
           <section class="panel-card">
             <div class="panel-title">
               <img src="assets/icon/人.png" alt="" />
-              <span>人员信息</span>
+              <span data-i18n="student.info">人员信息</span>
             </div>
             <h2 id="studentDetailName">学生</h2>
             <dl class="student-detail-grid">
-              <div><dt>年级</dt><dd id="studentDetailGrade">--</dd></div>
-              <div><dt>性格</dt><dd id="studentDetailPersonality">--</dd></div>
-              <div><dt>派系</dt><dd id="studentDetailFaction">--</dd></div>
-              <div><dt>状态</dt><dd id="studentDetailStatus">--</dd></div>
-              <div><dt>信任度</dt><dd id="studentDetailTrust">--</dd></div>
-              <div><dt>压力</dt><dd id="studentDetailStress">--</dd></div>
-              <div><dt>所属小队</dt><dd id="studentDetailSquad">无</dd></div>
+              <div><dt data-i18n="student.grade">年级</dt><dd id="studentDetailGrade">--</dd></div>
+              <div><dt data-i18n="student.personality">性格</dt><dd id="studentDetailPersonality">--</dd></div>
+              <div><dt data-i18n="student.faction">派系</dt><dd id="studentDetailFaction">--</dd></div>
+              <div><dt data-i18n="student.status">状态</dt><dd id="studentDetailStatus">--</dd></div>
+              <div><dt data-i18n="student.trust">信任度</dt><dd id="studentDetailTrust">--</dd></div>
+              <div><dt data-i18n="student.stress">压力</dt><dd id="studentDetailStress">--</dd></div>
+              <div><dt data-i18n="student.squad">所属小队</dt><dd id="studentDetailSquad">无</dd></div>
               <div id="studentDetailResistanceCard" class="student-detail-hover-card">
-                <dt>压力抗性</dt>
+                <dt data-i18n="student.resistance">压力抗性</dt>
                 <dd id="studentDetailResistance">--</dd>
                 <span id="studentDetailResistanceTip" class="student-detail-tip">--</span>
               </div>
@@ -601,14 +608,14 @@
             <section id="positionPanel" class="position-panel" hidden>
               <div class="panel-title">
                 <img src="assets/icon/管理.png" alt="" />
-                <span>更改职位</span>
+                <span data-i18n="student.changeRole">更改职位</span>
               </div>
               <div id="positionOptions" class="position-options"></div>
             </section>
             <div class="student-actions">
-              <button id="bribeStudent" class="student-action bribe" type="button">贿赂</button>
-              <button id="inviteStudent" class="student-action invite" type="button">邀请</button>
-              <button id="removeMember" class="student-action leave" type="button" hidden>让他离开</button>
+              <button id="bribeStudent" class="student-action bribe" type="button" data-i18n="student.bribe">贿赂</button>
+              <button id="inviteStudent" class="student-action invite" type="button" data-i18n="student.invite">邀请</button>
+              <button id="removeMember" class="student-action leave" type="button" data-i18n="student.leave" hidden>让他离开</button>
             </div>
           </section>
         </aside>
@@ -617,8 +624,8 @@
           <div class="confirm-card">
             <p id="confirmMessage">确认操作？</p>
             <div class="confirm-actions">
-              <button id="cancelConfirm" class="confirm-cancel" type="button">取消</button>
-              <button id="acceptConfirm" class="confirm-accept" type="button">确认</button>
+              <button id="cancelConfirm" class="confirm-cancel" type="button" data-i18n="common.cancel">取消</button>
+              <button id="acceptConfirm" class="confirm-accept" type="button" data-i18n="common.confirm">确认</button>
             </div>
           </div>
         </section>
@@ -642,18 +649,18 @@
           </div>
         </section>
 
-        <section id="eventLog" class="event-log" aria-label="事件日志">
+        <section id="eventLog" class="event-log" aria-label="事件日志" data-i18n-aria-label="game.eventLog">
           <button id="collapseLog" class="collapse-log" type="button" aria-label="收起日志">
             <img src="assets/icon/收起.png" alt="" />
           </button>
           <div class="panel-title">
             <img src="assets/icon/突发事件.png" alt="" />
-            <span>局势日志</span>
+            <span data-i18n="log.title">局势日志</span>
           </div>
           <ol id="logList">
-            <li><time>07:50</time> 地下组织建立，初始成员 2 人。</li>
-            <li><time>08:10</time> 管理层察觉值保持 0%，校园处于正常状态。</li>
-            <li><time>08:30</time> 等待玩家选择第一个 Province 区域。</li>
+            <li><time>07:50</time> <span data-i18n="log.initial1">地下组织建立，初始成员 2 人。</span></li>
+            <li><time>08:10</time> <span data-i18n="log.initial2">管理层察觉值保持 0%，校园处于正常状态。</span></li>
+            <li><time>08:30</time> <span data-i18n="log.initial3">等待玩家选择第一个 Province 区域。</span></li>
           </ol>
         </section>
         <button id="expandLog" class="expand-log" type="button" aria-label="展开日志" hidden>
@@ -662,6 +669,7 @@
       </main>
     </div>
 
+    <script src="i18n.js"></script>
     <script src="game.js"></script>
   </body>
 </html>
