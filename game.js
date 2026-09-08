@@ -373,10 +373,33 @@ const REGION_ACTIONS = {
 };
 const FALLBACK_UPDATE_LOG_DATES = [
   {
+    date: "2026-09-08",
+    label: "2026年9月8日",
+    timezone: "UTC+9",
+    latest: true,
+    updateCount: 1,
+    logs: [
+      {
+        id: "13_15",
+        date: "2026-09-08",
+        time: "13:15",
+        datetime: "2026-09-08T13:15:00+09:00",
+        layer: 1,
+        title: "V1.7.0 中英文语言系统",
+        latest: true,
+        sections: [
+          { heading: "双语支持", items: ["新增中文与英文语言切换。", "语言选择会保存在浏览器中，再次打开游戏时自动恢复。", "主页、阵营选择、设置与游戏内主要界面均已接入双语文本。"] },
+          { heading: "游戏动态文本", items: ["时间、资源、成员、行动小队、区域行动、邮件与事件日志会根据当前语言显示。", "角色状态、职位、地块名称和操作提示均支持实时切换。", "更新日志界面日期与提示文字加入英文显示。"] },
+          { heading: "系统联动", items: ["游戏与 Wiki 共用语言偏好，并保持切换同步。", "中英文语言包已加入启动预加载。", "保留原有游戏数据与状态逻辑，不影响现有玩法。"] },
+        ],
+      },
+    ],
+  },
+  {
     date: "2026-06-16",
     label: "2026年6月16日",
     timezone: "UTC+9",
-    latest: true,
+    latest: false,
     updateCount: 1,
     logs: [
       {
